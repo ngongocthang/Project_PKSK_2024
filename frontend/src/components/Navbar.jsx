@@ -23,7 +23,7 @@ const Navbar = () => {
   }, [setUser]);
 
   const handleLogout = () => {
-    sessionStorage.removeItem("user");
+    // sessionStorage.removeItem("user");
     localStorage.removeItem("user");
     setUser(null);
     navigate("/account");
@@ -86,7 +86,7 @@ const Navbar = () => {
         alt="Logo"
         style={{ width: "80px", height: "80px", objectFit: "contain" }}
       />
-
+  
       <ul className="hidden md:flex items-start gap-5 font-medium">
         <NavLink to="/">
           <li className="py-1 text-base">Trang chủ</li>
@@ -101,7 +101,7 @@ const Navbar = () => {
           <li className="py-1 text-base">Liên hệ</li>
         </NavLink>
       </ul>
-
+  
       <div className="flex items-center gap-4">
         {user ? (
           <div className="flex items-center gap-2 cursor-pointer group relative">
@@ -124,19 +124,22 @@ const Navbar = () => {
             </button>
           </NavLink>
         )}
-
-        <div className="relative">
-          {hasNewNotifications && (
-            <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-          )}
-          <img
-            onClick={handleNotificationClick}
-            className="w-6 cursor-pointer"
-            src={assets.notification_icon}
-            alt="Thông báo"
-          />
-        </div>
-
+  
+        {/* Hiển thị chuông thông báo chỉ khi người dùng đã đăng nhập */}
+        {user && (
+          <div className="relative">
+            {hasNewNotifications && (
+              <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+            )}
+            <img
+              onClick={handleNotificationClick}
+              className="w-6 cursor-pointer"
+              src={assets.notification_icon}
+              alt="Thông báo"
+            />
+          </div>
+        )}
+  
         <img
           onClick={() => setShowMenu(true)}
           className="w-6 md:hidden"

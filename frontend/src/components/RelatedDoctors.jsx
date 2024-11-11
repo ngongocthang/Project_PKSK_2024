@@ -27,6 +27,11 @@ const RelatedDoctors = ({ speciality, docId }) => {
         fetchDoctors();
     }, [speciality, docId]);
 
+    // Kiểm tra nếu không có bác sĩ nào cùng chuyên ngành
+    if (relDoc.length === 0) {
+        return null; 
+    }
+
     return (
         <div className='flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10'>
             <h1 className='text-3xl font-medium'>Bác sĩ liên quan</h1>

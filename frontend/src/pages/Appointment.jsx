@@ -83,14 +83,18 @@ const Appointment = () => {
       navigate('/account');
       return; // Thoát sớm khỏi hàm
     }
-    
+  
     if (slotTime) {
       const formattedDate = new Date(selectedDate).toLocaleDateString("vi-VN", {
         day: 'numeric',
         month: 'numeric',
         year: 'numeric'
       });
-
+  
+      // Dismiss any previous toast before showing the new one
+      toast.dismiss();
+  
+      // Show the confirmation toast
       toast.info(
         <div className="flex flex-col items-center justify-center">
           <div className="flex items-center mb-2">
@@ -124,7 +128,7 @@ const Appointment = () => {
     } else {
       toast.warn("Vui lòng chọn ca làm việc trước khi đặt lịch hẹn.");
     }
-  };
+  };    
 
   const confirmBooking = async () => {
     try {
@@ -217,10 +221,10 @@ const Appointment = () => {
                 <div
                   key={dateStr}
                   className={`text-center w-[100px] h-[100px] flex flex-col justify-center items-center rounded-full border cursor-pointer transition-all duration-300
-          ${isSelected ? "bg-[#00759c] text-white border-[#00759c]" : "border-gray-200 text-gray-600 hover:border-gray-300"}`}
+        ${isSelected ? "bg-[#00759c] text-white border-[#00759c]" : "border-gray-200 text-gray-600 hover:border-gray-300"}`}
                   onClick={() => setSelectedDate(dateStr)}
                 >
-                  <p className={`text-sm font-medium ${isSelected ? "text-white" : "text-gray-600"}`}>
+                  <p className={`text-sm font-bold ${isSelected ? "text-white" : "text-gray-600"}`}>
                     {dayOfWeek}
                   </p>
                   <p className={`text-sm font-semibold ${isSelected ? "text-white" : "text-gray-500"}`}>
@@ -232,8 +236,8 @@ const Appointment = () => {
           </div>
         )}
 
-         {/* Hiển thị các buổi sáng và chiều theo ngày */}
-         {selectedDate && !errorLoadingSchedule && (
+        {/* Hiển thị các buổi sáng và chiều theo ngày */}
+        {selectedDate && !errorLoadingSchedule && (
           <div className="flex items-center gap-3 w-full overflow-x-auto mt-4">
             {doctorSchedule[selectedDate].map((schedule) => (
               <p key={schedule._id} onClick={() => setSlotTime(schedule.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều")}
@@ -250,10 +254,11 @@ const Appointment = () => {
         {selectedDate && slotTime && (
           <button
             onClick={handleBooking}
-            className="bg-[#00759c] text-white text-sm font-light px-14 py-3 rounded-full my-6"
+            className="bg-[#00759c] text-white text-sm font-bold px-14 py-3 rounded-full my-6"
           >
             Đặt lịch hẹn
           </button>
+
         )}
       </div>
 

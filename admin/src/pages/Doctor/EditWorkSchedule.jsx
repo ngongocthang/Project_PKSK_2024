@@ -82,7 +82,7 @@ const EditWorkSchedule = () => {
             <select
               name="timeSlot"
               value={scheduleForm.timeSlot}
-              onChange={handleInputChange}
+              onChange={(e) => setScheduleForm({ ...scheduleForm, timeSlot: e.target.value })}
               required
               className="w-full p-3 border rounded focus:outline-none focus:border-blue-500"
             >
@@ -93,7 +93,6 @@ const EditWorkSchedule = () => {
               <option value="afternoon">Buổi chiều</option>
             </select>
           </div>
-
           {/* Submit Button */}
           <button
             type="submit"
