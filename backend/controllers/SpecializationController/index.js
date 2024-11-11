@@ -45,7 +45,6 @@ const findSpecialization = async (req, res) => {
   }
 };
 
-
 const updateSpecialization = async (req, res) => {
   try {
     // Validate dữ liệu từ client
@@ -54,7 +53,7 @@ const updateSpecialization = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const {id} = req.params;
+    const { id } = req.params;
     const specialization = await Specialization.findByIdAndUpdate(id, req.body);
     if (!specialization) {
       return res.status(400).json({ message: "Specialization not found" });
@@ -64,7 +63,7 @@ const updateSpecialization = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-}
+};
 
 const deleteSpecialization = async (req, res) => {
   try {
@@ -74,11 +73,20 @@ const deleteSpecialization = async (req, res) => {
       return res.status(400).json({ message: "Specialization not found" });
     }
     await Specialization.findByIdAndDelete(id);
-    await Doctor.updateMany({ specialization_id: id }, { $set: { specialization_id: null } });
+    await Doctor.updateMany(
+      { specialization_id: id },
+      { $set: { specialization_id: null } }
+    );
     return res.status(200).json({ message: "Delete specialization success!" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { createSpecialization, findAllSpecialization, findSpecialization, updateSpecialization, deleteSpecialization };
+module.exports = {
+  createSpecialization,
+  findAllSpecialization,
+  findSpecialization,
+  updateSpecialization,
+  deleteSpecialization,
+};
