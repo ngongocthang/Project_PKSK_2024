@@ -8,8 +8,9 @@ const MyAppointments = () => {
   const { user, setUser } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const toastId = React.useRef(null); 
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -24,7 +25,7 @@ const MyAppointments = () => {
       } else {
         setError("User not authenticated. Please log in.");
         navigate("/account");
-        setLoading(false); // Set loading to false when not authenticated
+        setLoading(false);
         return;
       }
 
@@ -49,7 +50,7 @@ const MyAppointments = () => {
       } catch (error) {
         console.error("Error fetching appointments:", error);
       } finally {
-        setLoading(false); // Set loading to false after data fetching is done
+        setLoading(false);
       }
     };
 
@@ -94,36 +95,38 @@ const MyAppointments = () => {
     const appointmentDate = new Date(appointment.work_date).toLocaleDateString("vi-VN");
     const appointmentShift = appointment.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều";
 
-    toast.warn(
-      <div className="p-4">
-        <p className="text-lg font-semibold text-center mb-3">
-          Bạn có chắc chắn muốn hủy cuộc hẹn ngày {appointmentDate} vào {appointmentShift} này không?
-        </p>
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={() => {
-              toast.dismiss();
-              confirmDelete();
-            }}
-            className="bg-red-600 text-white px-4 py-2 rounded transition duration-300 hover:bg-red-700"
-          >
-            Có
-          </button>
-          <button
-            onClick={() => toast.dismiss()}
-            className="bg-gray-300 text-black px-4 py-2 rounded transition duration-300 hover:bg-gray-400"
-          >
-            Không
-          </button>
-        </div>
-      </div>,
-      {
-        closeOnClick: false,
-        draggable: false,
-        autoClose: false,
-        position: "top-center",
-      }
-    );
+    if (!toast.isActive(toastId.current)) { 
+      toastId.current = toast.warn(
+        <div className="p-4">
+          <p className="text-lg font-semibold text-center mb-3">
+            Bạn có chắc chắn muốn hủy cuộc hẹn ngày {appointmentDate} vào {appointmentShift} này không?
+          </p>
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => {
+                toast.dismiss(toastId.current);
+                confirmDelete();
+              }}
+              className="bg-red-600 text-white px-4 py-2 rounded transition duration-300 hover:bg-red-700"
+            >
+              Có
+            </button>
+            <button
+              onClick={() => toast.dismiss(toastId.current)}
+              className="bg-gray-300 text-black px-4 py-2 rounded transition duration-300 hover:bg-gray-400"
+            >
+              Không
+            </button>
+          </div>
+        </div>,
+        {
+          closeOnClick: false,
+          draggable: false,
+          autoClose: false,
+          position: "top-center",
+        }
+      );
+    }
   };
 
   return (
