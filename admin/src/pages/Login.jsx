@@ -1,3 +1,4 @@
+// export default Login
 import React, { useContext, useState } from 'react'
 import { AdminContext } from '../context/AdminContext'
 import axios from 'axios'
@@ -22,7 +23,7 @@ const Login = () => {
             const response = await axios.post(`${backendUrl}/login`, { email, password })
 
             if (response.data.user) {
-                const { role, token } = response.data.user
+                const { role, token, ...userInfo } = response.data.user;
 
                 if (role === 'admin' && state === 'Admin') {
                     localStorage.setItem('aToken', token)
@@ -32,6 +33,7 @@ const Login = () => {
                 } else if (role === 'doctor' && state === 'Doctor') {
                     localStorage.setItem('dToken', token)
                     setDToken(token)
+                    sessionStorage.setItem('doctorInfo', JSON.stringify(userInfo));
                     toast.success("Đăng nhập bác sĩ thành công!")
                     navigate('/doctor-dashboard')
                 } else {
