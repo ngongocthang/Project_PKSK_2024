@@ -16,7 +16,7 @@ const Banner = () => {
                     <p className='mt-4 ml-0 md:ml-[-20px]'>đáng tin cậy</p>
                 </div>
                 <button 
-                    onClick={() => { navigate('/login'); scrollTo(0, 0); }} 
+                    onClick={() => { navigate('/account'); scrollTo(0, 0); }} 
                     className='bg-white text-sm sm:text-base text-gray-600 px-8 py-3 rounded-full mt-6 hover:scale-105 transition-all'
                     style={{ color: '#00759c' }}>
                     Tạo tài khoản

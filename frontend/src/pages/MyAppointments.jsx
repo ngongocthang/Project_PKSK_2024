@@ -5,18 +5,26 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MyAppointments = () => {
-  const { user } = useContext(AppContext);
+  const { user, setUser } = useContext(AppContext);
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const token = user?.token;
+      const token = localStorage.getItem("token");
 
-      if (!token) {
+      if (token) {
+        setUser({ token });
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (userData) {
+          setUser(userData);
+        }
+      } else {
         setError("User not authenticated. Please log in.");
         navigate("/account");
+        setLoading(false); // Set loading to false when not authenticated
         return;
       }
 
@@ -40,12 +48,13 @@ const MyAppointments = () => {
         }
       } catch (error) {
         console.error("Error fetching appointments:", error);
-        // setError("An error occurred while fetching appointments.");
+      } finally {
+        setLoading(false); // Set loading to false after data fetching is done
       }
     };
 
     fetchAppointments();
-  }, [navigate, user?.token]);
+  }, [setUser, navigate, user?.token]);
 
   const handleCancelAppointment = (appointmentId) => {
     const confirmDelete = () => {
@@ -53,7 +62,7 @@ const MyAppointments = () => {
 
       if (!token) {
         setError("User not authenticated. Please log in.");
-        navigate("/login");
+        navigate("/account");
         return;
       }
 
@@ -124,7 +133,9 @@ const MyAppointments = () => {
         Lịch hẹn của tôi:
       </p>
       <div>
-        {appointments.length === 0 ? (
+        {loading ? (
+          <p className="text-center text-gray-500 mt-5">Đang tải dữ liệu...</p> 
+        ) : appointments.length === 0 ? (
           <p className=" text-center text-gray-500 mt-5">Hiện tại bạn không có lịch hẹn.</p>
         ) : (
           appointments.map((appointment) => (

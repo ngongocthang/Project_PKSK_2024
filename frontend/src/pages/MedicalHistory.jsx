@@ -24,6 +24,7 @@ const MedicalHistory = () => {
       });
       const data = await response.json();
       setMedicalRecords(data.historyAppointments);
+      localStorage.setItem("medicalRecords", JSON.stringify(data.historyAppointments));
     } catch (error) {
       console.error("Error fetching medical history:", error);
       toast.error("Có lỗi xảy ra khi tải lịch sử lịch hẹn. Vui lòng thử lại.");
@@ -31,8 +32,14 @@ const MedicalHistory = () => {
   };
 
   useEffect(() => {
-    fetchMedicalHistory();
-  }, [user.id]);
+    // Kiểm tra xem dữ liệu có trong localStorage chưa
+    const storedRecords = localStorage.getItem("medicalRecords");
+    if (storedRecords) {
+      setMedicalRecords(JSON.parse(storedRecords));
+    } else {
+      fetchMedicalHistory();
+    }
+  }, [user]);
 
   return (
     <div className="container mx-auto p-4">
@@ -44,7 +51,7 @@ const MedicalHistory = () => {
         <table className="min-w-full bg-white border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
-            <th className="py-2 px-4 border-b">Bác sĩ</th>
+              <th className="py-2 px-4 border-b">Bác sĩ</th>
               <th className="py-2 px-4 border-b">Ngày khám</th>
               <th className="py-2 px-4 border-b">Ca khám</th>
             </tr>
@@ -52,11 +59,14 @@ const MedicalHistory = () => {
           <tbody>
             {medicalRecords.map((record) => (
               <tr key={record.history.id} className="hover:bg-gray-100">
-                <td className="py-2 px-4 border-b">{record.history.doctor_name}</td>
-                <td className="py-2 px-4 border-b">
+                <td className="py-2 px-4 border-b text-center">{record.history.doctor_name}</td>
+                <td className="py-2 px-4 border-b text-center">
                   {new Date(record.history.work_date).toLocaleDateString("vi-VN")}
                 </td>
-                <td className="py-2 px-4 border-b">{record.history.work_shift}</td>
+                <td className="py-2 px-4 border-b text-center">
+                  {record.history.work_shift === "morning" && "Buổi sáng"}
+                  {record.history.work_shift === "afternoon" && "Buổi chiều"}
+                </td>
               </tr>
             ))}
           </tbody>

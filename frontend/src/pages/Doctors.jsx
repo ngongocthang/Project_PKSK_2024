@@ -136,30 +136,34 @@ const Doctors = () => {
           ))}
         </div>
       </div>
-      <div className="flex justify-center items-center mt-6 space-x-2">
-        {Array.from({ length: totalPages }, (_, index) => {
-          const page = index + 1;
-          const shouldDisplay =
-            page >= currentPage - 2 && page <= currentPage + 2;
 
-          if (shouldDisplay) {
-            return (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-3 py-1 border transition-all duration-300 ${
-                  currentPage === page
-                    ? "bg-[#a2dbde] text-white border-[#a2dbde]"
-                    : "bg-white text-black border-gray-300 hover:bg-blue-50"
-                }`}
-              >
-                {page}
-              </button>
-            );
-          }
-          return null;
-        })}
-      </div>
+      {/* Chỉ hiển thị phần phân trang nếu có nhiều hơn 1 trang */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-6 space-x-2">
+          {Array.from({ length: totalPages }, (_, index) => {
+            const page = index + 1;
+            const shouldDisplay =
+              page >= currentPage - 2 && page <= currentPage + 2;
+
+            if (shouldDisplay) {
+              return (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-3 py-1 border transition-all duration-300 ${
+                    currentPage === page
+                      ? "bg-[#a2dbde] text-white border-[#a2dbde]"
+                      : "bg-white text-black border-gray-300 hover:bg-blue-50"
+                  }`}
+                >
+                  {page}
+                </button>
+              );
+            }
+            return null;
+          })}
+        </div>
+      )}
     </div>
   );
 };

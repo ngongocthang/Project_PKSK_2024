@@ -10,13 +10,6 @@ const AppContextProvider = (props) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const currencySymbol = "$";
 
-  useEffect(() => {
-    const savedUser = sessionStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-  }, []);
-
   const value = {
     doctors,
     setDoctors,
