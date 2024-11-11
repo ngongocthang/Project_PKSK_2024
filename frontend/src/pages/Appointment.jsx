@@ -30,25 +30,32 @@ const Appointment = () => {
     const docInfo = doctors.find((doc) => doc._id === docId);
     setDocInfo(docInfo);
   };
-
   const fetchDoctorSchedule = async () => {
     try {
       const response = await axios.get(`http://localhost:5000/get-schedule-doctor/${docId}`);
+      console.log(`doctor id: ${docId}`);
+      console.log("Response data:", response.data);
+  
       const groupedSchedule = response.data.reduce((acc, schedule) => {
         const dateStr = new Date(schedule.work_date).toISOString().split("T")[0];
         if (!acc[dateStr]) acc[dateStr] = [];
         acc[dateStr].push(schedule);
         return acc;
       }, {});
+      
       setDoctorSchedule(groupedSchedule);
       setErrorLoadingSchedule(false);
     } catch (error) {
       console.error("Error fetching doctor schedule:", error);
+      if (error.response) {
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+      }
       setErrorLoadingSchedule(true);
     }
   };
+  
 
-  // Đặt lại trạng thái đặt lịch khi một bác sĩ mới được chọn
   useEffect(() => {
     setSelectedDate(null);
     setSlotTime("");

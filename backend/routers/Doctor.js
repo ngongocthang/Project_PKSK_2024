@@ -12,7 +12,7 @@ const {
 } = require("../controllers/DoctorController/index");
 const upload = require('../helpers/multer-config'); // Import multer config
 const {
-  getScheduleByDoctor,
+  getScheduleByDoctorDashboard,
   doctorCreateSchedule,
   doctorUpdateSchedule,
   getSchedule
@@ -30,7 +30,7 @@ router.put("/update/:id", upload.single('image'), updateDoctor);
 router.delete("/delete/:id", deleteDoctor);
 router.put("/confirm-appointment/:id", confirmAppointment);
 router.get("/appointment", userMiddleware, getDoctorAppointments);
-router.get("/schedule/:id", getScheduleByDoctor);
+router.get("/schedule/:id", getScheduleByDoctorDashboard);
 router.get("/get-specializations/:id", getSpecializations);
 router.post("/create-schedule/:id", doctorCreateSchedule);
 router.get("/find-schedule/:id", getSchedule);

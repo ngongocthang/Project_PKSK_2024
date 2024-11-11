@@ -1,14 +1,9 @@
 import React, { useContext, useEffect } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
-import { AppContext } from "../../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
 const DoctorAppointments = () => {
-  const {
-    dToken,
-    schedules,
-    getDoctorSchedule,
-  } = useContext(DoctorContext);
+  const { dToken, schedules, getDoctorSchedule, deleteSchedule } = useContext(DoctorContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,7 +15,13 @@ const DoctorAppointments = () => {
   }, [dToken]);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
+    return date.toLocaleDateString("en-GB");
+  };
+
+  const handleDeleteSchedule = async (scheduleId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xóa lịch làm việc này?")) {
+      await deleteSchedule(scheduleId);
+    }
   };
 
   return (
@@ -57,7 +58,7 @@ const DoctorAppointments = () => {
               <div className="flex gap-3">
                 <svg
                   onClick={() =>
-                    (window.location.href = `/edit-work-schedule/${schedule._id}`)
+                    navigate(`/edit-work-schedule/${schedule._id}`)
                   }
                   className="w-6 h-6 cursor-pointer text-blue-500 hover:text-blue-600"
                   xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +67,7 @@ const DoctorAppointments = () => {
                   <path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z" />
                 </svg>
                 <svg
-                  onClick={() => console.log("Delete schedule", schedule._id)}
+                  onClick={() => handleDeleteSchedule(schedule._id)} // Gọi hàm xóa
                   className="w-6 h-6 cursor-pointer text-red-500 hover:text-red-600"
                   fill="currentColor"
                   viewBox="0 0 448 512"
@@ -87,4 +88,3 @@ const DoctorAppointments = () => {
 };
 
 export default DoctorAppointments;
-

@@ -121,8 +121,6 @@ const updateDoctor = async (req, res) => {
     let imageUrl = doctor.user_id.image; // Giữ URL ảnh cũ nếu không có ảnh mới
 
     if (req.file) {
-      console.log("Cập nhật ảnh mới");
-
       // Tạo base64 của ảnh mới để upload
       const base64Image = `data:${
         req.file.mimetype
@@ -190,7 +188,6 @@ const confirmAppointment = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    console.log(id, status);
 
     let updatedAppointment;
     let afterUpdateAppointment;
@@ -309,7 +306,6 @@ const getDoctorAppointments = async (req, res) => {
 const getSpecializations = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("id:",id);  
     const doctor = await Doctor.findOne({user_id: id}).populate("specialization_id");
     if (!doctor) {
       return res.status(400).json({ message: "Doctor not found" });

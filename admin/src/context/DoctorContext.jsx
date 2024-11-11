@@ -185,6 +185,70 @@ const DoctorContextProvider = (props) => {
     }
   };
 
+  const getScheduleById = async (scheduleId) => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/doctor/find-schedule/${scheduleId}`,
+        {
+          headers: { Authorization: `Bearer ${dToken}` },
+        }
+      );
+
+      if (data.success) {
+        return data.schedule; // Trả về lịch hẹn
+      } else {
+        toast.error("Không tìm thấy lịch hẹn!");
+        return null;
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Có lỗi xảy ra khi lấy lịch hẹn!");
+      return null;
+    }
+  };
+
+  const updateSchedule = async (scheduleId, scheduleData) => {
+    const doctorInfo = JSON.parse(sessionStorage.getItem("doctorInfo")); 
+    const doctorId = doctorInfo ? doctorInfo.id : null; 
+  
+    try {
+      const { data } = await axios.put(
+        `${backendUrl}/doctor/update-schedule/${scheduleId}`,
+        { ...scheduleData, id: doctorId },
+        { headers: { Authorization: `Bearer ${dToken}` } }
+      );
+  
+      if (data.success) {
+        toast.success("Cập nhật lịch làm việc thành công!");
+      } else {
+        toast.error("Cập nhật lịch làm việc thất bại!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Có lỗi xảy ra khi cập nhật lịch!");
+    }
+  };
+  
+  const deleteSchedule = async (scheduleId) => {
+    try {
+      const { data } = await axios.delete(`${backendUrl}/schedule/delete/${scheduleId}`, {
+        headers: { Authorization: `Bearer ${dToken}` },
+      });
+  
+      if (data.success) {
+        toast.success("Xóa lịch làm việc thành công!");
+        setSchedules((prevSchedules) => 
+          prevSchedules.filter((schedule) => schedule._id !== scheduleId)
+        );
+      } else {
+        toast.error("Xóa lịch làm việc thất bại!");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Có lỗi xảy ra khi xóa lịch làm việc!");
+    }
+  };
+  
   const value = {
     dToken,
     setDToken,
@@ -208,6 +272,9 @@ const DoctorContextProvider = (props) => {
     setSpecialzations,
     getDoctorSpecialization,
     createSchedule,
+    getScheduleById,
+    updateSchedule,
+    deleteSchedule
   };
 
   return (
