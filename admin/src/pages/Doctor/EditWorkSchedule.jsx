@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { toast, ToastContainer } from 'react-toastify'; 
 import 'react-toastify/dist/ReactToastify.css';
+import { DoctorContext } from '../../context/DoctorContext';
 
 const EditWorkSchedule = ({ schedule, onUpdate }) => {
+  const { specialzations, getDoctorSpecialization } = useContext(DoctorContext);
   const [scheduleForm, setScheduleForm] = useState({
-    doctorName: schedule.doctorName || '',
     workDate: schedule.workDate || new Date(),
     timeSlot: schedule.timeSlot || '',
     specialty: schedule.specialty || 'pediatrics',
@@ -15,7 +16,6 @@ const EditWorkSchedule = ({ schedule, onUpdate }) => {
 
   useEffect(() => {
     setScheduleForm({
-      doctorName: schedule.doctorName || '',
       workDate: schedule.workDate || new Date(),
       timeSlot: schedule.timeSlot || '',
       specialty: schedule.specialty || 'pediatrics',
@@ -23,10 +23,13 @@ const EditWorkSchedule = ({ schedule, onUpdate }) => {
     });
   }, [schedule]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setScheduleForm({ ...scheduleForm, [name]: value });
-  };
+  useEffect(() => {
+    const doctorInfo = sessionStorage.getItem("doctorInfo");
+    const doctorId = doctorInfo ? JSON.parse(doctorInfo).id : null;
+    if (doctorId) {
+      getDoctorSpecialization(doctorId);
+    }
+  }, [getDoctorSpecialization]);
 
   const handleDateChange = (date) => {
     setScheduleForm({ ...scheduleForm, workDate: date });
@@ -50,19 +53,15 @@ const EditWorkSchedule = ({ schedule, onUpdate }) => {
           {/* Specialty */}
           <div>
             <label className='block text-gray-700 mb-2'>Chuyên khoa</label>
-            <select
-              name='specialty'
-              value={scheduleForm.specialty}
-              onChange={handleInputChange}
-              required
-              className='w-full p-3 border rounded focus:outline-none focus:border-blue-500'
-            >
-              <option value='pediatrics'>Nhi khoa</option>
-              <option value='general'>Chung</option>
-              <option value='cardiology'>Tim mạch</option>
-              <option value='neurology'>Thần kinh</option>
-              {/* Thêm các chuyên khoa khác nếu cần */}
-            </select>
+            {specialzations.length > 0 ? (
+              <p className='w-full p-3 border rounded bg-gray-100 text-gray-700'>
+                {specialzations.find(spec => spec._id === schedule.specialty)?.name || 'Không có chuyên khoa'}
+              </p>
+            ) : (
+              <p className='w-full p-3 border rounded bg-gray-100 text-gray-700'>
+                Không có chuyên khoa
+              </p>
+            )}
           </div>
 
           {/* Ngày làm việc */}
@@ -82,7 +81,7 @@ const EditWorkSchedule = ({ schedule, onUpdate }) => {
             <select
               name='timeSlot'
               value={scheduleForm.timeSlot}
-              onChange={handleInputChange}
+              onChange={(e) => setScheduleForm({ ...scheduleForm, timeSlot: e.target.value })}
               required
               className='w-full p-3 border rounded focus:outline-none focus:border-blue-500'
             >
@@ -99,7 +98,7 @@ const EditWorkSchedule = ({ schedule, onUpdate }) => {
             <textarea
               name='notes'
               value={scheduleForm.notes}
-              onChange={handleInputChange}
+              onChange={(e) => setScheduleForm({ ...scheduleForm, notes: e.target.value })}
               rows='4'
               className='w-full p-3 border rounded focus:outline-none focus:border-blue-500'
             ></textarea>

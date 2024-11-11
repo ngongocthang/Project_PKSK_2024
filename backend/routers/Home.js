@@ -20,7 +20,6 @@ const {
   getScheduleByDoctor
 } = require("../controllers/ScheduleController/index");
 const { getCurrentUserNotifications } = require("../controllers/NotificationController/index");
-const { getDoctorAppointments } = require("../controllers/DoctorController/index");
 
 // Định nghĩa route
 router.post("/register", register);
@@ -37,6 +36,5 @@ router.get("/get-schedule-doctor/:id", getScheduleByDoctor);
 router.get("/filter/:id", filter);
 router.get("/notification", userMiddleware, getCurrentUserNotifications);
 router.get("/medical-history/:id", userMiddleware, getHistoryAppointment);
-router.get("/doctor-appointment", userMiddleware, getDoctorAppointments);
 
 module.exports = router;

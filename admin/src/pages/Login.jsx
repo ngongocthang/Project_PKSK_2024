@@ -1,3 +1,4 @@
+// export default Login
 import React, { useContext, useState } from 'react'
 import { AdminContext } from '../context/AdminContext'
 import axios from 'axios'
@@ -25,7 +26,7 @@ const Login = () => {
             const response = await axios.post(`${backendUrl}/login`, { email, password })
 
             if (response.data.user) {
-                const { role, token } = response.data.user
+                const { role, token, ...userInfo } = response.data.user;
 
                 if (role === 'admin' && state === 'Admin') {
                     localStorage.setItem('aToken', token)
@@ -35,6 +36,7 @@ const Login = () => {
                 } else if (role === 'doctor' && state === 'Doctor') {
                     localStorage.setItem('dToken', token)
                     setDToken(token)
+                    sessionStorage.setItem('doctorInfo', JSON.stringify(userInfo));
                     toast.success("Đăng nhập bác sĩ thành công!")
                     navigate('/doctor-dashboard')
                 } else {
@@ -42,7 +44,7 @@ const Login = () => {
                 }
                 window.location.reload() 
             } else {
-                toast.error(response.data.message || "Login failed.")
+                toast.error("Login failed!")
             }
 
         } catch (error) {
@@ -75,7 +77,7 @@ const Login = () => {
                         required
                     />
                     <img
-                        src={showPassword ? EyeOffIcon : EyeIcon}
+                        src={showPassword ? EyeIcon : EyeOffIcon}
                         alt="Toggle Password Visibility"
                         onClick={() => setShowPassword(!showPassword)}
                         className='absolute top-1/2 right-3 transform -translate-y-1/2 w-6 h-6 cursor-pointer w-4 h-4 mt-3'
