@@ -12,6 +12,8 @@ const DoctorContextProvider = (props) => {
     localStorage.getItem("dToken") ? localStorage.getItem("dToken") : ""
   );
   const [appointments, setAppointments] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [specialzations, setSpecialzations] = useState([]);
   const [dashData, setDashData] = useState(false);
   const [profileData, setProfileData] = useState(false);
 
@@ -33,7 +35,7 @@ const DoctorContextProvider = (props) => {
 
   const getAllAppointments = async () => {
     try {
-      const { data } = await axios.get(`${backendUrl}/doctor-appointment`, {
+      const { data } = await axios.get(`${backendUrl}/doctor/appointment`, {
         headers: { Authorization: `Bearer ${dToken}` },
       });
 
@@ -127,6 +129,62 @@ const DoctorContextProvider = (props) => {
     }
   };
 
+  const getDoctorSchedule = async (doctorId) => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/doctor/schedule/${doctorId}`,
+        {
+          headers: { Authorization: `Bearer ${dToken}` },
+        }
+      );
+
+      if (Array.isArray(data) && data.length > 0) {
+        setSchedules(data);
+      } else {
+        return toast.error("Không có lịch làm việc nào!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getDoctorSpecialization = async (doctorId) => {
+    try {
+      const { data } = await axios.get(
+        `${backendUrl}/doctor/get-specializations/${doctorId}`,
+        {
+          headers: { Authorization: `Bearer ${dToken}` },
+        }
+      );
+
+      if (data && data.specialization_id) {
+        setSpecialzations([data.specialization_id]);
+      } else {
+        return console.log("Error fetching specializations!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createSchedule = async (doctorId, scheduleData) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/doctor/create-schedule/${doctorId}`,
+        scheduleData,
+        { headers: { Authorization: `Bearer ${dToken}` } }
+      );
+
+      if (data.success) {
+        toast.success("Tạo lịch làm việc thành công!");
+      } else {
+        toast.error("Tạo lịch làm việc thất bại!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const value = {
     dToken,
     setDToken,
@@ -142,7 +200,14 @@ const DoctorContextProvider = (props) => {
     profileData,
     setProfileData,
     getProfileData,
-    getAllAppointments  
+    getAllAppointments,
+    schedules,
+    setSchedules,
+    getDoctorSchedule,
+    specialzations,
+    setSpecialzations,
+    getDoctorSpecialization,
+    createSchedule,
   };
 
   return (

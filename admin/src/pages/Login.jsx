@@ -44,7 +44,7 @@ const Login = () => {
                 }
                 window.location.reload() 
             } else {
-                toast.error(response.data.message || "Login failed.")
+                toast.error("Login failed!")
             }
 
         } catch (error) {
@@ -77,7 +77,7 @@ const Login = () => {
                         required
                     />
                     <img
-                        src={showPassword ? EyeOffIcon : EyeIcon}
+                        src={showPassword ? EyeIcon : EyeOffIcon}
                         alt="Toggle Password Visibility"
                         onClick={() => setShowPassword(!showPassword)}
                         className='absolute top-1/2 right-3 transform -translate-y-1/2 w-6 h-6 cursor-pointer w-4 h-4 mt-3'

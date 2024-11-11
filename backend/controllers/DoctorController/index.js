@@ -306,6 +306,20 @@ const getDoctorAppointments = async (req, res) => {
   }
 };
 
+const getSpecializations = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("id:",id);  
+    const doctor = await Doctor.findOne({user_id: id}).populate("specialization_id");
+    if (!doctor) {
+      return res.status(400).json({ message: "Doctor not found" });
+    }
+    return res.status(200).json(doctor);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  } 
+};  
+
 module.exports = {
   createDoctor,
   findAllDoctor,
@@ -313,5 +327,7 @@ module.exports = {
   updateDoctor,
   deleteDoctor,
   confirmAppointment,
-  getDoctorAppointments
+  getDoctorAppointments,
+  getSpecializations
+
 };
