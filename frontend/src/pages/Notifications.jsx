@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { assets } from "../assets/assets";
 
+// Hàm tính thời gian đã trôi qua
 const timeAgo = (date) => {
   const now = new Date();
   const diffInSeconds = Math.floor((now - new Date(date)) / 1000);
@@ -22,9 +24,11 @@ const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const { user, setUser, setUnreadCount } = useContext(AppContext);
   const navigate = useNavigate();
+  const [activeMenu, setActiveMenu] = useState(null); // State to manage active menu for each notification
 
   const token = user?.token || localStorage.getItem("token");
 
+  // Lấy thông báo từ server
   useEffect(() => {
     if (!user && token) {
       const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -47,9 +51,8 @@ const Notifications = () => {
           setNotifications(data);
 
           // Cập nhật số lượng thông báo chưa đọc vào Context
-          const unreadCount = data.filter(notification => !notification.isRead).length;
+          const unreadCount = data.filter((notification) => !notification.isRead).length;
           setUnreadCount(unreadCount);
-          // localStorage.setItem("unreadCount", unreadCount);
         } catch (error) {
           console.error("Error fetching notifications:", error);
         } finally {
@@ -60,6 +63,7 @@ const Notifications = () => {
     }
   }, [token, navigate, setUser, user, setUnreadCount]);
 
+  // Đánh dấu thông báo đã đọc
   const handleNotificationClick = async (id) => {
     try {
       const response = await fetch(`http://localhost:5000/notification/read/${id}`, {
@@ -87,6 +91,49 @@ const Notifications = () => {
     }
   };
 
+  // Ẩn thông báo
+  const handleHide = async (notificationId) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification._id !== notificationId)
+    );
+
+    // Gửi yêu cầu ẩn thông báo lên server
+    await fetch(`http://localhost:5000/notification/hide/${notificationId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
+
+  // Xóa thông báo
+  const handleDelete = async (notificationId) => {
+    try {
+      // Gọi API xóa để xóa thông báo khỏi máy chủ
+      const response = await fetch(`http://localhost:5000/notification/delete/${notificationId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        // Xóa thông báo đã xóa khỏi trạng thái cục bộ
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter((notification) => notification._id !== notificationId)
+        );
+      } else {
+        console.error("Không xóa được thông báo trên máy chủ");
+      }
+    } catch (error) {
+      console.error("Lỗi xóa thông báo:", error);
+    }
+  };
+
+  // Báo cáo thông báo
+  const handleReport = (notificationId) => {
+    alert(`Đã báo cáo thông báo với ID: ${notificationId}`);
+  };
+
+  // Sắp xếp thông báo theo ngày tạo
   const sortedNotifications = notifications.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
@@ -94,6 +141,18 @@ const Notifications = () => {
   const displayedNotifications = showAll
     ? sortedNotifications
     : sortedNotifications.slice(0, 10);
+
+  // Xử lý mở menu 3 dấu chấm
+  const toggleMenu = (id, e) => {
+    e.stopPropagation(); // Ngăn không cho sự kiện click lan rộng
+    setActiveMenu((prevMenu) => (prevMenu === id ? null : id));
+  };
+
+  // Xử lý đánh dấu thông báo đã đọc khi nhấn vào menu
+  const handleMarkAsRead = async (id) => {
+    await handleNotificationClick(id);
+    setActiveMenu(null); // Đóng menu sau khi xử lý
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -107,18 +166,71 @@ const Notifications = () => {
         displayedNotifications.map((notification) => (
           <div
             key={notification._id}
-            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-gray-100" : ""
-              }`}
+            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-transparent" : ""}`}
             onClick={() => handleNotificationClick(notification._id)}
           >
-            <div className="flex-1 ml-3">
-              <p className="font-medium">
+            <img
+              src={assets.notification_icon}
+              alt="Notification Icon"
+              className="w-6 h-6"
+            />
+            <div className="flex-1 ml-3 cursor-pointer">
+              <p className="font-medium mr-2">
                 {notification.isRead ? notification.content : <strong>{notification.content}</strong>}
               </p>
               <p className="text-xs text-gray-400">
                 Ca khám: {notification.work_shift === "morning" ? "buổi sáng" : "buổi chiều"}
               </p>
               <p className="text-xs text-gray-400">{timeAgo(notification.createdAt)}</p>
+            </div>
+
+            {/* 3 dots menu */}
+            <div className="relative menu-container">
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={(e) => toggleMenu(notification._id, e)}
+              >
+                <span className="material-icons">
+                  <i className="fa-solid fa-ellipsis hidden sm:inline"></i>
+                  <i className="fa-solid fa-ellipsis-vertical sm:hidden"></i>
+                </span>
+              </button>
+
+              {/* Dropdown menu */}
+              {activeMenu === notification._id && (
+                <div className="absolute right-0 mt-2 border border-gray-300 bg-white shadow-lg rounded-md w-48 z-10">
+                  <ul className="text-sm">
+                    <li
+                      onClick={() => handleMarkAsRead(notification._id)}
+                      className="cursor-pointer hover:bg-gray-100 px-4 py-2 transition-all duration-200 rounded-md"
+                    >
+                      <i class="fa-solid fa-envelope-circle-check mr-2"></i>
+                      Đánh dấu đã đọc
+                    </li>
+                    {/* <li
+                      onClick={() => handleHide(notification._id)}
+                      className="cursor-pointer hover:bg-gray-100 px-4 py-2 transition-all duration-200 rounded-md"
+                    >
+                      <i class="fa-solid fa-user-clock mr-2"></i>
+                      Ẩn thông báo
+                    </li> */}
+                    <li
+                      onClick={() => handleDelete(notification._id)}
+                      className="cursor-pointer hover:bg-red-100 text-red-500 px-4 py-2 transition-all duration-200 rounded-md"
+                    >
+                      <i class="fa-regular fa-trash-can mr-2"></i>
+                      Xóa thông báo
+                    </li>
+                    <li
+                      onClick={() => handleReport(notification._id)}
+                      className="cursor-pointer hover:bg-blue-100 text-blue-500 px-4 py-2 transition-all duration-200 rounded-md"
+                    >
+                      <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                      Báo cáo
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         ))
