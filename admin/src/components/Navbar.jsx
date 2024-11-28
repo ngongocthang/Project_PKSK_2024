@@ -47,7 +47,7 @@ const Navbar = () => {
         `http://localhost:5000/notification/get-notification-doctor/${doctorId}`
       );
       setNotifications(response.data);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.error("Lỗi khi lấy thông báo:", error);
     }
@@ -86,7 +86,7 @@ const Navbar = () => {
       if (dToken) {
         fetchNotifications();
       }
-    }, 30000); 
+    }, 1000); 
 
     return () => clearInterval(interval);
   }, [dToken]); 

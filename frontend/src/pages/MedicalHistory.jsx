@@ -1,16 +1,48 @@
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle, Calendar, Clock, User } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { AppContext } from "../context/AppContext";
 
 const MedicalHistory = () => {
   const navigate = useNavigate();
   const { user } = useContext(AppContext);
   const [medicalRecords, setMedicalRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "canceled":
+        return "bg-red-100 text-red-800";
+      case "completed":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-blue-100 text-blue-800";
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "pending":
+        return "Đang chờ xác nhận";
+      case "canceled":
+        return "Đã huỷ";
+      case "completed":
+        return "Đã hoàn thành";
+      default:
+        return "Đã xác nhận";
+    }
+  };
 
   const fetchMedicalHistory = async () => {
     const token = user?.token;
+    setLoading(true);
+    setError(null);
 
     if (!token) {
       navigate("/account");
@@ -27,22 +59,21 @@ const MedicalHistory = () => {
         }
       );
 
-      // Kiểm tra trạng thái HTTP của phản hồi
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
 
-      // Kiểm tra cấu trúc dữ liệu trả về
       if (data.historyAppointments && Array.isArray(data.historyAppointments)) {
         setMedicalRecords(data.historyAppointments);
       } else {
-        console.error("API returned invalid data structure:", data);
-        toast.error("Dữ liệu từ server không hợp lệ.");
+        throw new Error("Dữ liệu từ server không hợp lệ");
       }
     } catch (error) {
-      console.error("Error fetching medical history:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,87 +81,106 @@ const MedicalHistory = () => {
     fetchMedicalHistory();
   }, [user]);
 
-  return (
-    <div className="container mx-auto px-6 py-8">
-      <ToastContainer />
-      <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-black">Lịch sử hẹn</h1>
-        <p className="text-gray-500 mt-2">
-          Xem lại thông tin các lần khám của bạn
-        </p>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
+    );
+  }
 
-      {medicalRecords.length === 0 ? (
-        <div className="flex flex-col items-center justify-center mt-16">
-          <img
-            src="https://via.placeholder.com/150"
-            alt="No Data"
-            className="mb-4"
-          />
-          <p className="text-gray-500 text-lg">Chưa có lịch sử lịch hẹn nào.</p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full bg-white shadow-md rounded-lg border border-gray-200">
-            <thead>
-              <tr className="bg-blue-100 text-black text-left">
-                <th className="py-4 px-6 font-semibold">Bác sĩ</th>
-                <th className="py-4 px-6 font-semibold">Ngày khám</th>
-                <th className="py-4 px-6 font-semibold">Ca khám</th>
-                <th className="py-4 px-6 font-semibold">Trạng thái</th>
-                <th className="py-4 px-6 font-semibold">Chi tiết</th>
-              </tr>
-            </thead>
-            <tbody>
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Có lỗi xảy ra khi tải dữ liệu: {error}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="text-4xl font-semibold text-center">
+            Lịch sử lịch hẹn
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-gray-500 text-center mb-6">
+            Xem lại thông tin các lần khám của bạn
+          </p>
+
+          {medicalRecords.length === 0 ? (
+            <div className="text-center py-12">
+              <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <Calendar className="w-12 h-12 text-gray-400" />
+              </div>
+              <p className="text-gray-500 text-lg">
+                Chưa có lịch sử lịch hẹn nào.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {medicalRecords.map((record, index) => (
-                <tr
-                  key={index} // Sử dụng index làm key vì không có id
-                  className={`hover:bg-blue-50 ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  }`}
-                >
-                  <td className="py-4 px-6 border-t border-gray-200 text-gray-700">
-                    {record.history.doctor_name}
-                  </td>
-                  <td className="py-4 px-6 border-t border-gray-200 text-gray-700">
-                    {new Date(record.history.work_date).toLocaleDateString(
-                      "vi-VN"
-                    )}
-                  </td>
-                  <td className="py-4 px-6 border-t border-gray-200 text-gray-700">
-                    {record.history.work_shift === "morning"
-                      ? "Buổi sáng"
-                      : "Buổi chiều"}
-                  </td>
-                  <td className="py-4 px-6 border-t border-gray-200 text-gray-700">
-                    {record.history.status === "pending"
-                      ? "Đang chờ xác nhận"
-                      : record.history.status === "canceled"
-                      ? "Đã huỷ"
-                      : record.history.status === "completed"
-                      ? "Đã hoàn thành"
-                      : "Đã xác nhận"}
-                  </td>
-                  <td className="py-4 px-6 border-t border-gray-200 text-gray-700">
-                    {new Date(record.history.createdAt).toLocaleString(
-                      "vi-VN",
-                      {
-                        timeZone: "Asia/Ho_Chi_Minh",
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      }
-                    )}
-                  </td>
-                </tr>
+                <Card key={index} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <User className="w-5 h-5 text-blue-500 mr-2" />
+                      <span className="font-medium">
+                        Bs. {record.history.doctor_name}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center mb-4">
+                      <Calendar className="w-5 h-5 text-gray-500 mr-2" />
+                      <span>
+                        {new Date(record.history.work_date).toLocaleDateString(
+                          "vi-VN"
+                        )}
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center mb-4">
+                      <Clock className="w-5 h-5 text-gray-500 mr-2" />
+                      <span>
+                        {record.history.work_shift === "morning"
+                          ? "Buổi sáng"
+                          : "Buổi chiều"}
+                      </span>
+                    </div>
+
+                    <Badge
+                      className={`${getStatusColor(
+                        record.history.status
+                      )} px-3 py-1 rounded-full text-sm font-medium`}
+                    >
+                      {getStatusText(record.history.status)}
+                    </Badge>
+
+                    <div className="mt-4 pt-4 border-t border-gray-100 text-sm text-gray-500">
+                      Ngày xác nhận:{" "}
+                      {new Date(record.history.createdAt).toLocaleDateString(
+                        "vi-VN",
+                        {
+                          timeZone: "Asia/Ho_Chi_Minh",
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                        }
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

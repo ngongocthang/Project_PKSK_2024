@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { DoctorContext } from '../../context/DoctorContext';
 
 const ConfirmationSchedule = () => {
-  const { dToken, appointments, getAppointments, completeAppointment, cancelAppointment } = useContext(DoctorContext);
+  const { appointments, getAppointments, completeAppointment, cancelAppointment } = useContext(DoctorContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);

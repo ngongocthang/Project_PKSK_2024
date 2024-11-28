@@ -72,18 +72,23 @@ const Navbar = () => {
       <ul className="hidden md:flex items-start gap-5 font-medium">
         <NavLink to="/" activeClassName="underline">
           <li className="py-1 text-base">Trang chủ</li>
+          <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
         </NavLink>
         <NavLink to="/doctors" activeClassName="underline">
           <li className="py-1 text-base">Tất cả bác sĩ</li>
+          <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
         </NavLink>
         <NavLink to="/abouts" activeClassName="underline">
           <li className="py-1 text-base">Về chúng tôi</li>
+          <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
         </NavLink>
         <NavLink to="/contact" activeClassName="underline">
           <li className="py-1 text-base">Liên hệ</li>
+          <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
         </NavLink>
         <NavLink to="/all-schedule" activeClassName="underline">
           <li className="py-1 text-base">Đặt lịch hẹn</li>
+          <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
         </NavLink>
       </ul>
 
