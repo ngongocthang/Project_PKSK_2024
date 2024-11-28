@@ -106,12 +106,12 @@ const MedicalHistory = () => {
     <div className="container mx-auto px-4 py-8">
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="text-4xl font-semibold text-center">
+          <CardTitle className="sm:text-4xl text-3xl font-semibold text-center">
             Lịch sử lịch hẹn
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-gray-500 text-center mb-6">
+          <p className="text-gray-500 text-center text-sm mb-6">
             Xem lại thông tin các lần khám của bạn
           </p>
 
