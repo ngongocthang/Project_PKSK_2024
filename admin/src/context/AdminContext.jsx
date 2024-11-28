@@ -160,11 +160,10 @@ const AdminContextProvider = ({ children }) => {
       if (data.success) {
         setDashUpApData(data.data);
       } else {
-        toast.error(data.message);
+        console.log(data.message);
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
-      toast.error(error.response?.data?.message || error.message);
     }
   };
 

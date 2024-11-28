@@ -184,6 +184,11 @@ const Appointment = () => {
     );
   }
 
+  const formatPrice = (price) => {
+    if (isNaN(price)) return price; 
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -205,7 +210,7 @@ const Appointment = () => {
             </p>
           </p>
           <div className="flex items-center gap-2 text-sm mt-1 text-gray-600" style={{ lineHeight: "2.5" }}>
-            <p>Kinh nghiệm: {docInfo.specialization_id.name}</p>
+            <p>Giá: {formatPrice(docInfo.price)} (VND)</p>
           </div>
           <div className="flex items-center gap-2 text-sm mt-1 text-gray-600" style={{ lineHeight: "2.5" }}>
             <p>Chuyên Khoa: {docInfo.specialization_id.name}</p>
@@ -226,7 +231,8 @@ const Appointment = () => {
         <p>Đặt khám nhanh:</p>
 
         {errorLoadingSchedule ? (
-          <p className="text-red-500">Bác sĩ không có lịch làm việc!</p>
+          <p className="text-red-500">Hiện tại bác sĩ chưa có lịch làm việc.</p>
+
         ) : (
           <div className="flex gap-3 items-center w-full overflow-x-scroll mt-4 py-2">
             {Object.keys(doctorSchedule).map((dateStr) => {

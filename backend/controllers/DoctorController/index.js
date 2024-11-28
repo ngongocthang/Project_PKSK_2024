@@ -33,6 +33,12 @@ const createDoctor = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
+    //check email
+    const checkEmail = await User.findOne({ email: req.body.email });
+    if (checkEmail) {
+      return res.status(400).json({ message: "Email đã tồn tại!" });
+    }
+
     let imageUrl = null;
     if (req.file) {
       // Chuyển đổi buffer của file thành chuỗi Base64 để upload
@@ -109,6 +115,7 @@ const findDoctor = async (req, res) => {
 
 const updateDoctor = async (req, res) => {
   try {
+    console.log(req.body);
     const { id } = req.params;
     const doctor = await Doctor.findById(id).populate("user_id");
 
@@ -159,6 +166,7 @@ const updateDoctor = async (req, res) => {
       {
         specialization_id: req.body.specialization_id,
         description: req.body.description,
+        price: req.body.price,
       },
       { new: true }
     );
@@ -463,6 +471,7 @@ const updateProfileDoctor = async (req, res) => {
       {
         specialization_id: req.body.specialization_id,
         description: req.body.description,
+        price: req.body.price,
       },
       { new: true }
     );
