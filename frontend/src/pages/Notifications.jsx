@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 
-// Hàm tính thời gian đã trôi qua
+// Chức năng tính thời gian trước đây
 const timeAgo = (date) => {
   const now = new Date();
   const diffInSeconds = Math.floor((now - new Date(date)) / 1000);
@@ -24,7 +24,7 @@ const Notifications = () => {
   const [loading, setLoading] = useState(true);
   const { user, setUser, setUnreadCount } = useContext(AppContext);
   const navigate = useNavigate();
-  const [activeMenu, setActiveMenu] = useState(null); // State to manage active menu for each notification
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const token = user?.token || localStorage.getItem("token");
 
@@ -50,7 +50,7 @@ const Notifications = () => {
           const data = await response.json();
           setNotifications(data);
 
-          // Cập nhật số lượng thông báo chưa đọc vào Context
+          // Cập nhật số lượng thông báo chưa đọc trong Context
           const unreadCount = data.filter((notification) => !notification.isRead).length;
           setUnreadCount(unreadCount);
         } catch (error) {
@@ -63,7 +63,7 @@ const Notifications = () => {
     }
   }, [token, navigate, setUser, user, setUnreadCount]);
 
-  // Đánh dấu thông báo đã đọc
+  // Đánh dấu thông báo là đã đọc
   const handleNotificationClick = async (id) => {
     try {
       const response = await fetch(`http://localhost:5000/notification/read/${id}`, {
@@ -80,7 +80,7 @@ const Notifications = () => {
       );
       setNotifications(updatedNotifications);
 
-      // Giảm số lượng thông báo chưa đọc
+      // Giảm số lượng chưa đọc
       setUnreadCount((prevCount) => {
         const updatedCount = prevCount - 1;
         localStorage.setItem("unreadCount", updatedCount);
@@ -97,7 +97,6 @@ const Notifications = () => {
       prevNotifications.filter((notification) => notification._id !== notificationId)
     );
 
-    // Gửi yêu cầu ẩn thông báo lên server
     await fetch(`http://localhost:5000/notification/hide/${notificationId}`, {
       method: "PATCH",
       headers: {
@@ -109,28 +108,27 @@ const Notifications = () => {
   // Xóa thông báo
   const handleDelete = async (notificationId) => {
     try {
-      // Gọi API xóa để xóa thông báo khỏi máy chủ
       const response = await fetch(`http://localhost:5000/notification/delete/${notificationId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
-        // Xóa thông báo đã xóa khỏi trạng thái cục bộ
         setNotifications((prevNotifications) =>
           prevNotifications.filter((notification) => notification._id !== notificationId)
         );
       } else {
-        console.error("Không xóa được thông báo trên máy chủ");
+        console.error("Could not delete notification on the server");
       }
     } catch (error) {
-      console.error("Lỗi xóa thông báo:", error);
+      console.error("Error deleting notification:", error);
     }
   };
 
   // Báo cáo thông báo
   const handleReport = (notificationId) => {
-    alert(`Đã báo cáo thông báo với ID: ${notificationId}`);
+    alert(`Reported notification with ID: ${notificationId}`);
+    setActiveMenu(null); // Đóng menu sau khi thực hiện hành động 
   };
 
   // Sắp xếp thông báo theo ngày tạo
@@ -142,16 +140,15 @@ const Notifications = () => {
     ? sortedNotifications
     : sortedNotifications.slice(0, 10);
 
-  // Xử lý mở menu 3 dấu chấm
   const toggleMenu = (id, e) => {
-    e.stopPropagation(); // Ngăn không cho sự kiện click lan rộng
+    e.stopPropagation(); // Prevent event from propagating
     setActiveMenu((prevMenu) => (prevMenu === id ? null : id));
   };
 
-  // Xử lý đánh dấu thông báo đã đọc khi nhấn vào menu
+  // Xử lý đánh dấu là đã đọc khi nhấp vào tùy chọn menu
   const handleMarkAsRead = async (id) => {
     await handleNotificationClick(id);
-    setActiveMenu(null); // Đóng menu sau khi xử lý
+    setActiveMenu(null); // Đóng menu sau khi thực hiện hành động
   };
 
   return (
@@ -166,7 +163,9 @@ const Notifications = () => {
         displayedNotifications.map((notification) => (
           <div
             key={notification._id}
-            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-transparent" : ""}`}
+            className={`flex items-start border-b border-gray-300 py-2 ${
+              !notification.isRead ? "bg-transparent" : ""
+            }`}
             onClick={() => handleNotificationClick(notification._id)}
           >
             <img
@@ -204,28 +203,21 @@ const Notifications = () => {
                       onClick={() => handleMarkAsRead(notification._id)}
                       className="cursor-pointer hover:bg-gray-100 px-4 py-2 transition-all duration-200 rounded-md"
                     >
-                      <i class="fa-solid fa-envelope-circle-check mr-2"></i>
+                      <i className="fa-solid fa-envelope-circle-check mr-2"></i>
                       Đánh dấu đã đọc
                     </li>
-                    {/* <li
-                      onClick={() => handleHide(notification._id)}
-                      className="cursor-pointer hover:bg-gray-100 px-4 py-2 transition-all duration-200 rounded-md"
-                    >
-                      <i class="fa-solid fa-user-clock mr-2"></i>
-                      Ẩn thông báo
-                    </li> */}
                     <li
                       onClick={() => handleDelete(notification._id)}
                       className="cursor-pointer hover:bg-red-100 text-red-500 px-4 py-2 transition-all duration-200 rounded-md"
                     >
-                      <i class="fa-regular fa-trash-can mr-2"></i>
+                      <i className="fa-regular fa-trash-can mr-2"></i>
                       Xóa thông báo
                     </li>
                     <li
                       onClick={() => handleReport(notification._id)}
                       className="cursor-pointer hover:bg-blue-100 text-blue-500 px-4 py-2 transition-all duration-200 rounded-md"
                     >
-                      <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                      <i className="fa-solid fa-circle-exclamation mr-2"></i>
                       Báo cáo
                     </li>
                   </ul>
