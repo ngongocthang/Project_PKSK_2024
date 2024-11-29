@@ -86,10 +86,10 @@ const Navbar = () => {
       if (dToken) {
         fetchNotifications();
       }
-    }, 1000); 
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [dToken]); 
+  }, [dToken]);
 
   // Nhóm thông báo theo ngày và sắp xếp từ mới nhất đến cũ nhất
   const groupedNotifications = notifications
@@ -134,14 +134,14 @@ const Navbar = () => {
       <a
         href={aToken ? "http://localhost:5174/admin-dashboard" : "http://localhost:5174/doctor-dashboard"}
       >
-        <div className="flex items-center gap-2 text-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs">
           <img
             className="w-36 sm:w-40 cursor-pointer"
             src={assets.admin_logo}
-            alt="Logo"
+            alt=""
           />
-          <p className="border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600">
-            {aToken ? "Quản trị viên" : "Bác sĩ"}
+          <p className="border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600 text-center sm:text-left">
+            {aToken ? 'Quản trị viên' : 'Bác sĩ'}
           </p>
         </div>
       </a>
@@ -149,14 +149,19 @@ const Navbar = () => {
       <div className="flex items-center gap-4">
         {/* Icon thông báo chỉ hiển thị với bác sĩ */}
         {!aToken && (
-          <div className="relative">
-            <BellIcon
-              className="w-6 h-6 text-gray-600 cursor-pointer"
-              onClick={toggleModal}
-            />
-            {/* Hiển thị số lượng thông báo chưa đọc */}
+          <div
+            className="relative cursor-pointer"
+            onClick={toggleModal}
+            role="button"
+            aria-label="Mở thông báo"
+          >
+            <BellIcon className="w-6 h-6 text-gray-600" />
             {unreadNotifications > 0 && (
-              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              <span
+                className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
+                role="button"
+                aria-label="Xem thông báo chưa đọc"
+              >
                 {unreadNotifications}
               </span>
             )}
@@ -164,18 +169,16 @@ const Navbar = () => {
         )}
 
         {/* Nút Đăng xuất */}
-        <button
-          onClick={logout}
-          className="bg-[#0091a1] text-white text-sm px-10 py-2 rounded-full"
-        >
-          Đăng xuất
+        <button onClick={logout} className="bg-[#0091a1] text-white text-sm px-5 py-2 rounded-full">
+          <span className="hidden md:inline">Đăng xuất</span>
+          <i className="fa-solid fa-right-from-bracket mx-2"></i>
         </button>
       </div>
 
       {/* Modal thông báo */}
       {isModalOpen && !aToken && (
         <div className="fixed inset-0 flex justify-center items-center z-50 bg-gray-500 bg-opacity-50">
-          <div className="bg-white p-8 rounded-lg w-3/4 max-w-5xl modal-content">
+          <div className="bg-white p-5 rounded-lg w-4/5 sm:w-3/4 lg:w-1/2 max-w-5xl modal-content">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold">Thông báo</h3>
               <button onClick={toggleModal} className="text-gray-500 text-lg">
