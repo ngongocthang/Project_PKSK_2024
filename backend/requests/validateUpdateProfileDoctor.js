@@ -50,6 +50,11 @@ const updateDoctorSchema = Joi.object({
   oldPassword: Joi.string().messages({
     "string.base": "Mật khẩu phải là một chuỗi."
   }),
+  price: Joi.number().min(0).required().messages({
+    "number.base": "Giá khám phải là một số.",
+    "number.min": "Giá khám không được nhỏ hơn 0.",
+    "any.required": "Giá khám là bắt buộc.",
+  }),
 });
 
 const validateUpdateDoctor = (data) => {
