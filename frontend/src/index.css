@@ -83,3 +83,12 @@
     color: #555;
   }
   
+  .scroll-container {
+    max-height: 685px; /* Chiều cao tối đa */
+    overflow-y: auto; /* Thanh cuộn dọc */
+    border: 1px solid #ddd; /* Viền mờ */
+    border-radius: 12px; /* Bo góc */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    padding: 1rem; /* Khoảng cách bên trong */
+    background-color: #fff; /* Nền trắng */
+  }

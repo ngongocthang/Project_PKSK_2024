@@ -176,7 +176,7 @@ const DoctorsList = () => {
 
             <div className='p-4'>
               <p className='text-neutral-800 text-lg font-medium'>Bs. {item.user_id.name}</p>
-              <p className='text-zinc-600 text-sm'>Giá: {formatPrice(item.price)} (VND)</p>
+              <p className='text-zinc-600 text-sm'>Giá: {formatPrice(item.price)} VND</p>
               <p className='text-zinc-600 text-sm'>SĐT: {item.user_id.phone}</p>
               <p className='text-zinc-600 text-sm truncate'>Email: {item.user_id.email}</p>
             </div>

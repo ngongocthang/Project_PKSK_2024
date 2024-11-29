@@ -1,27 +1,27 @@
-import React, { useContext, useState } from 'react'
-import Login from './pages/Login'
+import React, { useContext } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { AdminContext } from './context/AdminContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
-import { Route, Routes } from 'react-router-dom';
-import Dashboard from './pages/Admin/Dashboard';
-import AllAppointments from './pages/Admin/AllAppointments';
-import AddDoctor from './pages/Admin/AddDoctor';
-import DoctorsList from './pages/Admin/DoctorsList';
-import PatientList from './pages/Admin/PatientList';
-import AddPatient from './pages/Admin/AddPatient';
-import EditPatient from './pages/Admin/EditPatient';
+import { AdminContext } from './context/AdminContext';
 import { DoctorContext } from './context/DoctorContext';
-import DoctorDashboard from './pages/Doctor/DoctorDashboard';
+import AddDoctor from './pages/Admin/AddDoctor';
+import AddPatient from './pages/Admin/AddPatient';
+import AllAppointments from './pages/Admin/AllAppointments';
+import Dashboard from './pages/Admin/Dashboard';
+import DoctorsList from './pages/Admin/DoctorsList';
+import EditPatient from './pages/Admin/EditPatient';
+import PatientList from './pages/Admin/PatientList';
+import ConfirmationAppointments from './pages/Doctor/ConfirmationAppointments';
+import ConfirmCompletedAppointments from './pages/Doctor/ConfirmCompletedAppointments';
 import DoctorAppointments from './pages/Doctor/DoctorAppointments';
-import ConfirmAppointments from './pages/Doctor/ConfirmAppointments';
+import DoctorCreateSchedule from './pages/Doctor/DoctorCreateSchedule';
+import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import DoctorProfile from './pages/Doctor/DoctorProfile';
 import DoctorWorkSchedule from './pages/Doctor/DoctorWorkSchedule';
-import DoctorCreateSchedule from './pages/Doctor/DoctorCreateSchedule';
-import ConfirmationSchedule from './pages/Doctor/ConfirmationSchedule';
 import EditWorkSchedule from './pages/Doctor/EditWorkSchedule';
+import Login from './pages/Login';
 
 const App = () => {
 
@@ -49,11 +49,11 @@ const App = () => {
           {/* Doctor Route */}
           <Route path='/doctor-dashboard' element={<DoctorDashboard />} />
           <Route path='/doctor-appointments' element={<DoctorAppointments />} />
-          <Route path='/confirm-completed-appointments' element={<ConfirmAppointments />} />
+          <Route path='/confirm-completed-appointments' element={<ConfirmCompletedAppointments />} />
           <Route path='/doctor-profile' element={<DoctorProfile />} />
           <Route path='/doctor-work-schedule' element={<DoctorWorkSchedule />} />
           <Route path='/doctor-create-schedule' element={<DoctorCreateSchedule />} />
-          <Route path='/confirmation-appointments' element={<ConfirmationSchedule />} />
+          <Route path='/confirmation-appointments' element={<ConfirmationAppointments />} />
           <Route path='/edit-work-schedule/:id' element={<EditWorkSchedule />} />
         </Routes>
       </div>
