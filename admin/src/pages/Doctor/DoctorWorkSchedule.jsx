@@ -89,7 +89,7 @@ const DoctorWorkSchedule = () => {
 
       <div className="bg-white border rounded-xl text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll">
         {/* Header chỉ hiển thị trên desktop */}
-        <div className="hidden sm:grid grid-cols-[0.5fr_2fr_1fr_1fr] gap-4 py-3 px-6 border-b">
+        <div className="hidden sm:grid grid-cols-[0.5fr_2fr_1fr_1fr] bg-gray-200 gap-4 py-3 px-6 border-b">
           <p className="font-bold text-center text-[16px]">#</p>
           <p className="font-bold text-center text-[16px]">Ngày làm việc</p>
           <p className="font-bold text-center text-[16px]">Ca làm việc</p>

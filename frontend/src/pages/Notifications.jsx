@@ -74,6 +74,7 @@ const Notifications = () => {
       });
 
       if (!response.ok) throw new Error("Failed to mark notification as read");
+      setActiveMenu(null);
 
       const updatedNotifications = notifications.map((notification) =>
         notification._id === id ? { ...notification, isRead: true } : notification
@@ -141,7 +142,7 @@ const Notifications = () => {
 
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 cursor-pointer">
       <h1 className="text-2xl font-semibold mb-4">Thông báo của bạn</h1>
 
       {loading ? (
@@ -152,9 +153,8 @@ const Notifications = () => {
         displayedNotifications.map((notification) => (
           <div
             key={notification._id}
-            className={`flex items-start border-b border-gray-300 py-2 ${
-              !notification.isRead ? "bg-transparent" : ""
-            }`}
+            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-transparent" : ""
+              }`}
             onClick={() => handleNotificationClick(notification._id)}
           >
             <img
@@ -188,6 +188,14 @@ const Notifications = () => {
               {activeMenu === notification._id && (
                 <div className="absolute right-0 mt-2 border border-gray-300 bg-white shadow-lg rounded-md w-48 z-10">
                   <ul className="text-sm">
+                    <li
+                      onClick={() => handleMarkAsRead(notification._id)}
+                      className="cursor-pointer hover:bg-gray-100 px-4 py-2 transition-all duration-200 rounded-md"
+                    >
+                      <i className="fa-solid fa-envelope-circle-check mr-2"></i>
+                      Đánh dấu đã đọc
+                    </li>
+
                     <li
                       onClick={() => handleDelete(notification._id)}
                       className="cursor-pointer hover:bg-red-100 text-red-500 px-4 py-2 transition-all duration-200 rounded-md"

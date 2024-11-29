@@ -103,22 +103,22 @@ const DoctorProfile = () => {
   // Check if the update button should be disabled
   const isUpdateDisabled = () => {
     return isEdit && (
-      (newPassword && !oldPassword) || 
+      (newPassword && !oldPassword) ||
       (!newPassword && (oldPassword || selectedImage))
     );
   };
 
   const formatPrice = (price) => {
-    if (isNaN(price)) return price; 
+    if (isNaN(price)) return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   return (
     profileData && (
-      <div className="w-full max-w-4xl mx-auto p-5 bg-gray-50 shadow-md rounded-md mt-8">
-        <div className="flex flex-col sm:flex-row gap-5 mb-6">
+      <div className="w-full max-w-screen-lg mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-lg md:pt-0 pt-4 flex flex-col md:flex-row md:items-center">
           {/* Left section: Image, Name, and Specialization */}
-          <div className="flex flex-col items-center sm:items-start gap-4 sm:w-1/3">
+          <div className="flex flex-col items-center gap-4 sm:w-1/3">
             <div className="relative ml-6">
               <img
                 className="bg-primary/80 sm:max-w-64 h-64 rounded-lg object-cover shadow-lg"
@@ -204,7 +204,7 @@ const DoctorProfile = () => {
                   />
                 </>
               ) : (
-                <p className="text-gray-800 text-lg">
+                <p className="text-gray-800 text-lg break-words">
                   <span className="font-bold">Email:</span> {profileData.doctorProfile.email}
                 </p>
               )}
@@ -250,7 +250,7 @@ const DoctorProfile = () => {
                 </>
               ) : (
                 <p className="text-gray-800 text-lg">
-                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} (VND)
+                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} (VNĐ)
                 </p>
               )}
             </div>
