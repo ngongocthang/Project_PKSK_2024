@@ -33,11 +33,6 @@ const Navbar = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  // Hàm chuyển đổi giữa "Tất cả" và "Thu gọn"
-  const toggleNotificationView = () => {
-    setShowAllNotifications(!showAllNotifications);
-  };
-
   // Lấy thông báo từ API
   const fetchNotifications = async () => {
     try {
@@ -209,15 +204,6 @@ const Navbar = () => {
               ) : (
                 <p className="text-gray-500">Không có thông báo mới.</p>
               )}
-
-              <div className="mt-4">
-                <button
-                  onClick={toggleNotificationView}
-                  className="text-blue-500 text-sm"
-                >
-                  {showAllNotifications ? "Thu gọn" : "Tất cả"}
-                </button>
-              </div>
             </div>
           </div>
         </div>
