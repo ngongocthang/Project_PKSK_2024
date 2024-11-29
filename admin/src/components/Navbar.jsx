@@ -198,11 +198,11 @@ const Navbar = () => {
                         {groupedNotifications[time].map((notification) => (
                           <li
                             key={notification._id}
-                            className={`py-3 px-4 border-b border-black-200 flex items-start gap-2 cursor-pointer ${!notification.isRead ? "bg-blue-100" : ""}`}
+                            className={`py-3 px-4 border-b border-black-200 flex items-start gap-2 hover:bg-blue-50 cursor-pointer ${!notification.isRead ? "font-semibold bg-gray-100" : ""}`}
                             onClick={() => markAsRead(notification._id)}
                           >
-                            <BellIcon className="w-5 h-5 text-black" />
-                            <p className="text-lg text-gray-800">{notification.content}</p>
+                            <BellIcon className="w-10 pt-0.5 md:w-5 text-black" />
+                            <p className="md:text-base text-sm text-gray-800">{notification.content}</p>
                           </li>
                         ))}
                       </ul>
