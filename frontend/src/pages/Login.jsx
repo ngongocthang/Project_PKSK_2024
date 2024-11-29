@@ -80,7 +80,7 @@ const Login = () => {
   
   return (
     <>
-      <form className="min-h-[80vh] flex items-center" onSubmit={onSubmitHandler}>
+      <form className="sm:min-h-[80vh] min-h-[50vh] flex items-center" onSubmit={onSubmitHandler}>
         <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[340px] sm:min-w-96 border rounded-xl text-zinc-600 text-sm shadow-lg">
           <div className="flex flex-col items-center w-full">
             <p className="text-2xl font-semibold text-center">

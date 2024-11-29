@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
 import axios from "axios";
+import { createContext, useState } from "react";
 import { toast } from "react-toastify";
 
 export const DoctorContext = createContext();
@@ -29,7 +29,6 @@ const DoctorContextProvider = (props) => {
         return toast.error("Không có lịch hẹn đang chờ xác nhận nào!");
       }
     } catch (error) {
-      console.log(error);
     }
   };
 

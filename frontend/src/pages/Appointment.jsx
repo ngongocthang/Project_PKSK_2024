@@ -185,7 +185,7 @@ const Appointment = () => {
   }
 
   const formatPrice = (price) => {
-    if (isNaN(price)) return price; 
+    if (isNaN(price)) return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
@@ -210,14 +210,14 @@ const Appointment = () => {
             </p>
           </p>
           <div className="flex items-center gap-2 text-sm mt-1 text-gray-600" style={{ lineHeight: "2.5" }}>
-            <p>Giá: {formatPrice(docInfo.price)} (VND)</p>
+            <p><strong>Giá:</strong> {formatPrice(docInfo.price)} VND</p>
           </div>
           <div className="flex items-center gap-2 text-sm mt-1 text-gray-600" style={{ lineHeight: "2.5" }}>
-            <p>Chuyên Khoa: {docInfo.specialization_id.name}</p>
+            <p><strong>Chuyên Khoa:</strong> {docInfo.specialization_id.name}</p>
           </div>
           <div>
-            <p className="flex items-center gap-1 text-sm font-medium text-gray-900" style={{ lineHeight: "2.5" }}>
-              Giới thiệu <img src={assets.info_icon} alt="" />
+            <p className="flex items-center gap-1 text-sm font-medium text-gray-600" style={{ lineHeight: "2.5" }}>
+              <strong>Giới thiệu</strong><img src={assets.info_icon} alt="" />
             </p>
             <p className="text-sm text-gray-500 mt-1 max-w-full sm:max-w-[12000px]" style={{ lineHeight: "1.5", textAlign: "justify" }}>
               {docInfo.description}
@@ -265,8 +265,8 @@ const Appointment = () => {
                 key={schedule._id}
                 onClick={() => setSlotTime(schedule.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều")}
                 className={`text-sm font-semibold px-6 py-3 rounded-full cursor-pointer transition-all duration-300 ${slotTime === (schedule.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều")
-                    ? "bg-[#00759c] text-white"
-                    : "text-gray-500 border border-gray-300 hover:border-[#00759c] hover:text-[#00759c]"
+                  ? "bg-[#00759c] text-white"
+                  : "text-gray-500 border border-gray-300 hover:border-[#00759c] hover:text-[#00759c]"
                   }`}
               >
                 {schedule.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều"}
