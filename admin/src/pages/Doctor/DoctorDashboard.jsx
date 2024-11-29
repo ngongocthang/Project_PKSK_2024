@@ -187,7 +187,7 @@ const DoctorDashboard = () => {
   return (
     <div className="m-5 w-full shadow-lg">
       {/* Overview Section */}
-      <div className="flex gap-3 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Hiển thị thu nhập */}
         <div className="relative flex-1 min-w-0 bg-[#4fc2f7] p-4 rounded border-2 cursor-pointer hover:scale-105 transition-all flex items-center justify-center shadow-lg overflow-hidden">
           {/* Bong bóng */}
