@@ -14,6 +14,7 @@ const DoctorContextProvider = (props) => {
   const [appointmentStatus, setAppointmentStatus] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [specialzations, setSpecialzations] = useState([]);
+  const [moneys, setMoneys] = useState([]);
   const [dashData, setDashData] = useState(false);
   const [profileData, setProfileData] = useState(false);
 
@@ -288,6 +289,20 @@ const DoctorContextProvider = (props) => {
       toast.error("Có lỗi xảy ra khi lấy lịch hẹn theo trạng thái!");
     }
   };
+
+  const amountPaymentDoctors = async (doctorId) => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/doctor/get-amount-dashboard-doctor/${doctorId}`, {});
+
+      if (data.success) {
+        setMoneys(data.data);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error.response?.data?.message || error.message);
+    }
+  };
   
 
   const value = {
@@ -319,7 +334,10 @@ const DoctorContextProvider = (props) => {
     showUpcomingAppointments,
     appointmentStatus,
     setAppointmentStatus,
-    getAppointmentsByStatus
+    getAppointmentsByStatus,
+    moneys,
+    setMoneys,
+    amountPaymentDoctors
   };
 
   return (

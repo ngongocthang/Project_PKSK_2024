@@ -26,43 +26,62 @@ const Dashboard = () => {
     aToken,
     getDashData,
     getAllPatients,
-    getUpcomingApointmentsDashData,
-    patient,
-    doctors,
     getAllDoctors,
-    dashUpApData,
+    getUpcomingApointmentsDashData,
     countAppointments,
-    getCountAppointments,
     countPatient,
-    countPatients,
+    dashUpApData,
+    doctors,
   } = useContext(AdminContext);
 
-  // Dữ liệu doanh thu (giả định)
   const [revenueData, setRevenueData] = useState([
-    { month: "Tháng 1", revenue: 1200 },
-    { month: "Tháng 2", revenue: 1500 },
-    { month: "Tháng 3", revenue: 1700 },
-    { month: "Tháng 4", revenue: 1300 },
-    { month: "Tháng 5", revenue: 2000 },
-    { month: "Tháng 6", revenue: 1800 },
-    { month: "Tháng 7", revenue: 2100 },
-    { month: "Tháng 8", revenue: 2500 },
-    { month: "Tháng 9", revenue: 2200 },
-    { month: "Tháng 10", revenue: 2400 },
-    { month: "Tháng 11", revenue: 2600 },
-    { month: "Tháng 12", revenue: 2800 },
+    { month: "Tháng 1", revenue: 0 },
+    { month: "Tháng 2", revenue: 0 },
+    { month: "Tháng 3", revenue: 0 },
+    { month: "Tháng 4", revenue: 0 },
+    { month: "Tháng 5", revenue: 0 },
+    { month: "Tháng 6", revenue: 0 },
+    { month: "Tháng 7", revenue: 0 },
+    { month: "Tháng 8", revenue: 0 },
+    { month: "Tháng 9", revenue: 0 },
+    { month: "Tháng 10", revenue: 0 },
+    { month: "Tháng 11", revenue: 0 },
+    { month: "Tháng 12", revenue: 0 },
   ]);
 
-  // Sử dụng useEffect để gọi API và lấy dữ liệu
+  // Sử dụng useEffect để gọi API và lấy dữ liệu doanh thu
   useEffect(() => {
-    if (aToken) {
-      getDashData();
-      getAllPatients();
-      getAllDoctors();
-      getUpcomingApointmentsDashData();
-      getCountAppointments();
-      countPatients();
-    }
+    const fetchRevenueData = async () => {
+      if (aToken) {
+        try {
+          const response = await fetch("http://localhost:5000/get-money-dashboard-admin", {
+            headers: {
+              Authorization: `Bearer ${aToken}`,
+            },
+          });
+          const data = await response.json();
+
+          // Cập nhật doanh thu vào tháng tương ứng
+          const updatedRevenueData = revenueData.map((item) => {
+            const revenueItem = data.find((d) => d.month === item.month);
+            return {
+              ...item,
+              revenue: revenueItem ? revenueItem.revenue : 0,
+            };
+          });
+
+          setRevenueData(updatedRevenueData); // Cập nhật dữ liệu doanh thu
+        } catch (error) {
+          console.error("Error fetching revenue data:", error);
+        }
+      }
+    };
+
+    fetchRevenueData();
+    getDashData();
+    getAllPatients();
+    getAllDoctors();
+    getUpcomingApointmentsDashData();
   }, [aToken]);
 
   // Cấu hình biểu đồ
@@ -80,23 +99,23 @@ const Dashboard = () => {
   };
 
   const options = {
-    responsive: true, // Đảm bảo biểu đồ tự động điều chỉnh theo kích thước màn hình
-    maintainAspectRatio: false, // Tắt chế độ duy trì tỷ lệ khung hình
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: true, // Hiển thị chú thích
-        position: "bottom", // Đặt vị trí của chú thích (ví dụ: 'top', 'bottom', 'left', 'right')
+        display: true,
+        position: "bottom",
         labels: {
-          color: "#4B5563", // Màu của text trong chú thích
+          color: "#4B5563",
           font: {
-            size: 10, // Kích thước chữ
-            weight: "bold", // Độ đậm chữ
+            size: 10,
+            weight: "bold",
           },
         },
       },
       tooltip: {
-        enabled: true, // Bật tooltip
-        backgroundColor: "#1F2937", // Màu nền của tooltip
+        enabled: true,
+        backgroundColor: "#1F2937",
         titleFont: {
           size: 14,
           weight: "bold",
@@ -109,10 +128,10 @@ const Dashboard = () => {
     scales: {
       x: {
         grid: {
-          display: false, // Ẩn đường lưới trên trục X
+          display: false,
         },
         ticks: {
-          color: "#4B5563", // Màu của các giá trị trên trục X
+          color: "#4B5563",
           font: {
             size: 12,
           },
@@ -120,11 +139,11 @@ const Dashboard = () => {
       },
       y: {
         grid: {
-          color: "#E5E7EB", // Màu của các đường lưới trên trục Y
-          borderDash: [5, 5], // Kiểu gạch đứt cho đường lưới
+          color: "#E5E7EB",
+          borderDash: [5, 5],
         },
         ticks: {
-          color: "#4B5563", // Màu của các giá trị trên trục Y
+          color: "#4B5563",
           font: {
             size: 12,
           },
@@ -138,7 +157,6 @@ const Dashboard = () => {
       <div className="flex flex-wrap gap-3">
         {/* Hiển thị số lượng bác sĩ */}
         <div className="relative flex-1 min-w-0 bg-[#4fc2f7] p-4 rounded border-2 cursor-pointer hover:scale-105 transition-all flex items-center justify-center shadow-lg overflow-hidden">
-          {/* Bong bóng */}
           <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-white opacity-50 rounded-full z-10"></div>
           <div className="absolute top-[60px] right-[-40px] w-16 h-16 bg-white opacity-30 rounded-full z-10"></div>
 
@@ -151,34 +169,24 @@ const Dashboard = () => {
 
         {/* Hiển thị số lượng lịch hẹn */}
         <div className="relative flex-1 min-w-0 bg-[#32db9d] p-4 rounded border-2 cursor-pointer hover:scale-105 transition-all flex items-center justify-center shadow-lg overflow-hidden">
-          {/* Bong bóng */}
           <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-white opacity-50 rounded-full z-10"></div>
           <div className="absolute top-[60px] right-[-40px] w-16 h-16 bg-white opacity-30 rounded-full z-10"></div>
 
           <div className="text-center relative z-20">
-            <img
-              className="w-14 mx-auto"
-              src={assets.appointments_icon3}
-              alt=""
-            />
-            <p className="text-xl font-semibold text-white">
-              {countAppointments.length}
-            </p>
+            <img className="w-14 mx-auto" src={assets.appointments_icon3} alt="" />
+            <p className="text-xl font-semibold text-white">{countAppointments.length}</p>
             <p className="text-white text-xl font-semibold">Lịch hẹn</p>
           </div>
         </div>
 
         {/* Hiển thị số lượng bệnh nhân */}
         <div className="relative flex-1 min-w-0 bg-[#ff8a66] p-4 rounded border-2 cursor-pointer hover:scale-105 transition-all flex items-center justify-center shadow-lg overflow-hidden">
-          {/* Bong bóng */}
           <div className="absolute top-[-20px] right-[-20px] w-24 h-24 bg-white opacity-50 rounded-full z-10"></div>
           <div className="absolute top-[60px] right-[-40px] w-16 h-16 bg-white opacity-30 rounded-full z-10"></div>
 
           <div className="text-center relative z-20">
             <img className="w-14 mx-auto" src={assets.patients_icon} alt="" />
-            <p className="text-xl font-semibold text-white">
-              {countPatient.length}
-            </p>
+            <p className="text-xl font-semibold text-white">{countPatient.length}</p>
             <p className="text-white text-xl font-semibold">Bệnh nhân</p>
           </div>
         </div>
@@ -191,9 +199,7 @@ const Dashboard = () => {
             <Bar data={chartData} options={options} />
           </div>
           <div className="mt-4 text-center text-gray-600">
-            <p className="text-sm font-bold">
-              Biểu đồ thể hiện doanh thu hàng tháng trong năm.
-            </p>
+            <p className="text-sm font-bold">Biểu đồ thể hiện doanh thu hàng tháng trong năm.</p>
           </div>
         </div>
 
@@ -207,67 +213,33 @@ const Dashboard = () => {
             <table className="w-full bg-white rounded-lg overflow-hidden shadow-md">
               <thead className="bg-gray-100 border-b">
                 <tr>
-                  <th className="py-3 px-4  text-gray-700 font-semibold text-center">
-                    Bệnh nhân
-                  </th>
-                  <th className="py-3 px-4 text-left text-gray-700 font-semibold">
-                    Bác sĩ
-                  </th>
-                  <th className="py-3 px-4 text-left text-gray-700 font-semibold">
-                    Ca làm việc
-                  </th>
-                  <th className="py-3 px-4 text-left text-gray-700 font-semibold">
-                    Trạng thái
-                  </th>
+                  <th className="py-3 px-4 text-gray-700 font-semibold text-center">Bệnh nhân</th>
+                  <th className="py-3 px-4 text-left text-gray-700 font-semibold">Bác sĩ</th>
+                  <th className="py-3 px-4 text-left text-gray-700 font-semibold">Ca làm việc</th>
+                  <th className="py-3 px-4 text-left text-gray-700 font-semibold">Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
                 {dashUpApData &&
                   dashUpApData.map((item, index) => (
-                    <tr
-                      key={index}
-                      className={`hover:bg-gray-50 ${
-                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                      }`}
-                    >
+                    <tr key={index} className={`hover:bg-gray-50 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}>
                       <td className="py-4 px-4">
                         <div className="text-sm text-center">
-                          <p className="font-medium text-gray-800">
-                            {item.patient_id.user_id.name}
-                          </p>
-                          <p className="text-gray-500 text-xs">
-                            Ngày khám:{" "}
-                            {new Date(item.work_date).toLocaleDateString()}
-                          </p>
+                          <p className="font-medium text-gray-800">{item.patient_id.user_id.name}</p>
+                          <p className="text-gray-500 text-xs">Ngày khám: {new Date(item.work_date).toLocaleDateString()}</p>
                         </div>
                       </td>
                       <td className="py-4 px-4">
-                        <p className="font-medium text-gray-800 text-sm">
-                          {item.doctor_id.user_id.name}
-                        </p>
+                        <p className="font-medium text-gray-800 text-sm">{item.doctor_id.user_id.name}</p>
                       </td>
                       <td className="py-4 px-4">
-                        <span
-                          className={`py-1 px-4 rounded-full text-sm font-medium text-white shadow-md ${
-                            item.work_shift === "afternoon"
-                              ? "bg-orange-400"
-                              : "bg-blue-400"
-                          }`}
-                        >
+                        <span className={`py-1 px-4 rounded-full text-sm font-medium text-white shadow-md ${item.work_shift === "afternoon" ? "bg-orange-400" : "bg-blue-400"}`}>
                           {item.work_shift === "afternoon" ? "Chiều" : "Sáng"}
                         </span>
                       </td>
                       <td className="py-4 px-4">
-                        <span
-                          className={`py-1 px-4 rounded-full text-sm font-medium text-white shadow-md ${
-                            item.status === "confirmed"
-                              ? "bg-green-500"
-                              : "bg-red-500"
-                          }`}
-                        >
-                          {item.status === "confirmed"
-                            ? "Đã xác nhận"
-                            : "Chưa xác nhận"}
+                        <span className={`py-1 px-4 rounded-full text-sm font-medium text-white shadow-md ${item.status === "confirmed" ? "bg-green-500" : "bg-red-500"}`}>
+                          {item.status === "confirmed" ? "Đã xác nhận" : "Chưa xác nhận"}
                         </span>
                       </td>
                     </tr>
