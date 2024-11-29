@@ -24,12 +24,15 @@ const Navbar = () => {
       });
       const data = await response.json();
 
-      // Lọc thông báo chưa đọc
-      const unreadNotifications = data.filter(notification => !notification.isRead);
-      const unreadCount = unreadNotifications.length;
-
-      setUnreadCount(unreadCount);
-      // localStorage.setItem("unreadCount", unreadCount);
+      // Kiểm tra xem dữ liệu có phải là mảng không
+      if (Array.isArray(data)) {
+        // Lọc thông báo chưa đọc
+        const unreadNotifications = data.filter(notification => !notification.isRead);
+        const unreadCount = unreadNotifications.length;
+        setUnreadCount(unreadCount);
+      } else {
+        setUnreadCount(0); // Nếu không phải mảng, không có thông báo chưa đọc
+      }
     } catch (error) {
       console.error("Lỗi khi lấy thông báo chưa đọc:", error);
     }
@@ -37,9 +40,9 @@ const Navbar = () => {
 
   useEffect(() => {
     if (user?.token) {
-      fetchUnreadNotifications(); // Lần đầu tiên khi có user
-      const interval = setInterval(fetchUnreadNotifications, 1000); // Lấy thông báo mỗi 30 giây
-      return () => clearInterval(interval); // Dọn dẹp interval khi component bị hủy
+      fetchUnreadNotifications(); 
+      const interval = setInterval(fetchUnreadNotifications, 1000);
+      return () => clearInterval(interval);
     }
   }, [user, setUnreadCount]);
 
