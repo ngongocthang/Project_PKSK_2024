@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
+import "../index.css";
 
 const MyAppointments = () => {
   const { user, setUser } = useContext(AppContext);
@@ -119,7 +120,6 @@ const MyAppointments = () => {
         if (response.data.success) {
           toast.error("Có lỗi xảy ra khi hủy cuộc hẹn.");
           console.error("Error else here:", error);
-         
         } else {
           console.log("Appointment canceled successfully");
           toast.success("Cuộc hẹn đã được hủy thành công!");
@@ -196,12 +196,21 @@ const MyAppointments = () => {
   return (
     <div className="mb-10">
       <ToastContainer />
-      <p className="pb-3 mt-12 font-medium text-zinc-700 border-b text-xl">
-        Lịch hẹn của tôi:
-      </p>
+      {/* Thay đổi định dạng tiêu đề */}
+      <div className="text-center">
+        <h2 className="sm:text-4xl text-3xl font-semibold text-center text-zinc-800">
+          Lịch hẹn của tôi
+        </h2>
+        <p className="text-gray-500 text-sm mt-2">
+          Xem tất cả lịch hẹn của bạn
+        </p>
+      </div>
+      <br />
       <div>
         {loading ? (
-          <p className="text-center text-gray-500 mt-5">Đang tải dữ liệu...</p>
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
         ) : appointments.length === 0 ? (
           <p className="text-center text-gray-500 mt-5">
             Hiện tại bạn không có lịch hẹn.
@@ -318,15 +327,15 @@ const MyAppointments = () => {
             </div>
           ))
         )}
-        {error && (
-          <div
-            className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg"
-            role="alert"
-          >
-            <span className="font-medium">Lỗi:</span> {error}
-          </div>
-        )}
       </div>
+      {error && (
+        <div
+          className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg"
+          role="alert"
+        >
+          <span className="font-medium">Lỗi:</span> {error}
+        </div>
+      )}
     </div>
   );
 };

@@ -250,7 +250,7 @@ const DoctorProfile = () => {
                 </>
               ) : (
                 <p className="text-gray-800 text-lg">
-                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} (VND)
+                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} VND
                 </p>
               )}
             </div>
