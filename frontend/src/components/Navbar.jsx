@@ -24,12 +24,15 @@ const Navbar = () => {
         headers: { Authorization: `Bearer ${user.token}` },
       });
       const data = await response.json();
-
-      // Filter unread notifications
-      const unreadNotifications = data.filter(notification => !notification.isRead);
-      const unreadCount = unreadNotifications.length;
-
-      setUnreadCount(unreadCount);
+      // Kiểm tra xem dữ liệu có phải là mảng không
+      if (Array.isArray(data)) {
+        // Lọc thông báo chưa đọc
+        const unreadNotifications = data.filter(notification => !notification.isRead);
+        const unreadCount = unreadNotifications.length;
+        setUnreadCount(unreadCount);
+      } else {
+        setUnreadCount(0); // Nếu không phải mảng, không có thông báo chưa đọc
+      }
     } catch (error) {
       console.error("Error fetching unread notifications:", error);
     }

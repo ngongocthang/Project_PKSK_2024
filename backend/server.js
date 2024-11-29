@@ -22,7 +22,6 @@ const userRouterAppointment = require("./routers/Appointment");
 const userRouterSchedule = require("./routers/Schedule");
 const userRouterHome = require("./routers/Home");
 
-//middleware
 // Middleware
 const app = express();
 
