@@ -48,6 +48,7 @@ const DoctorProfile = () => {
       updatedData.append("email", formData.email);
       updatedData.append("phone", formData.phone);
       updatedData.append("description", formData.description);
+      updatedData.append("price", formData.price.replace(/\./g, ''));
       if (selectedImage) {
         updatedData.append("image", selectedImage);
       }
@@ -105,6 +106,11 @@ const DoctorProfile = () => {
       (newPassword && !oldPassword) || 
       (!newPassword && (oldPassword || selectedImage))
     );
+  };
+
+  const formatPrice = (price) => {
+    if (isNaN(price)) return price; 
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   return (
@@ -225,6 +231,31 @@ const DoctorProfile = () => {
             </div>
 
             <div className="mb-6">
+              {isEdit ? (
+                <>
+                  <label className="block text-gray-700 font-bold mb-1">Giá:</label>
+                  <input
+                    type="text" // Sử dụng type="text" để cho phép dấu phân cách
+                    name="price"
+                    value={formData.price ? formatPrice(formData.price) : ''}
+                    onChange={(e) => handleInputChange({
+                      target: {
+                        name: 'price',
+                        value: e.target.value.replace(/\./g, '') // Xóa dấu chấm trước khi lưu
+                      }
+                    })}
+                    className="w-full p-3 border-2 border-gray-300 rounded-md mt-1 focus:ring-2 focus:ring-blue-500"
+                    placeholder="Giá"
+                  />
+                </>
+              ) : (
+                <p className="text-gray-800 text-lg">
+                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} (VND)
+                </p>
+              )}
+            </div>
+
+            <div className="mb-6">
               <label className="block text-gray-700 font-bold mb-1">Giới thiệu:</label>
               {isEdit ? (
                 <textarea
@@ -308,4 +339,3 @@ const DoctorProfile = () => {
 };
 
 export default DoctorProfile;
-

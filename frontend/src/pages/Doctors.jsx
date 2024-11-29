@@ -101,6 +101,11 @@ const Doctors = () => {
     );
   };
 
+  const formatPrice = (price) => {
+    if (isNaN(price)) return price; 
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
   return (
     <div>
       <p className="text-gray-600 text-[20px]">Duyệt qua các bác sĩ chuyên khoa.</p>
@@ -142,6 +147,7 @@ const Doctors = () => {
                   <p>Đặt lịch</p>
                 </div>
                 <p className="text-gray-900 text-lg font-medium">{item.user_id.name}</p>
+                <p className="text-gray-900 text-sm truncate">Giá: {formatPrice(item.price)} (VND)</p>
                 <p className="text-gray-900 text-sm truncate">{item.description}</p>
               </div>
             </div>

@@ -53,8 +53,8 @@ const AddDoctor = () => {
     }
 
     // Kiểm tra giá
-    const numericPrice = price.replace(/\./g, ""); // Loại bỏ dấu chấm
-    const priceValue = Number(numericPrice); // Chuyển đổi thành số
+    const numericPrice = price.replace(/\./g, ""); 
+    const priceValue = Number(numericPrice); 
 
     if (isNaN(priceValue) || priceValue < 0) {
       return toast.error(

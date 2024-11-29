@@ -125,12 +125,6 @@ const Notifications = () => {
     }
   };
 
-  // Báo cáo thông báo
-  const handleReport = (notificationId) => {
-    alert(`Reported notification with ID: ${notificationId}`);
-    setActiveMenu(null); // Đóng menu sau khi thực hiện hành động 
-  };
-
   // Sắp xếp thông báo theo ngày tạo
   const sortedNotifications = notifications.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -145,11 +139,6 @@ const Notifications = () => {
     setActiveMenu((prevMenu) => (prevMenu === id ? null : id));
   };
 
-  // Xử lý đánh dấu là đã đọc khi nhấp vào tùy chọn menu
-  const handleMarkAsRead = async (id) => {
-    await handleNotificationClick(id);
-    setActiveMenu(null); // Đóng menu sau khi thực hiện hành động
-  };
 
   return (
     <div className="container mx-auto p-4">
@@ -200,25 +189,11 @@ const Notifications = () => {
                 <div className="absolute right-0 mt-2 border border-gray-300 bg-white shadow-lg rounded-md w-48 z-10">
                   <ul className="text-sm">
                     <li
-                      onClick={() => handleMarkAsRead(notification._id)}
-                      className="cursor-pointer hover:bg-gray-100 px-4 py-2 transition-all duration-200 rounded-md"
-                    >
-                      <i className="fa-solid fa-envelope-circle-check mr-2"></i>
-                      Đánh dấu đã đọc
-                    </li>
-                    <li
                       onClick={() => handleDelete(notification._id)}
                       className="cursor-pointer hover:bg-red-100 text-red-500 px-4 py-2 transition-all duration-200 rounded-md"
                     >
                       <i className="fa-regular fa-trash-can mr-2"></i>
                       Xóa thông báo
-                    </li>
-                    <li
-                      onClick={() => handleReport(notification._id)}
-                      className="cursor-pointer hover:bg-blue-100 text-blue-500 px-4 py-2 transition-all duration-200 rounded-md"
-                    >
-                      <i className="fa-solid fa-circle-exclamation mr-2"></i>
-                      Báo cáo
                     </li>
                   </ul>
                 </div>

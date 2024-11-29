@@ -69,12 +69,15 @@ const MyAppointments = () => {
 
       const cancelAppointment = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/cancel-appointment/${appointmentId}`, {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await fetch(
+            `http://localhost:5000/cancel-appointment/${appointmentId}`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
 
           if (!response.ok) {
             throw new Error("Failed to cancel appointment");
@@ -93,8 +96,11 @@ const MyAppointments = () => {
     };
 
     const appointment = appointments.find((appt) => appt._id === appointmentId);
-    const appointmentDate = new Date(appointment.work_date).toLocaleDateString("vi-VN");
-    const appointmentShift = appointment.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều";
+    const appointmentDate = new Date(appointment.work_date).toLocaleDateString(
+      "vi-VN"
+    );
+    const appointmentShift =
+      appointment.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều";
 
     if (!toast.isActive(toastId.current)) {
       toastId.current = toast.warn(
@@ -104,7 +110,8 @@ const MyAppointments = () => {
             <p className="font-bold text-lg">Thông báo</p>
           </div>
           <p>
-            Bạn có chắc chắn muốn hủy cuộc hẹn ngày {appointmentDate} vào {appointmentShift} này không?
+            Bạn có chắc chắn muốn hủy cuộc hẹn ngày {appointmentDate} vào{" "}
+            {appointmentShift} này không?
           </p>
           <div className="flex justify-center gap-4">
             <button
@@ -112,12 +119,14 @@ const MyAppointments = () => {
                 toast.dismiss(toastId.current);
                 confirmDelete();
               }}
-              className="bg-red-600 text-white px-4 py-2 rounded transition duration-300 hover:bg-red-700">
+              className="bg-red-600 text-white px-4 py-2 rounded transition duration-300 hover:bg-red-700"
+            >
               Có
             </button>
             <button
               onClick={() => toast.dismiss(toastId.current)}
-              className="bg-gray-300 text-black px-4 py-2 rounded transition duration-300 hover:bg-gray-400">
+              className="bg-gray-300 text-black px-4 py-2 rounded transition duration-300 hover:bg-gray-400"
+            >
               Không
             </button>
           </div>
@@ -140,9 +149,13 @@ const MyAppointments = () => {
       </p>
       <div>
         {loading ? (
-          <p className="text-center text-gray-500 mt-5">Đang tải dữ liệu...</p>
+          <div className="flex items-center justify-center min-h-screen">
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
         ) : appointments.length === 0 ? (
-          <p className="text-center text-gray-500 mt-5">Hiện tại bạn không có lịch hẹn.</p>
+          <p className="text-center text-gray-500 mt-5">
+            Hiện tại bạn không có lịch hẹn.
+          </p>
         ) : (
           appointments.map((appointment) => (
             <div
@@ -164,15 +177,23 @@ const MyAppointments = () => {
                   Bác sĩ: {appointment.doctor_id.user_id.name}
                 </p>
                 <p className="text-xs mt-1">
-                  <span className="text-sm text-neutral-700 font-medium">Ngày khám:</span>{" "}
+                  <span className="text-sm text-neutral-700 font-medium">
+                    Ngày khám:
+                  </span>{" "}
                   {new Date(appointment.work_date).toLocaleDateString("vi-VN")}
                 </p>
                 <p className="text-xs mt-1">
-                  <span className="text-sm text-neutral-700 font-medium">Ca khám:</span>{" "}
-                  {appointment.work_shift === "morning" ? "Buổi sáng" : "Buổi chiều"}
+                  <span className="text-sm text-neutral-700 font-medium">
+                    Ca khám:
+                  </span>{" "}
+                  {appointment.work_shift === "morning"
+                    ? "Buổi sáng"
+                    : "Buổi chiều"}
                 </p>
                 <p className="text-xs mt-1">
-                  <span className="text-sm text-neutral-700 font-medium">Trạng thái:</span>{" "}
+                  <span className="text-sm text-neutral-700 font-medium">
+                    Trạng thái:
+                  </span>{" "}
                   <span
                     className={`${
                       appointment.status === "pending"
