@@ -11,6 +11,7 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
   const [notificationsCount, setNotificationsCount] = useState(0);
   const [rotateIcon, setRotateIcon] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // State for navbar visibility
 
   const getDisplayName = (fullName) => {
     const nameParts = fullName.split(" ");
@@ -24,22 +25,21 @@ const Navbar = () => {
       });
       const data = await response.json();
 
-      // Lọc thông báo chưa đọc
+      // Filter unread notifications
       const unreadNotifications = data.filter(notification => !notification.isRead);
       const unreadCount = unreadNotifications.length;
 
       setUnreadCount(unreadCount);
-      // localStorage.setItem("unreadCount", unreadCount);
     } catch (error) {
-      console.error("Lỗi khi lấy thông báo chưa đọc:", error);
+      console.error("Error fetching unread notifications:", error);
     }
   };
 
   useEffect(() => {
     if (user?.token) {
-      fetchUnreadNotifications(); // Lần đầu tiên khi có user
-      const interval = setInterval(fetchUnreadNotifications, 1000); // Lấy thông báo mỗi 30 giây
-      return () => clearInterval(interval); // Dọn dẹp interval khi component bị hủy
+      fetchUnreadNotifications(); // First time fetching when user exists
+      const interval = setInterval(fetchUnreadNotifications, 1000); // Fetch notifications every 1 second
+      return () => clearInterval(interval); // Cleanup interval on unmount
     }
   }, [user, setUnreadCount]);
 
@@ -67,6 +67,30 @@ const Navbar = () => {
     navigate("/Notifications");
   };
 
+  // Scroll event handler for hiding/showing navbar
+  useEffect(() => {
+    let lastScrollY = window.scrollY; // Keep track of the last scroll position
+
+    const handleScroll = () => {
+      if (window.scrollY === 0) {
+        // If at the top of the page, ensure the navbar is visible
+        setIsVisible(true);
+      } else if (window.scrollY > lastScrollY) {
+        // Scrolling down
+        setIsVisible(false);
+      } else if (window.scrollY < lastScrollY) {
+        // Scrolling up
+        setIsVisible(true);
+      }
+      lastScrollY = window.scrollY <= 0 ? 0 : window.scrollY; // Prevent negative values
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Cleanup listener on component unmount
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -76,7 +100,7 @@ const Navbar = () => {
   }
 
   return (
-    <div className="flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400">
+    <div className={`flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400 bg-white sticky top-0 z-50 transition-transform duration-300 ${isVisible ? "transform-none" : "-translate-y-full"}`}>
       <img
         onClick={() => navigate('/')}
         className="w-20 sm:w-24 cursor-pointer"

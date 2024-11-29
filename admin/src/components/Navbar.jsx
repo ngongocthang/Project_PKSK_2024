@@ -130,7 +130,7 @@ const Navbar = () => {
   }, [isModalOpen]);
 
   return (
-    <div className="flex justify-between items-center px-4 sm:px-10 py-3 border-b bg-white">
+    <div className="flex justify-between items-center px-4 sm:px-10 py-3 border-b bg-white sticky top-0 z-50">
       <a
         href={aToken ? "http://localhost:5174/admin-dashboard" : "http://localhost:5174/doctor-dashboard"}
       >

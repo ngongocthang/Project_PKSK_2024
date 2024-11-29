@@ -134,7 +134,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="m-5">
+    <div className="m-5 w-full">
       <div className="flex flex-wrap gap-3">
         {/* Hiển thị số lượng bác sĩ */}
         <div className="relative flex-1 min-w-0 bg-[#4fc2f7] p-4 rounded border-2 cursor-pointer hover:scale-105 transition-all flex items-center justify-center shadow-lg overflow-hidden">
