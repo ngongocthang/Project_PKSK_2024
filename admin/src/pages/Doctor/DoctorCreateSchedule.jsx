@@ -50,18 +50,18 @@ const CreateDoctorSchedule = () => {
   };
 
   return (
-    <div className='max-w-2xl mx-auto p-5'>
-      <div className='bg-white p-8 rounded-lg shadow-lg' style={{ width: '400px' }}>
-        <h2 className='text-2xl font-semibold mb-5'>Tạo Lịch Làm Việc của Bác Sĩ</h2>
+    <div className='max-w-full sm:max-w-md md:max-w-2xl mx-auto p-5'>
+      <div className='bg-white p-8 rounded-lg shadow-lg'>
+        <h2 className='text-2xl font-semibold mb-5 text-center text-gray-800'>Tạo Lịch Làm Việc của Bác Sĩ</h2>
         <form onSubmit={handleSubmit} className='space-y-5'>
           <div>
-            <label className='block text-gray-700 mb-2'>Ngày làm việc</label>
+            <label className='block text-gray-700 mb-2 text-sm font-medium'>Ngày làm việc</label>
             <DatePicker
               selected={scheduleForm.workDate}
               onChange={handleDateChange}
               dateFormat="dd/MM/yyyy"
               minDate={new Date()}
-              className='w-[335px] p-3 border rounded focus:outline-none focus:border-black'
+              className='w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500'
             />
           </div>
 

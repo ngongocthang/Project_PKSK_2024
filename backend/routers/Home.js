@@ -5,7 +5,8 @@ const {
   login,
   logout,
   filter,
-  getHistoryAppointment
+  getHistoryAppointment,
+  getdataMoneyDashboardAdmin
 } = require("../controllers/HomeController/index");
 const {
   patientCreateAppointment, 
@@ -22,6 +23,9 @@ const {
   getScheduleByDoctor
 } = require("../controllers/ScheduleController/index");
 const { getCurrentUserNotifications } = require("../controllers/NotificationController/index");
+// const {payment} = require("../helpers/momo-config");
+const {payment, callback, checkPaymentStatus} = require("../helpers/momo-config");
+
 
 // Định nghĩa route
 router.post("/register", register);
@@ -40,6 +44,10 @@ router.get("/notification", userMiddleware, getCurrentUserNotifications);
 router.get("/medical-history/:id", userMiddleware, getHistoryAppointment);
 router.get("/get-data-doctor-dashboard/:id", countAppointmentDoctorDashboard);
 router.get("/upcoming-appointments-dashboard-admin", getUpcomingAppointmentsDashboardAdmin);
+router.post("/payment/:id", payment);
+router.post("/callback", callback);
+router.get("/check-payment-status/:id", checkPaymentStatus); 
+router.get("/get-money-dashboard-admin", getdataMoneyDashboardAdmin); 
 
 
 module.exports = router;
