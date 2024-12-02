@@ -250,7 +250,8 @@ const DoctorProfile = () => {
                 </>
               ) : (
                 <p className="text-gray-800 text-lg">
-                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} (VNĐ)
+
+                  <span className="font-bold">Giá:</span> {formatPrice(profileData.doctorProfile.price)} VND
                 </p>
               )}
             </div>
