@@ -133,17 +133,54 @@ const Navbar = () => {
 
       <div className="flex items-center gap-4">
         {user ? (
-          <div className="flex items-center gap-2 cursor-pointer group relative" onClick={() => setShowDropdown(!showDropdown)}>
+          // <div className="flex items-center gap-2 cursor-pointer group relative" onClick={() => setShowDropdown(!showDropdown)}>
+          //   <img className="w-8 rounded-full" src={assets.profile_pic} alt="Avatar" />
+          //   <p className="font-medium text-gray-700">{getDisplayName(user.name)}</p>
+          //   <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown Icon" />
+          //   {showDropdown && (
+          //     <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20">
+          //       <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
+          //         <p onClick={() => navigate('my-profile')} className="hover:text-black cursor-pointer">Hồ sơ của tôi</p>
+          //         <p onClick={() => navigate('my-appointments')} className="hover:text-black cursor-pointer">Lịch hẹn của tôi</p>
+          //         <p onClick={() => navigate('medical-history')} className="hover:text-black cursor-pointer">Lịch sử khám bệnh</p>
+          //         <p onClick={handleLogout} className="hover:text-black cursor-pointer">Đăng xuất</p>
+          //       </div>
+          //     </div>
+          //   )}
+          // </div>
+
+          <div
+            className="flex items-center gap-2 cursor-pointer group relative"
+            onMouseEnter={() => setShowDropdown(true)} // Hiển thị menu khi di chuột vào
+            onMouseLeave={() => setShowDropdown(false)} // Ẩn menu khi rời chuột
+          >
             <img className="w-8 rounded-full" src={assets.profile_pic} alt="Avatar" />
             <p className="font-medium text-gray-700">{getDisplayName(user.name)}</p>
             <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown Icon" />
             {showDropdown && (
               <div className="absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20">
                 <div className="min-w-48 bg-stone-100 rounded flex flex-col gap-4 p-4">
-                  <p onClick={() => navigate('my-profile')} className="hover:text-black cursor-pointer">Hồ sơ của tôi</p>
-                  <p onClick={() => navigate('my-appointments')} className="hover:text-black cursor-pointer">Lịch hẹn của tôi</p>
-                  <p onClick={() => navigate('medical-history')} className="hover:text-black cursor-pointer">Lịch sử khám bệnh</p>
-                  <p onClick={handleLogout} className="hover:text-black cursor-pointer">Đăng xuất</p>
+                  <p
+                    onClick={() => navigate('my-profile')}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    Hồ sơ của tôi
+                  </p>
+                  <p
+                    onClick={() => navigate('my-appointments')}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    Lịch hẹn của tôi
+                  </p>
+                  <p
+                    onClick={() => navigate('medical-history')}
+                    className="hover:text-black cursor-pointer"
+                  >
+                    Lịch sử khám bệnh
+                  </p>
+                  <p onClick={handleLogout} className="hover:text-black cursor-pointer">
+                    Đăng xuất
+                  </p>
                 </div>
               </div>
             )}
