@@ -34,7 +34,7 @@ const Navbar = () => {
         setUnreadCount(0); // Nếu không phải mảng, không có thông báo chưa đọc
       }
     } catch (error) {
-      console.error("Error fetching unread notifications:", error);
+      // console.error("Error fetching unread notifications:", error);
     }
   };
 

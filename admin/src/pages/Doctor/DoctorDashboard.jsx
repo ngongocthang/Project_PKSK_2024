@@ -200,6 +200,7 @@ import { DoctorContext } from "../../context/DoctorContext";
       const countCompletedAppointments = () => {
         return appointmentStatus.filter(item => item.status === "completed").length;
       };
+
       const formatPrice = (price) => {
         if (isNaN(price)) return price; 
         return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");

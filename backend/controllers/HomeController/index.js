@@ -77,7 +77,7 @@ const login = async (req, res) => {
 
     // Tạo token JWT
     const token = jwt.sign({ id: user._id, role: userRole }, JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
 
     return res.status(200).json({

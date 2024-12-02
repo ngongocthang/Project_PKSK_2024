@@ -105,6 +105,7 @@ const MyAppointments = () => {
         navigate("/account");
         return;
       }
+
       try {
         const response = await axios.put(
           `http://localhost:5000/cancel-appointment/${appointmentId}`,
