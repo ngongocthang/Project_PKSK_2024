@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import moment from "moment-timezone";
 
 const ConfirmAppointments = () => {
   const [confirmedAppointments, setConfirmedAppointments] = useState([]);
@@ -31,6 +32,7 @@ const ConfirmAppointments = () => {
           }
         );
         if (response.data.success) {
+          console.log("lay lich hen da xac nhan ", response.data.data);
           setConfirmedAppointments(response.data.data);
         }
       } catch (error) {
@@ -71,9 +73,21 @@ const ConfirmAppointments = () => {
     completeAppointment(id);
   };
 
-  const filteredAppointments = confirmedAppointments.filter(appointment =>
-    appointment.patient_id.user_id.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredAppointments = confirmedAppointments.filter((appointment) =>
+    appointment.patient_id.user_id.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
+
+  const formatVietnameseDate = (date) => {
+    moment.locale("vi");
+    const formattedDate = moment
+      .utc(date)
+      .tz("Asia/Ho_Chi_Minh")
+      .format("DD/MM/YYYY"); // Định dạng theo kiểu dd/mm/yyyy
+    return formattedDate;
+  };
+  
 
   return (
     <div className="w-full max-w-6xl m-5 shadow-lg">
@@ -88,7 +102,7 @@ const ConfirmAppointments = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <span className="p-2 rounded-lg border-2 border-[#0091a1] bg-blue-50 shadow-md text-sm font-semibold text-gray-800">
-            {new Date().toLocaleDateString()}
+            {formatVietnameseDate(workDate)}
           </span>
         </div>
       </div>
@@ -103,18 +117,51 @@ const ConfirmAppointments = () => {
             <thead className="bg-gray-200">
               <tr>
                 <th className="py-2 px-4 font-bold text-[16px]">#</th>
-                <th className="py-2 px-4 font-bold text-center text-[16px]">Bệnh nhân</th>
-                <th className="py-2 px-4 font-bold text-center text-[16px]">Ca khám</th>
-                <th className="py-2 px-4 font-bold text-center text-[16px]">Xác nhận</th>
+                <th className="py-2 px-4 font-bold text-center text-[16px]">
+                  Bệnh nhân
+                </th>
+                <th className="py-2 px-4 font-bold text-center text-[16px]">
+                  Trạng thái thanh toán
+                </th>
+                <th className="py-2 px-4 font-bold text-center text-[16px]">
+                  Ca khám
+                </th>
+                <th className="py-2 px-4 font-bold text-center text-[16px]">
+                  Xác nhận
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredAppointments.map((appointment, index) => (
-                <tr key={appointment._id} className="hover:bg-gray-50 text-center text-[16px]">
-                  <td className="py-3 px-4 text-gray-800 font-medium">{index + 1}</td>
-                  <td className="py-3 px-4 text-gray-800 font-medium">{appointment.patient_id.user_id.name}</td>
+                <tr
+                  key={appointment._id}
+                  className="hover:bg-gray-50 text-center text-[16px]"
+                >
+                  <td className="py-3 px-4 text-gray-800 font-medium">
+                    {index + 1}
+                  </td>
+                  <td className="py-3 px-4 text-gray-800 font-medium">
+                    {appointment.patient_id.user_id.name}
+                  </td>
                   <td className="py-3 px-4 text-center w-[170px]">
-                    <p className={`py-1 px-4 rounded-full text-white text-base font-semibold ${appointment.work_shift === "afternoon" ? "bg-orange-300" : "bg-blue-300"}`}>
+                    <p
+                      className={`py-1 px-4 rounded-full text-white text-base font-semibold ${
+                        appointment.paymentStatus === "true"
+                          ? "bg-green-300"
+                          : "bg-red-300"
+                      }`}
+                    >
+                      {appointment.paymentStatus === "true" ? "Đã" : "Chưa"}
+                    </p>
+                  </td>
+                  <td className="py-3 px-4 text-center w-[170px]">
+                    <p
+                      className={`py-1 px-4 rounded-full text-white text-base font-semibold ${
+                        appointment.work_shift === "afternoon"
+                          ? "bg-orange-300"
+                          : "bg-blue-300"
+                      }`}
+                    >
                       {appointment.work_shift === "morning" ? "Sáng" : "Chiều"}
                     </p>
                   </td>
@@ -125,7 +172,9 @@ const ConfirmAppointments = () => {
                       ) : (
                         <>
                           {appointment.status === "completed" ? (
-                            <span className="border border-blue-500 text-blue-500 bg-white py-1 px-3 rounded-full font-semibold">Hoàn thành</span>
+                            <span className="border border-blue-500 text-blue-500 bg-white py-1 px-3 rounded-full font-semibold">
+                              Hoàn thành
+                            </span>
                           ) : (
                             <svg
                               onClick={() => handleConfirm(appointment._id)}

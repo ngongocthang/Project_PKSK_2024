@@ -1,82 +1,97 @@
-import { Scheduler } from "@bitnoi.se/react-scheduler";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
+import FullCalendar from "@fullcalendar/react";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
+import viLocale from "@fullcalendar/core/locales/vi"; // Ngôn ngữ tiếng Việt
 
-const AllSchedule = ({ doctorId }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState([]);
-    const [error, setError] = useState(null);
+const DoctorTimeline = () => {
+  const [doctors, setDoctors] = useState([]);
+  const [events, setEvents] = useState([]);
 
-    useEffect(() => {
-        if (!doctorId) {
-            setError('Không tìm thấy ID của bác sĩ.');
-            return;
-        }
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/get-all-schedule-doctor");
+        const data = await response.json();
 
-        setIsLoading(true);
-        setError(null);
+        // Tạo danh sách bác sĩ (resources)
+        const resources = data.map((doctor) => ({
+          id: doctor.doctorId,
+          doctorName: doctor.doctorName,
+          doctorImage: doctor.doctorImage,
+        }));
 
-        const apiUrl = `http://localhost:5000/get-schedule-doctor/${doctorId}`;
+        // Xử lý lịch làm việc (events)
+        const mappedEvents = data.flatMap((doctor) =>
+          doctor.schedules.map((schedule) => {
+            const startDate = new Date(schedule.work_date); // Lấy thời gian bắt đầu
+            const endDate = new Date(startDate); // Tính thời gian kết thúc
+            endDate.setHours(endDate.getHours() + 4); // Cộng thêm 4 tiếng
 
-        fetch(apiUrl)
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then((fetchedData) => {
-                if (Array.isArray(fetchedData)) {
-                    setData(fetchedData);
-                } else {
-                    console.error('Dữ liệu nhận được không phải là một mảng:', fetchedData);
-                    setError('Dữ liệu không đúng định dạng mong đợi.');
-                }
-            })
-            .catch((error) => {
-                console.error('Lỗi khi tải dữ liệu:', error);
-                setError('Đã xảy ra lỗi khi tải dữ liệu.');
-            })
-            .finally(() => setIsLoading(false));
-    }, [doctorId]);
+            return {
+              id: schedule._id,
+              resourceId: doctor.doctorId,
+              title: `Ca: ${schedule.work_shift}`,
+              start: startDate.toISOString(),
+              end: endDate.toISOString(),
+            };
+          })
+        );
 
-    return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold text-center mb-6">Đặt lịch hẹn</h1>
+        setDoctors(resources);
+        setEvents(mappedEvents);
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu:", error);
+      }
+    };
 
-            {/* Hiển thị lỗi nếu có */}
-            {error && (
-                <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-                    <span className="font-medium">Lỗi:</span> {error}
+    fetchSchedules();
+  }, []);
+
+  return (
+    <div>
+      <h1 className="">Lịch Làm Việc Của Bác Sĩ</h1>
+      <FullCalendar
+        plugins={[resourceTimelinePlugin]}
+        initialView="resourceTimelineWeek"
+        resources={doctors}
+        events={events}
+        locale={viLocale} // Cài đặt ngôn ngữ tiếng Việt
+        resourceAreaColumns={[
+          {
+            // Tùy chỉnh hiển thị cột tài nguyên
+            headerContent: "Bác sĩ",
+            field: "doctorName",
+            cellContent: (args) => {
+              const { doctorImage, doctorName } = args.resource.extendedProps;
+              return (
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src={doctorImage}
+                    alt={doctorName}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: "50%",
+                      marginRight: 8,
+                    }}
+                  />
+                  {doctorName}
                 </div>
-            )}
-
-            {/* Hiển thị trạng thái tải dữ liệu */}
-            {isLoading ? (
-                <div className="text-center text-gray-500">Đang tải dữ liệu...</div>
-            ) : (
-                <div className="relative bg-white rounded-lg shadow-md p-4 mb-4 mx-auto h-[75vh] overflow-hidden">
-                    <Scheduler
-                        data={data}
-                        isLoading={isLoading}
-                        onItemClick={(clickedItem) => console.log(clickedItem)}
-                        onFilterData={() => {}}
-                        onClearFilterData={() => {}}
-                        config={{
-                            filterButtonState: 0,
-                            zoom: 0,
-                            lang: "vi",
-                            timeZone: "Asia/Ho_Chi_Minh",
-                            maxRecordsPerPage: 20,
-                        }}
-                        style={{
-                            height: "100%",
-                            width: "100%",
-                        }}
-                    />
-                </div>
-            )}
-        </div>
-    );
+              );
+            },
+          },
+        ]}
+        headerToolbar={{
+          left: "prev,next today",
+          center: "title",
+          right: "resourceTimelineDay,resourceTimelineWeek",
+        }}
+        slotMinTime="06:00:00" // Thời gian bắt đầu hiển thị
+        slotMaxTime="19:00:00" // Thời gian kết thúc hiển thị
+        nowIndicator={true} // Hiển thị vạch thời gian hiện tại
+      />
+    </div>
+  );
 };
 
-export default AllSchedule;
+export default DoctorTimeline;

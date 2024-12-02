@@ -11,6 +11,7 @@ const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [doctorsPerPage] = useState(8);
+  const [selectedDate, setSelectedDate] = useState(""); // Thêm trạng thái cho ngày làm việc
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,11 +34,21 @@ const Doctors = () => {
   };
 
   const applyFilter = () => {
-    const filtered = speciality
+    let filtered = speciality
       ? doctors.filter(
-        (doc) => convertToSlug(doc.specialization_id?.name) === speciality
-      )
+          (doc) => convertToSlug(doc.specialization_id?.name) === speciality
+        )
       : doctors;
+
+    // Lọc theo ngày làm việc
+    if (selectedDate) {
+      filtered = filtered.filter((doc) =>
+        doc.schedules.some(schedule => 
+          new Date(schedule.work_date).toISOString().split('T')[0] === selectedDate
+        )
+      );
+    }
+
     setFilterDoc(filtered);
   };
 
@@ -48,11 +59,12 @@ const Doctors = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [doctors, speciality]);
+  }, [doctors, speciality, selectedDate]); // Cập nhật khi selectedDate thay đổi
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setCurrentPage(Number(queryParams.get("page")) || 1);
+    setSelectedDate(queryParams.get("date") || ""); // Lấy giá trị ngày từ URL
   }, [location]);
 
   const totalDoctors = filterDoc.length;
@@ -65,6 +77,18 @@ const Doctors = () => {
     setCurrentPage(page);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("page", page);
+    queryParams.set("date", selectedDate); // Thêm giá trị ngày vào URL
+    navigate(
+      `/doctors${speciality ? `/${speciality}` : ""}?${queryParams.toString()}`,
+      { replace: true }
+    );
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("date", date); // Cập nhật giá trị ngày trong URL
+    queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi ngày
     navigate(
       `/doctors${speciality ? `/${speciality}` : ""}?${queryParams.toString()}`,
       { replace: true }
@@ -108,12 +132,13 @@ const Doctors = () => {
 
   return (
     <div>
-      <p className="text-gray-600 text-[20px]">Duyệt qua các bác sĩ chuyên khoa.</p>
+      <p className="text-gray-600 text-[20px]">Các bác sĩ chuyên khoa.</p>
       <div className="flex flex-col sm:flex-row items-start gap-5 mt-5">
         <button className={`py-1 px-3 border rounded text-sm transition-all sm:hidden ${showFilter ? "bg-primary text-white" : ""}`} onClick={() => setShowFilter((prev) => !prev)}>
           Filters
         </button>
         <div className={`flex-col gap-4 text-[18px] text-gray-600 ${showFilter ? "flex" : "hidden sm:flex"}`}>
+          <h3>Chuyên khoa:</h3>
           {specializations.map((spec) => (
             <div
               key={spec._id}
@@ -129,6 +154,14 @@ const Doctors = () => {
               <p className="m-0">{spec.name}</p>
             </div>
           ))}
+          {/* Thêm phần chọn ngày */}
+          <h3>Ngày làm việc:</h3>
+          <input 
+            type="date" 
+            value={selectedDate} // Đặt giá trị cho ô nhập ngày
+            onChange={(e) => handleDateChange(e.target.value)} // Gọi hàm cập nhật ngày
+            className="w-[94vw] sm:w-40 border rounded p-2"
+          />
         </div>
 
         <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
@@ -151,7 +184,7 @@ const Doctors = () => {
                 <p className="text-gray-900 text-sm truncate">{item.description}</p>
               </div>
             </div>
-          ))}
+          ))} 
         </div>
       </div>
       {totalPages > 1 && renderPagination()}

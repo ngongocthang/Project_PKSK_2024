@@ -38,13 +38,14 @@ const Navbar = () => {
     }
   };
 
-  useEffect(() => {
-    if (user?.token) {
-      fetchUnreadNotifications(); // First time fetching when user exists
-      const interval = setInterval(fetchUnreadNotifications, 1000); // Fetch notifications every 1 second
-      return () => clearInterval(interval); // Cleanup interval on unmount
-    }
-  }, [user, setUnreadCount]);
+  // useEffect(() => {
+  //   if (user?.token) {
+  //     fetchUnreadNotifications(); // Lần đầu tiên khi có user
+  //     const interval = setInterval(fetchUnreadNotifications, 1000); // Lấy thông báo mỗi 30 giây
+
+  //     return () => clearInterval(interval); // Dọn dẹp interval khi component bị hủy
+  //   }
+  // }, [user, setUnreadCount]);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -129,8 +130,7 @@ const Navbar = () => {
           <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
         </NavLink>
         <NavLink to="/all-schedule" activeClassName="underline">
-          <li className="py-1 text-base">Đặt lịch hẹn</li>
-          <hr className='border-none outline-none h-0.5 bg-[#00759c] w-3/5 m-auto hidden' />
+          <li className="py-1 text-base">Lịch làm việc</li>
         </NavLink>
       </ul>
 

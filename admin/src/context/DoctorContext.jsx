@@ -14,6 +14,8 @@ const DoctorContextProvider = (props) => {
   const [appointmentStatus, setAppointmentStatus] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [specialzations, setSpecialzations] = useState([]);
+  const [moneys, setMoneys] = useState([]);
+  const [patients, setCountPatients] = useState([]);
   const [dashData, setDashData] = useState(false);
   const [profileData, setProfileData] = useState(false);
 
@@ -253,7 +255,7 @@ const DoctorContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Bạn không thể xoá lịch làm việc trong vòng 24h trước khi diễn ra!");
+      toast.error( error.response?.data?.message || "Bạn không thể xoá lịch làm việc trong vòng 24h trước khi diễn ra!");
     }
   };
 
@@ -281,11 +283,39 @@ const DoctorContextProvider = (props) => {
       if (Array.isArray(data) && data.length > 0) {
         setAppointmentStatus(data);
       } else {
-        toast.error("Không có lịch hẹn sắp tới nào!");
+        console.log("Không có lịch hẹn sắp tới nào!");
       }
     } catch (error) {
       console.log(error);
       toast.error("Có lỗi xảy ra khi lấy lịch hẹn theo trạng thái!");
+    }
+  };
+
+  const amountPaymentDoctors = async (doctorId) => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/doctor/get-amount-dashboard-doctor/${doctorId}`, {});
+
+      if (data.success) {
+        setMoneys(data.data);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error.response?.data?.message || error.message);
+    }
+  };
+
+  const countPatients = async (doctorId) => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/patient/get-patient-dashboard-doctor/${doctorId}`, {});
+
+      if (data.success) {
+        setCountPatients(data.data);
+      } else {
+        console.log(data.message);
+      }
+    } catch (error) {
+      console.log(error.response?.data?.message || error.message);
     }
   };
   
@@ -319,7 +349,13 @@ const DoctorContextProvider = (props) => {
     showUpcomingAppointments,
     appointmentStatus,
     setAppointmentStatus,
-    getAppointmentsByStatus
+    getAppointmentsByStatus,
+    moneys,
+    setMoneys,
+    amountPaymentDoctors,
+    patients,
+    setCountPatients,
+    countPatients
   };
 
   return (
