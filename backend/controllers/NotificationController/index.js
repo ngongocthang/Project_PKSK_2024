@@ -3,6 +3,9 @@ const Notification = require("../../models/Notification");
 const Doctor = require("../../models/Doctor");
 const Patient = require("../../models/Patient");
 const Appointment = require("../../models/Appointment");
+const Appointment_history = require("../../models/Appointment_history");
+const Payment = require("../../models/Payment");
+const Schedule = require("../../models/Schedule");
 
 const createNotification = async (req, res) => {
   try {

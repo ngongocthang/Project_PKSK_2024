@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const Role = require("../../models/Role");
 const User = require("../../models/User");
 const UserRole = require("../../models/User_role");
-const Doctor = require("../../models/Patient");
+const Doctor = require("../../models/Doctor");
 const validatePatient = require("../../requests/validatePatient");
 const validateUpdatePatient = require("../../requests/validateUpdatePatientDashboard");
 const Patient = require("../../models/Patient");
@@ -261,6 +261,34 @@ const getPatientById = async (req, res) => {
   }
 };
 
+const countPatientDashboardDoctor = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const doctor = await Doctor.findOne({user_id: id});
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+    // Tìm tất cả các lịch hẹn có trạng thái 'completed'
+    const completedAppointments = await Appointment.find({ doctor_id: doctor._id, status: 'completed' })
+      .populate('patient_id'); // Lấy thông tin bệnh nhân từ patient_id
+
+    // Lấy danh sách bệnh nhân từ các lịch hẹn đã hoàn thành
+    const patients = completedAppointments.map(appointment => appointment.patient_id);
+
+    // Loại bỏ các bệnh nhân trùng lặp
+    const uniquePatients = [...new Map(patients.map(patient => [patient._id, patient])).values()];
+
+    if (uniquePatients.length > 0) {
+      return res.status(200).json({ success: true, data: uniquePatients });
+    } else {
+      return res.status(400).json({ message: "No patients with completed appointments found." });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
 module.exports = {
   createPatient,
   countPatient,
@@ -270,5 +298,6 @@ module.exports = {
   profilePatient,
   updateProfilePatient,
   getPatientById,
-  findAllPatient
+  findAllPatient,
+  countPatientDashboardDoctor
 };

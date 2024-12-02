@@ -4,15 +4,16 @@ const User = require("../../models/User");
 const UserRole = require("../../models/User_role");
 const Doctor = require("../../models/Doctor");
 const Patient = require("../../models/Patient");
+const Payment = require("../../models/Payment");
 const cloudinary = require("cloudinary").v2;
 const validateDoctor = require("../../requests/validateDoctor");
 const Appointment = require("../../models/Appointment");
 const Notification = require("../../models/Notification");
+const Schedule = require("../../models/Schedule");
 const validateUpdateDoctor = require("../../requests/validateUpdateProfileDoctor");
 const transporter = require("../../helpers/mailer-config");
 const moment = require("moment");
 require("moment/locale/vi");
-
 
 //{ key: value } là một đtuong trong js, thường dùng để crud
 /*
@@ -79,23 +80,57 @@ const createDoctor = async (req, res) => {
   }
 };
 
+// const findAllDoctor = async (req, res) => {
+//   try {
+//     const doctors = await Doctor.find({})
+//       .populate("user_id")
+//       .populate("specialization_id");
+
+//     if (doctors) {
+//       return res.status(200).json({ success: true, doctors });
+//     } else {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Doctors not found." });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ success: false, message: error.message });
+//   }
+// };
 const findAllDoctor = async (req, res) => {
   try {
+    // Lấy danh sách bác sĩ
     const doctors = await Doctor.find({})
       .populate("user_id")
       .populate("specialization_id");
 
-    if (doctors) {
-      return res.status(200).json({ success: true, doctors });
-    } else {
-      return res
-        .status(404)
-        .json({ success: false, message: "Doctors not found." });
-    }
+    // Lấy lịch làm việc cho tất cả bác sĩ
+    const schedules = await Schedule.find({
+      doctor_id: { $in: doctors.map(doctor => doctor._id) }
+    });
+
+    // Ghép lịch làm việc vào thông tin bác sĩ
+    const doctorsWithSchedules = doctors.map(doctor => {
+      const doctorSchedules = schedules.filter(schedule => 
+        schedule.doctor_id.toString() === doctor._id.toString()
+      ).map(schedule => ({
+        work_date: schedule.work_date,
+        work_shift: schedule.work_shift
+      }));
+
+      return {
+        ...doctor.toObject(), // Chuyển đổi bác sĩ thành đối tượng đơn giản
+        schedules: doctorSchedules // Thêm lịch làm việc vào bác sĩ
+      };
+    });
+
+    return res.status(200).json({ success: true, doctors: doctorsWithSchedules });
+    
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 const findDoctor = async (req, res) => {
   try {
@@ -535,25 +570,47 @@ const getAppointmentConfirmByDoctor = async (req, res) => {
     const { id } = req.params;
     const doctor = await Doctor.findOne({ user_id: id });
     if (!doctor) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Doctor not found" });
+      return res.status(404).json({ success: false, message: "Doctor not found" });
     }
+
+    // Lấy work_date từ req.body
+    const workDate = new Date(req.body.work_date);
+    const startOfDay = new Date(workDate.setUTCHours(0, 0, 0, 0));
+    const endOfDay = new Date(workDate.setUTCHours(23, 59, 59, 999));
+
     const appointments = await Appointment.find({
       doctor_id: doctor._id,
       status: "confirmed",
-      work_date: req.body.work_date,
+      work_date: { $gte: startOfDay, $lte: endOfDay },
       work_shift: req.body.work_shift,
     }).populate({
       path: "patient_id",
       populate: { path: "user_id", select: "name" },
     });
-    if (!appointments) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No appointments found" });
+
+    if (!appointments || appointments.length === 0) {
+      return res.status(404).json({ success: false, message: "No appointments found" });
     }
-    return res.status(200).json({ success: true, data: appointments });
+
+    // Lấy thông tin thanh toán cho các cuộc hẹn
+    const appointmentIds = appointments.map((appointment) => appointment._id);
+    const payments = await Payment.find({
+      appointment_id: { $in: appointmentIds },
+    });
+
+    // Tạo một đối tượng để lưu trạng thái thanh toán theo appointment_id
+    const paymentStatusMap = {};
+    payments.forEach((payment) => {
+      paymentStatusMap[payment.appointment_id] = payment.status;
+    });
+
+    // Thêm trạng thái thanh toán vào từng cuộc hẹn
+    const result = appointments.map((appointment) => ({
+      ...appointment.toObject(),
+      paymentStatus: paymentStatusMap[appointment._id] || "false",
+    }));
+
+    return res.status(200).json({ success: true, data: result });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -610,25 +667,61 @@ const searchPatient = async (req, res) => {
   try {
     const results = await Appointment.find()
       .populate({
-        path: 'patient_id',
+        path: "patient_id",
         populate: {
-          path: 'user_id',
-          match: { name: { $regex: query, $options: 'i' } },
-          select: 'name'
-        }
+          path: "user_id",
+          match: { name: { $regex: query, $options: "i" } },
+          select: "name",
+        },
       })
       .exec();
 
     // Lọc kết quả để chỉ lấy những bệnh nhân có tên phù hợp
-    const filteredResults = results.filter(appointment => appointment.patient_id && appointment.patient_id.user_id);
+    const filteredResults = results.filter(
+      (appointment) => appointment.patient_id && appointment.patient_id.user_id
+    );
 
     if (filteredResults.length <= 0) {
-      return res.status(404).json({ success: false, message: "Patient not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Patient not found" });
     }
 
     res.json({ success: true, data: filteredResults });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// sum amount money
+const sumAmountMoney = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const doctor = await Doctor.findOne({user_id: id}); 
+    if (!doctor) {
+      return res.status(404).json({ success: false, message: "Doctor not found" });
+    }
+
+    const appointments = await Appointment.find({ doctor_id: doctor._id });
+    if (appointments.length <= 0) {
+      return res.status(404).json({ success: false, message: "Appointment not found" });
+    }
+
+    // Lấy tất cả các ID của các cuộc hẹn
+    const appointmentIds = appointments.map(appointment => appointment._id);
+
+    // Tìm tất cả các thanh toán liên quan đến các cuộc hẹn
+    const payments = await Payment.find({ appointment_id: { $in: appointmentIds } });
+
+    // Tính tổng số tiền
+    const totalAmount = payments.reduce((sum, payment) => sum + payment.amount, 0);
+
+    // Trả về kết quả
+    return res.status(200).json({ success: true, data: totalAmount });
+    
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -648,4 +741,5 @@ module.exports = {
   getAppointmentConfirmByDoctor,
   completeApointment,
   searchPatient,
+  sumAmountMoney
 };

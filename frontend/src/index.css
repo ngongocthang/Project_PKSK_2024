@@ -93,3 +93,24 @@
     padding: 1rem; /* Khoảng cách bên trong */
     background-color: #fff; /* Nền trắng */
   }
+
+  .appointments-container {
+    max-height: 555px; /* Chiều cao tối đa */
+    overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
+    scrollbar-width: thin; /* Thanh cuộn mỏng (Firefox) */
+    scrollbar-color: gray #f0f0f0; /* Màu thanh cuộn (Firefox) */
+  }
+  
+  .appointments-container::-webkit-scrollbar {
+    width: 8px; /* Độ rộng thanh cuộn */
+  }
+  
+  .appointments-container::-webkit-scrollbar-thumb {
+    background-color: gray; /* Màu thanh cuộn */
+    border-radius: 4px; /* Góc tròn */
+  }
+  
+  .appointments-container::-webkit-scrollbar-track {
+    background: #f0f0f0; /* Màu nền track */
+  }
+  
