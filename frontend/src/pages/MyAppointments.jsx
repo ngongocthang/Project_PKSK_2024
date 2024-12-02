@@ -105,7 +105,6 @@ const MyAppointments = () => {
         navigate("/account");
         return;
       }
-
       try {
         const response = await axios.put(
           `http://localhost:5000/cancel-appointment/${appointmentId}`,
@@ -213,7 +212,8 @@ const MyAppointments = () => {
           appointments.map((appointment) => (
             <div
               className="grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-2 border-b"
-              key={appointment._id}>
+              key={appointment._id}
+            >
               <div>
                 <img
                   className="w-32 bg-indigo-50"
@@ -317,8 +317,8 @@ const MyAppointments = () => {
                   Hủy cuộc hẹn
                 </button>
               </div>
-              </div>
-          ))
+          </div>
+            ))
         )}
         {error && (
           <div

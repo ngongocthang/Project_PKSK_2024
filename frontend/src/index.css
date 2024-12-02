@@ -93,7 +93,6 @@
     padding: 1rem; /* Khoảng cách bên trong */
     background-color: #fff; /* Nền trắng */
   }
-
   .appointments-container {
     max-height: 555px; /* Chiều cao tối đa */
     overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
