@@ -21,7 +21,7 @@ const App = () => {
     <div className="min-h-screen flex flex-col">
       <div className="flex-grow mx-4 sm:mx-[10%]">
         <Marquee className="marquee-text py-1 font-medium bg-gray-50">
-          Phòng khám mở cửa vào các khung giờ: Sáng 8h00 đến 11h30 và Chiều 13h30 đến 18h00. Xin hãy đến trước 15 phút. Cảm ơn quý khách!
+          Phòng khám mở cửa vào các khung giờ: Sáng 7h30 đến 11h30 và Chiều 13h30 đến 18h00. Xin hãy đến trước 15 phút. Cảm ơn quý khách!
         </Marquee>
         <Navbar />
         <Routes>

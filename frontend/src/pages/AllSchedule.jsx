@@ -188,7 +188,7 @@ const AllSchedule = () => {
                           alt={doctorName}
                           className="w-8 h-8 rounded-full mr-2"
                         />
-                        {doctorName}  {" "} (Chuyên khoa: {specialization})
+                        {doctorName}  {" "} ({specialization})
                       </div>
                     );
                   },

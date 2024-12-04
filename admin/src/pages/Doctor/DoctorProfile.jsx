@@ -98,28 +98,28 @@ const DoctorProfile = () => {
       const doctorInfo = JSON.parse(sessionStorage.getItem("doctorInfo"));
       const doctorId = doctorInfo ? doctorInfo.id : null;
       const updatedData = new FormData();
-  
+
       // Thêm tất cả các trường vào FormData
       updatedData.append("name", formData.name || "");
       updatedData.append("email", formData.email || "");
       updatedData.append("phone", formData.phone || "");
       updatedData.append("description", formData.description || "");
-  
+
       // Gửi giá trị price mà không cần loại bỏ dấu chấm
       updatedData.append("price", formData.price || "0");
       updatedData.append("available", formData.available ? "true" : "false");
-  
+
       // Chỉ thêm hình ảnh nếu có ảnh mới được chọn
       if (selectedImage) {
         updatedData.append("image", selectedImage);
       }
-  
+
       // Chỉ thêm mật khẩu nếu có
       if (newPassword) {
         updatedData.append("oldPassword", oldPassword || "");
         updatedData.append("newPassword", newPassword);
       }
-  
+
       const { data } = await axios.put(
         `${backendUrl}/doctor/update-profile/${doctorId}`,
         updatedData,
@@ -130,7 +130,7 @@ const DoctorProfile = () => {
           },
         }
       );
-  
+
       if (data.success) {
         toast.success(data.message);
         setIsEdit(false);
@@ -144,7 +144,7 @@ const DoctorProfile = () => {
       setLoading(false);
     }
   };
-  
+
 
   // Cancel changes
   const handleCancel = () => {
@@ -171,7 +171,7 @@ const DoctorProfile = () => {
       (newPassword && !oldPassword)
     );
   };
-  
+
   const formatPrice = (price) => {
     if (isNaN(price)) return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -190,8 +190,8 @@ const DoctorProfile = () => {
                   previewImage
                     ? previewImage
                     : selectedImage
-                    ? URL.createObjectURL(selectedImage)
-                    : profileData.doctorProfile.image
+                      ? URL.createObjectURL(selectedImage)
+                      : profileData.doctorProfile.image
                 }
                 alt="Profile"
               />
@@ -247,9 +247,36 @@ const DoctorProfile = () => {
                   {profileData.doctorProfile.name}
                 </h2>
               )}
-              <p className="text-gray-500 text-sm mt-2">
-                Khoa: {profileData.doctorProfile.specialization_id.name}
-              </p>
+              <div className="flex items-center justify-between mt-2 text-sm text-gray-500">
+                <div className="flex items-center justify-between mt-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-4">
+                    <p>
+                      Khoa: {profileData.doctorProfile.specialization_id.name}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        onChange={() =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            available: !prev.available,
+                          }))
+                        }
+                        checked={formData.available}
+                        type="checkbox"
+                        name="available"
+                        id="available-checkbox"
+                        className={`cursor-pointer h-4 w-4 rounded 
+                        ${isEdit ? "border-blue-500 focus:ring-green-500" : "bg-green-500 border-none"}`}
+                        disabled={!isEdit} 
+                      />
+                      <label htmlFor="available-checkbox" className="cursor-pointer">
+                        Available
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
 
@@ -387,13 +414,13 @@ const DoctorProfile = () => {
               </div>
             )}
 
-            <div className="flex gap-1 pt-2">
+            {/* <div className="flex gap-1 pt-2">
               <input
                 onChange={() => {
                   if (isEdit) {
                     setFormData((prev) => ({
                       ...prev,
-                      available: !prev.available, // Cập nhật trạng thái available
+                      available: !prev.available, 
                     }));
                   }
                 }}
@@ -403,18 +430,17 @@ const DoctorProfile = () => {
                 id=""
               />
               <label htmlFor="">Available</label>
-            </div>
+            </div> */}
 
             <div className="flex justify-center space-x-2">
               {isEdit ? (
                 <>
                   <button
                     onClick={updateProfile}
-                    className={`px-4 py-2 rounded-md ${
-                      loading || isUpdateDisabled()
-                        ? "bg-gray-300 text-black disabled-button"
-                        : "bg-[#219c9e] text-white"
-                    }`}
+                    className={`px-4 py-2 rounded-md ${loading || isUpdateDisabled()
+                      ? "bg-gray-300 text-black disabled-button"
+                      : "bg-[#219c9e] text-white"
+                      }`}
                     disabled={loading || isUpdateDisabled()}
                   >
                     {loading ? "Cập nhật..." : "Cập nhật"}

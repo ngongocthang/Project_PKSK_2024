@@ -185,7 +185,9 @@ const MyAppointments = () => {
     const appointment = appointments.find((appt) => appt._id === appointmentId);
 
     if (appointment.status !== "canceled") {
-      toast.error("Bạn chỉ có thể xóa cuộc hẹn đã được hủy.");
+      if (!toast.isActive(toastId.current)) {
+        toastId.current = toast.error("Bạn chỉ có thể xóa cuộc hẹn đã được hủy.");
+      }
       return;
     }
 
@@ -312,19 +314,18 @@ const MyAppointments = () => {
                 <p className="text-xs mt-1">
                   <span className="text-sm text-neutral-700 font-medium">Trạng thái:</span>{" "}
                   <span
-                    className={`${
-                      appointment.status === "pending"
+                    className={`${appointment.status === "pending"
                         ? "text-yellow-500"
                         : appointment.status === "confirmed"
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
                   >
                     {appointment.status === "pending"
                       ? "Đang chờ"
                       : appointment.status === "confirmed"
-                      ? "Đã xác nhận"
-                      : "Đã hủy"}
+                        ? "Đã xác nhận"
+                        : "Đã hủy"}
                   </span>
                 </p>
                 <p className="text-xs mt-1">
@@ -339,11 +340,10 @@ const MyAppointments = () => {
                 <p className="text-xs mt-1">
                   <span className="text-sm text-neutral-700 font-medium">Trạng thái thanh toán:</span>{" "}
                   <span
-                    className={`${
-                      appointment.paymentStatus
+                    className={`${appointment.paymentStatus
                         ? "text-green-500"
                         : "text-yellow-500"
-                    }`}
+                      }`}
                   >
                     {appointment.paymentStatus ? "Đã thanh toán" : "Chưa thanh toán"}
                   </span>
@@ -355,12 +355,11 @@ const MyAppointments = () => {
                   onClick={() =>
                     handlePayment(appointment._id, appointment.doctor_id.price)
                   }
-                  className={`text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded transition-all duration-300 ${
-                    !appointment.paymentStatus &&
-                    appointment.status === "confirmed"
+                  className={`text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded transition-all duration-300 ${!appointment.paymentStatus &&
+                      appointment.status === "confirmed"
                       ? "hover:bg-primary hover:text-white"
                       : "bg-gray-300 cursor-not-allowed"
-                  }`}
+                    }`}
                   disabled={
                     appointment.status !== "confirmed" ||
                     appointment.paymentStatus
