@@ -90,7 +90,7 @@ const ConfirmAppointments = () => {
 
 
   return (
-    <div className="w-full max-w-6xl m-5 shadow-lg">
+    <div className="w-full max-w-6xl m-5">
       <div className="flex justify-between items-center mb-3">
         <p className="text-lg font-medium text-gray-700">Xác nhận khám bệnh</p>
         <div className="space-x-4">
@@ -126,7 +126,7 @@ const ConfirmAppointments = () => {
                 <th className="py-2 px-4 font-bold text-center text-[16px]">
                   Ca khám
                 </th>
-                <th className="py-2 px-4 font-bold text-center text-[16px]">
+                <th className="py-2 px-4 font-bold text-center text-[16px] cursor-pointer">
                   Xác nhận
                 </th>
               </tr>

@@ -226,7 +226,7 @@ const DoctorProfile = () => {
               {isEdit ? (
                 <>
                   <label className="block text-gray-700 font-bold mb-1">
-                    Phone:
+                    Số điện thoại:
                   </label>
                   <input
                     type="tel"

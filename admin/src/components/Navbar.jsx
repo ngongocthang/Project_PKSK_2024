@@ -16,6 +16,7 @@ const Navbar = () => {
 
   // Trạng thái modal (hiển thị thông báo)
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
 
   // Hàm đăng xuất
@@ -30,6 +31,11 @@ const Navbar = () => {
   // Hàm mở/đóng modal
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
+  };
+
+  // Hàm chuyển đổi giữa "Tất cả" và "Thu gọn"
+  const toggleNotificationView = () => {
+    setShowAllNotifications(!showAllNotifications);
   };
 
   // Lấy thông báo từ API
@@ -165,6 +171,7 @@ const Navbar = () => {
         {/* Nút Đăng xuất */}
         <button onClick={logout} className="bg-[#0091a1] text-white text-sm px-5 py-2 rounded-full">
           <span className="hidden md:inline">Đăng xuất</span>
+          <i className="fa-solid fa-right-from-bracket mx-2"></i>
         </button>
       </div>
 
@@ -183,7 +190,7 @@ const Navbar = () => {
                 <div className="h-80 overflow-y-auto">
                   {Object.keys(groupedNotifications).map((time) => (
                     <div key={time}>
-                      <h4 className="font-semibold text-gray-600 mt-4">
+                      <h4 className="font-semibold text-sm text-gray-500 mt-4">
                         {/* Hiển thị thời gian thay vì ngày */}
                         {formatTime(time)}
                       </h4>
@@ -194,7 +201,7 @@ const Navbar = () => {
                             className={`py-3 px-4 border-b border-black-200 flex items-start gap-2 hover:bg-blue-50 cursor-pointer ${!notification.isRead ? "font-semibold bg-gray-100" : ""}`}
                             onClick={() => markAsRead(notification._id)}
                           >
-                            <BellIcon className="w-10 pt-0.5 md:w-5 text-black" />
+                            <i class="fa-regular fa-bell mt-1"></i>
                             <p className="md:text-base text-sm text-gray-800">{notification.content}</p>
                           </li>
                         ))}
@@ -205,6 +212,15 @@ const Navbar = () => {
               ) : (
                 <p className="text-gray-500">Không có thông báo mới.</p>
               )}
+
+              <div className="mt-4">
+                <button
+                  onClick={toggleNotificationView}
+                  className="text-blue-500 text-sm"
+                >
+                  {showAllNotifications ? "Thu gọn" : "Tất cả"}
+                </button>
+              </div>
             </div>
           </div>
         </div>

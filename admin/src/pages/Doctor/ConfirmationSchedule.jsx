@@ -75,39 +75,85 @@ const ConfirmationSchedule = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl m-5 shadow-lg">
-      <p className="mb-4 text-lg font-medium">Các lịch hẹn chờ xác nhận:</p>
+    <div className='w-full max-w-6xl m-5'>
+      <p className='mb-4 text-lg font-medium'>Các lịch hẹn chờ xác nhận:</p>
+      <div className='bg-white border rounded-xl text-sm max-h-[80vh] min-h-[50vh] overflow-y-auto'>
 
-      <div className="bg-white border rounded text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-gray-200 text-center">
-              <th className="py-2 px-4 font-bold text-[16px]">#</th>
-              <th className="py-2 px-4 font-bold text-[16px]">Bệnh nhân</th>
-              <th className="py-2 px-4 font-bold text-[16px]">Ngày khám</th>
-              <th className="py-2 px-4 font-bold text-[16px]">Ca khám</th>
-              <th className="py-2 px-4 font-bold text-[16px]">Hành động</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentAppointments.length > 0 ? (
-              currentAppointments.map((item, index) => (
-                <tr key={item._id} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 text-center font-medium text-[16px]">
-                    {index + 1 + (currentPage - 1) * appointmentsPerPage}
-                  </td>
-                  <td className="py-3 px-4 text-center font-medium text-[16px]">{item.patient_id.user_id.name}</td>
-                  <td className="py-3 px-4 text-center font-medium text-[16px]">{formatDate(item.work_date)}</td>
-                  <td className="py-3 px-4 text-center">
-                    <div className="flex items-center justify-center">
-                      <p
-                        className={`py-1 px-4 rounded-full text-white text-base font-semibold w-[138px] ${item.work_shift === 'afternoon' ? 'bg-orange-300' : 'bg-blue-300'
-                          }`}
-                      >
-                        {item.work_shift === 'morning' ? 'Sáng' : 'Chiều'}
-                      </p>
-                    </div>
-                  </td>
+        {/* Header Row */}
+        <div className='hidden md:grid grid-cols-[0.5fr_2fr_2fr_2fr_1fr] gap-4 py-4 px-6 bg-gray-200 border-b text-center'>
+          <p className='font-bold text-[16px]'>#</p>
+          <p className='font-bold text-[16px]'>Bệnh nhân</p>
+          <p className='font-bold text-[16px]'>Ngày khám</p>
+          <p className='font-bold text-[16px]'>Ca khám</p>
+          <p className='font-bold text-[16px] justify-self-end'>Hành động</p>
+        </div>
+
+        {/* Appointment Rows */}
+        {currentAppointments.length > 0 ? (
+          currentAppointments.map((item, index) => (
+            <div
+              className='border-b hover:bg-gray-50 p-4 md:p-1'
+              key={item._id}
+            >
+              <div className='md:grid md:grid-cols-[0.5fr_2fr_2fr_2fr_1fr] items-center gap-4'>
+                <p className='text-center font-bold md:col-span-1'>{index + 1 + (currentPage - 1) * appointmentsPerPage}</p>
+
+                {/* Mobile-friendly stacking */}
+                <div className='flex flex-col gap-1 md:gap-0'>
+                  <p className='text-base text-center md:text-center font-medium md:font-normal'>
+                    <span className="md:hidden font-semibold">Bệnh nhân: </span>
+                    {item.patient_id.user_id.name}
+                  </p>
+                  <div className='md:hidden'>
+                    <p className='text-sm py-2 font-semibold'>Ngày khám: {formatDate(item.work_date)}</p>
+                    {/* <p>{formatDate(item.work_date)}</p> */}
+                  </div>
+                  <div className='md:hidden flex items-center'>
+                    <p className='text-sm font-semibold'>Ca khám:</p>
+                    <p
+                      className={`py-0 ml-1 p-2 md:py-1 rounded-full text-white text-sm text-center max-w-[100px] 
+                      ${item.work_shift === "afternoon" ? "bg-orange-300" : "bg-blue-300"} shadow-lg max-w-[70px] w-full`}
+                    >
+                      {item.work_shift === "morning" ? "Sáng" : "Chiều"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Desktop-specific layout */}
+                <p className='text-base text-center hidden md:block'>
+                  {formatDate(item.work_date)}
+                </p>
+
+                {/* Updated 'Ca khám' with centered text */}
+                <div className='flex justify-center items-center'>
+                  <p
+                    className={`py-1 rounded-full text-white text-sm text-center max-w-[100px] hidden md:block 
+                    ${item.work_shift === "afternoon" ? "bg-orange-300" : "bg-blue-300"} shadow-lg max-w-[100px] w-full`}
+                  >
+                    {item.work_shift === "morning" ? "Sáng" : "Chiều"}
+                  </p>
+                </div>
+
+
+                {/* Action Buttons */}
+                <div className='flex flex-row gap-2 md:gap-3 justify-center md:justify-end'>
+                  {/* Mobile-friendly text buttons */}
+                  <div className="md:hidden flex gap-2 mt-5">
+                    <button
+                      onClick={() => completeAppointment(item._id)}
+                      className='bg-green-500 text-white px-3 py-1 rounded-md shadow-md'
+                    >
+                      Xác nhận
+                    </button>
+                    <button
+                      onClick={() => cancelAppointment(item._id)}
+                      className='bg-red-500 text-white px-3 py-1 rounded-md shadow-md'
+                    >
+                      Hủy
+                    </button>
+                  </div>
+
+                  {/* Desktop SVG icons */}
                   <td className="py-3 px-4 text-center">
                     <div className="flex justify-center gap-3">
                       {loadingId === item._id ? (
@@ -146,26 +192,23 @@ const ConfirmationSchedule = () => {
                       )}
                     </div>
                   </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="py-3 text-center text-gray-500">
-                  Không có lịch hẹn nào chờ được xác nhận.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className='text-gray-500 py-3 px-1 text-center'>Không có lịch hẹn nào chờ được xác nhận.</p>
+        )}
       </div>
 
+      {/* Pagination */}
       {pendingAppointments.length > appointmentsPerPage && (
         <div className="flex justify-center mt-4">
           {Array.from({ length: totalPages }, (_, index) => (
             <button
               key={index + 1}
               onClick={() => paginate(index + 1)}
-              className={`px-4 py-2 ${currentPage === index + 1 ? 'bg-[#219c9e] text-white' : 'bg-gray-200'} rounded-md mx-1 hover:bg-[#0091a1] hover:text-white`}
+              className={`px-4 py-2 ${currentPage === index + 1 ? 'bg-[#219c9e] text-white' : 'bg-gray-200'} rounded-md mx-1 hover:bg-[#0091a1]`}
             >
               {index + 1}
             </button>

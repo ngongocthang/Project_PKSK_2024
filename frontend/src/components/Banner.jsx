@@ -20,7 +20,7 @@ const Banner = () => {
             {/* ----- Left Side ----- */}
             <div 
                 className='flex-1 py-8 sm:py-10 md:py-16 lg:py-24 lg:pl-5 flex flex-col justify-center items-start' 
-                data-aos="fade-left"
+                data-aos="fade-right"
             >
                 <div className='text-xl sm:text-2xl md:text-3xl lg:text-5xl font-semibold text-[#00759c]'>
                     <p className='ml-0 md:ml-[-20px]'>Đặt lịch hẹn</p>

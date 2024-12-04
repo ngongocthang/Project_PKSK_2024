@@ -146,34 +146,24 @@ const DoctorsList = () => {
 
   return (
     <div className="m-5 max-h-[90vh] overflow-y-scroll">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold text-[#0091a1]">Tất cả bác sĩ</h1>
-        <div className="flex items-center shadow-lg">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+        <h1 className='md:text-3xl text-xl font-bold text-[#0091a1] text-center md:text-left mb-4 md:mb-0'>
+          Tất cả bác sĩ
+        </h1>
+        <div className="flex items-center shadow-lg w-full md:w-auto">
           <select
             value={selectedSpecialization}
             onChange={(e) => {
               setSelectedSpecialization(e.target.value);
               // Cập nhật URL khi người dùng chọn chuyên khoa, nhưng không có tham số page
-              navigate(
-                `/doctor-list${e.target.value ? `/${convertToSlug(e.target.value)}` : ""
-                }`
-              );
+              navigate(`/doctor-list${e.target.value ? `/${convertToSlug(e.target.value)}` : ''}`);
             }}
-            className="px-5 py-3 rounded-lg bg-white text-gray-800 border border-gray-300 transition-all duration-300 shadow-non focus:outline-none hover:border-blue-400"
+            className="px-5 py-3 rounded-lg bg-white text-gray-800 border border-gray-300 transition-all duration-300 shadow-non focus:outline-none hover:border-blue-400 w-full md:w-auto"
           >
-            <option value="" className="text-gray-500">
-              Chọn chuyên khoa
-            </option>
-            {Array.isArray(specializations) &&
-              specializations.map((spec) => (
-                <option
-                  key={spec._id}
-                  value={spec.name}
-                  className="text-gray-700"
-                >
-                  {spec.name}
-                </option>
-              ))}
+            <option value="" className="text-gray-500">Chọn chuyên khoa</option>
+            {Array.isArray(specializations) && specializations.map(spec => (
+              <option key={spec._id} value={spec.name} className="text-gray-700">{spec.name}</option>
+            ))}
           </select>
         </div>
       </div>

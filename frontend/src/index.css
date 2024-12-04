@@ -122,3 +122,26 @@
   align-items: center;
   justify-content: center;
 }
+
+/* code chữ chạy đổi màu */
+.marquee-text {
+  font-size: 15px;
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+    color: #00759c;
+  }
+
+  50% {
+    opacity: 1;
+    color: darkorange;
+  }
+
+  100% {
+    opacity: 1;
+    color: #00759c;
+  }
+}

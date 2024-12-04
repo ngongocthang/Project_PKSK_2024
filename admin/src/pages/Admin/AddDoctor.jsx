@@ -114,7 +114,7 @@ const AddDoctor = () => {
   return (
     <form onSubmit={onSubmitHandler} className="m-5 w-full">
       <div className="flex justify-between items-center mb-4">
-        <p className="text-3xl font-bold text-[#0091a1]">Thêm bác sĩ</p>
+        <p className="md:text-3xl text-xl font-bold text-[#0091a1]">Thêm bác sĩ</p>
       </div>
       <div className="overflow-x-auto bg-white p-4 rounded-md shadow-md">
         <div className="flex items-center gap-4 mb-8 text-gray-500">
@@ -217,8 +217,8 @@ const AddDoctor = () => {
           </div>
         </div>
 
-        <div className="flex-1 flex flex-col gap-1">
-          <p className="mt-4 mb-2">Giới thiệu</p>
+        <div className="flex-1 flex flex-col gap-1 text-gray-500">
+          <p className="mt-4 mb-2 font-bold">Giới thiệu</p>
           <textarea
             onChange={(e) => setDescription(e.target.value)}
             value={description}

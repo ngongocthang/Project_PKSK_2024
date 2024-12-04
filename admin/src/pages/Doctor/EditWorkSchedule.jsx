@@ -63,12 +63,21 @@ const EditWorkSchedule = () => {
     }
   };
 
-  if (!schedule) return <p>Loading...</p>;
+  if (!schedule) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+        <p className="text-white text-xl text-center">
+          <i className="fa-solid fa-spinner animate-spin text-4xl"></i>
+          <p className="text-base">Đang tải...</p>
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-2xl mx-auto p-5">
-      <div className="bg-white p-8 rounded-lg shadow-lg" style={{ width: '480px' }}>
-        <h2 className="text-2xl font-semibold mb-5">
+    <div className="max-w-full md:max-w-2xl mx-auto p-5">
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-xl font-semibold mb-5 text-center">
           Chỉnh Sửa Lịch Làm Việc của Bác Sĩ
         </h2>
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -80,7 +89,7 @@ const EditWorkSchedule = () => {
               onChange={handleDateChange}
               dateFormat="dd/MM/yyyy"
               minDate={new Date()}
-              className="w-[415px] p-3 border rounded focus:outline-none focus:border-black"
+              className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
             />
           </div>
 
@@ -105,9 +114,8 @@ const EditWorkSchedule = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-3 mt-5 text-white rounded font-semibold flex items-center justify-center ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#219B9D] hover:bg-[#0091a1]"
-            }`}
+            className={`w-full py-3 mt-5 text-white rounded font-semibold flex items-center justify-center ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#219B9D] hover:bg-[#0091a1]"
+              }`}
             disabled={loading}
           >
             {loading ? (

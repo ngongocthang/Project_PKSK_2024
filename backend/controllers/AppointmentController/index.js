@@ -224,15 +224,15 @@ const patientCreateAppointment = async (req, res) => {
     }
 
     // Kiểm tra nếu đã hủy 2 lần trước đó
-    const canceledCount = await Appointment.countDocuments({
-      patient_id: patient._id,
-      work_date: req.body.work_date,
-      work_shift: req.body.work_shift,
-      status: "canceled",
-    });
-    if (canceledCount >= 2) {
-      return res.status(400).json({ message: "Bạn đã hủy lịch hẹn này hai lần, không thể đặt lại!" });
-    }
+    // const canceledCount = await Appointment.countDocuments({
+    //   patient_id: patient._id,
+    //   work_date: req.body.work_date,
+    //   work_shift: req.body.work_shift,
+    //   status: "canceled",
+    // });
+    // if (canceledCount >= 2) {
+    //   return res.status(400).json({ message: "Bạn đã hủy lịch hẹn này hai lần, không thể đặt lại!" });
+    // }
 
     // Xác định thời gian buổi sáng và buổi chiều
     const appointmentDate = new Date(req.body.work_date);
