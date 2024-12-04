@@ -252,7 +252,7 @@ const getdataMoneyDashboardAdmin = async (req, res) => {
 const getAllScheduleDoctor = async (req, res) => {
   try {
     // Lấy danh sách bác sĩ
-    const doctors = await Doctor.find({}).populate("user_id", "name image");
+    const doctors = await Doctor.find({}).populate("user_id", "name image").populate("specialization_id", "name"); ;
     if (!doctors || doctors.length === 0) {
       return res.status(404).json({ message: "Doctor not found" });
     }
@@ -281,6 +281,7 @@ const getAllScheduleDoctor = async (req, res) => {
         doctorId: doctor._id,
         doctorName: doctor.user_id.name,
         doctorImage: doctor.user_id.image,
+        specialization: doctor.specialization_id.name,
         schedules: doctorSchedules
       };
     });

@@ -31,6 +31,7 @@ const AllSchedule = () => {
           id: doctor.doctorId,
           doctorName: doctor.doctorName,
           doctorImage: doctor.doctorImage,
+          specialization: doctor.specialization,
         }));
 
         const mappedEvents = data.flatMap((doctor) =>
@@ -179,7 +180,7 @@ const AllSchedule = () => {
                   headerContent: "Bác sĩ",
                   field: "doctorName",
                   cellContent: (args) => {
-                    const { doctorImage, doctorName } = args.resource.extendedProps;
+                    const { doctorImage, doctorName, specialization } = args.resource.extendedProps;
                     return (
                       <div className="flex items-center">
                         <img
@@ -187,7 +188,7 @@ const AllSchedule = () => {
                           alt={doctorName}
                           className="w-8 h-8 rounded-full mr-2"
                         />
-                        {doctorName}
+                        {doctorName}  {" "} (Chuyên khoa: {specialization})
                       </div>
                     );
                   },

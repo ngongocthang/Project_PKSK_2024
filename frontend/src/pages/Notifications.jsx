@@ -72,39 +72,43 @@ const Notifications = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       if (!response.ok) throw new Error("Failed to mark notification as read");
-      setActiveMenu(null);
-
+  
       const updatedNotifications = notifications.map((notification) =>
         notification._id === id ? { ...notification, isRead: true } : notification
       );
       setNotifications(updatedNotifications);
-
-      // Giảm số lượng chưa đọc
-      setUnreadCount((prevCount) => {
-        const updatedCount = prevCount - 1;
-        localStorage.setItem("unreadCount", updatedCount);
-        return updatedCount;
-      });
+  
+      // Cập nhật số lượng thông báo chưa đọc
+      const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
+      setUnreadCount(unreadCount);
+      localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
-  };
+  };  
 
   // Ẩn thông báo
   const handleHide = async (notificationId) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification._id !== notificationId)
-    );
-
+    const hiddenNotification = notifications.find((n) => n._id === notificationId);
+    const updatedNotifications = notifications.filter((n) => n._id !== notificationId);
+    setNotifications(updatedNotifications);
+  
+    // Nếu thông báo bị ẩn chưa đọc, giảm số lượng chưa đọc
+    if (!hiddenNotification.isRead) {
+      const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
+      setUnreadCount(unreadCount);
+      localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
+    }
+  
     await fetch(`http://localhost:5000/notification/hide/${notificationId}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
-  };
+  };  
 
   // Xóa thông báo
   const handleDelete = async (notificationId) => {
@@ -113,18 +117,25 @@ const Notifications = () => {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       if (response.ok) {
-        setNotifications((prevNotifications) =>
-          prevNotifications.filter((notification) => notification._id !== notificationId)
-        );
+        const deletedNotification = notifications.find((n) => n._id === notificationId);
+        const updatedNotifications = notifications.filter((n) => n._id !== notificationId);
+        setNotifications(updatedNotifications);
+  
+        // Nếu thông báo bị xóa chưa đọc, giảm số lượng chưa đọc
+        if (!deletedNotification.isRead) {
+          const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
+          setUnreadCount(unreadCount);
+          localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
+        }
       } else {
         console.error("Could not delete notification on the server");
       }
     } catch (error) {
       console.error("Error deleting notification:", error);
     }
-  };
+  };  
 
   // Sắp xếp thông báo theo ngày tạo
   const sortedNotifications = notifications.sort(

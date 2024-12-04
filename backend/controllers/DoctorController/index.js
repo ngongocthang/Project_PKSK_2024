@@ -427,6 +427,109 @@ const getProfileDoctor = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+// const updateProfileDoctor = async (req, res) => {
+//   try {
+//     // Validate dữ liệu từ client
+//     const { error } = validateUpdateDoctor(req.body);
+//     if (error) {
+//       return res.status(400).json({ message: error.details[0].message });
+//     }
+
+//     const { id } = req.params;
+
+//     const doctor = await Doctor.findOne({ user_id: id }).populate(
+//       "specialization_id"
+//     );
+//     if (!doctor) {
+//       return res.status(400).json({ message: "Doctor not found" });
+//     }
+
+//     const user = await User.findOne({ _id: id });
+//     if (!user) {
+//       return res.status(400).json({ message: "User not found" });
+//     }
+//     // Kiểm tra mật khẩu cũ
+//     if (req.body.oldPassword) {
+//       const checkNewPassord = await bcrypt.compare(
+//         req.body.newPassword,
+//         user.password
+//       );
+//       if (checkNewPassord) {
+//         return res
+//           .status(400)
+//           .json({ message: "Mật khẩu mới không được giống mật sách cũ!" });
+//       }
+//       const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+//       if (!isMatch) {
+//         return res.status(400).json({ message: "Mật khẩu cũ không chính xác" });
+//       }
+//     }
+
+//     let hashedPassword = doctor.user_id.password;
+//     if (req.body.newPassword) {
+//       hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+//     }
+
+//     let imageUrl = doctor.user_id.image;
+
+//     if (req.file) {
+//       const base64Image = `data:${
+//         req.file.mimetype
+//       };base64,${req.file.buffer.toString("base64")}`;
+
+//       if (imageUrl) {
+//         const publicId = imageUrl.split("/").slice(-1)[0].split(".")[0];
+//         await cloudinary.uploader.destroy(`doctor/${publicId}`);
+//       }
+
+//       const result = await cloudinary.uploader.upload(base64Image, {
+//         folder: "doctor",
+//       });
+//       imageUrl = result.secure_url;
+//     }
+
+//     const updatedUser = await User.findOneAndUpdate(
+//       { _id: id },
+//       {
+//         name: req.body.name,
+//         email: req.body.email,
+//         password: hashedPassword,
+//         image: imageUrl,
+//         phone: req.body.phone,
+//       },
+//       { new: true }
+//     );
+//     if (!updatedUser) {
+//       return res
+//         .status(400)
+//         .json({ message: "Cập nhật hồ sơ không thành công" });
+//     }
+
+//     const updatedDoctor = await Doctor.findOneAndUpdate(
+//       { user_id: id },
+//       {
+//         specialization_id: req.body.specialization_id,
+//         description: req.body.description,
+//         price: req.body.price,
+//         available: req.body.available,
+//       },
+//       { new: true }
+//     );
+//     if (!updatedDoctor) {
+//       return res
+//         .status(400)
+//         .json({ message: "Cập nhật hồ sơ không thành công" });
+//     }
+
+//     return res
+//       .status(200)
+//       .json({ success: true, message: "Cập nhật hồ sơ thành công!" });
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
 const updateProfileDoctor = async (req, res) => {
   try {
     // Validate dữ liệu từ client
@@ -448,7 +551,8 @@ const updateProfileDoctor = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }
-    // Kiểm tra mật khẩu cũ
+
+    // Kiểm tra mật khẩu cũ (nếu có)
     if (req.body.oldPassword) {
       const checkNewPassord = await bcrypt.compare(
         req.body.newPassword,
@@ -457,7 +561,7 @@ const updateProfileDoctor = async (req, res) => {
       if (checkNewPassord) {
         return res
           .status(400)
-          .json({ message: "Mật khẩu mới không được giống mật sách cũ!" });
+          .json({ message: "Mật khẩu mới không được giống mật khẩu cũ!" });
       }
       const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
       if (!isMatch) {
@@ -470,24 +574,30 @@ const updateProfileDoctor = async (req, res) => {
       hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
     }
 
-    let imageUrl = doctor.user_id.image;
+    let imageUrl = user.image;
+    // console.log("imageUrl", imageUrl);
 
+    // Cập nhật ảnh nếu có file tải lên
     if (req.file) {
       const base64Image = `data:${
         req.file.mimetype
       };base64,${req.file.buffer.toString("base64")}`;
 
+      // Xóa ảnh cũ trên Cloudinary (nếu có)
       if (imageUrl) {
         const publicId = imageUrl.split("/").slice(-1)[0].split(".")[0];
+        // console.log("Xóa ảnh cũ với publicId:", publicId);
         await cloudinary.uploader.destroy(`doctor/${publicId}`);
       }
 
+      // Upload ảnh mới lên Cloudinary
       const result = await cloudinary.uploader.upload(base64Image, {
         folder: "doctor",
       });
       imageUrl = result.secure_url;
     }
 
+    // Cập nhật thông tin User
     const updatedUser = await User.findOneAndUpdate(
       { _id: id },
       {
@@ -505,6 +615,7 @@ const updateProfileDoctor = async (req, res) => {
         .json({ message: "Cập nhật hồ sơ không thành công" });
     }
 
+    // Cập nhật thông tin Doctor
     const updatedDoctor = await Doctor.findOneAndUpdate(
       { user_id: id },
       {
@@ -529,6 +640,7 @@ const updateProfileDoctor = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 const getTopDoctor = async (req, res) => {
   try {
     // Tìm tất cả các bác sĩ
