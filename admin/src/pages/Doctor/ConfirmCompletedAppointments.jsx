@@ -76,7 +76,7 @@ const ConfirmCompletedAppointments = () => {
   };
 
   const filteredAppointments = confirmedAppointments.filter((appointment) =>
-    appointment.patient_id.user_id.name
+    appointment.patient_id && appointment.patient_id.user_id && appointment.patient_id.user_id.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );

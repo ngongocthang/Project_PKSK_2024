@@ -265,7 +265,6 @@ const DoctorContextProvider = (props) => {
       if (data.length === 0) console.log("Không có lịch hẹn nào!");
     } catch (error) {
       console.error("Error fetching appointments:", error);
-      toast.error("Có lỗi xảy ra khi lấy lịch hẹn!");
     }
   };
 
@@ -283,7 +282,6 @@ const DoctorContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Có lỗi xảy ra khi lấy lịch hẹn theo trạng thái!");
     }
   };
 

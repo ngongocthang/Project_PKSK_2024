@@ -47,6 +47,7 @@ const SpecialtyList = () => {
                 <div className="flex justify-center gap-2">
                     <button
                         onClick={async () => {
+                            toast.dismiss(confirmToastId); // Đóng toast ngay lập tức khi nhấn xác nhận
                             try {
                                 const response = await axios.delete(
                                     `${VITE_BACKEND_URI}/specialization/delete/${id}`
@@ -61,7 +62,6 @@ const SpecialtyList = () => {
                                 console.error("Error deleting specialty:", error);
                                 toast.error("Có lỗi xảy ra khi xóa chuyên khoa!"); // Thông báo lỗi
                             }
-                            toast.dismiss(confirmToastId); // Đóng toast xác nhận
                         }}
                         className="bg-red-500 text-white px-3 py-1 rounded"
                     >

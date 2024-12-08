@@ -196,41 +196,49 @@ const PatientList = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {currentPatients.map((patient, index) => (
-                            <tr key={patient._id} className="hover:bg-gray-50">
-                                <td className="py-2 px-4 border-b text-sm font-semibold">{index + 1}</td>
-                                <td className="py-2 px-4 border-b text-center">{patient.user_id.name}</td>
-                                <td className="py-2 px-4 border-b text-center">{patient.user_id.email}</td>
-                                <td className="py-2 px-4 border-b text-center">{patient.user_id.phone}</td>
-                                <td className="py-2 px-4 border-b text-sm flex gap-2">
-                                    <svg
-                                        onClick={() => navigate(`/edit-patient/${patient._id}`)}
-                                        className="w-6 h-6 md:w-8 md:h-8 cursor-pointer text-blue-500 bg-blue-100 rounded-full p-1 md:p-2 transition-all shadow-lg"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M3.99 16.854l-1.314 3.504a.75.75 0 0 0 .966.965l3.503-1.314a3 3 0 0 0 1.068-.687L18.36 9.175s-.354-1.061-1.414-2.122c-1.06-1.06-2.122-1.414-2.122-1.414L4.677 15.786a3 3 0 0 0-.687 1.068zm12.249-12.63l1.383-1.383c.248-.248.579-.406.925-.348.487.08 1.232.322 1.934 1.025.703.703.945 1.447 1.025 1.934.058.346-.1.677-.348.925L19.774 7.76s-.353-1.06-1.414-2.12c-1.06-1.062-2.121-1.415-2.121-1.415z"
-                                            fill="#000000"
-                                        ></path>
-                                    </svg>
+                        {currentPatients && currentPatients.length > 0 ? (
+                            currentPatients.map((patient, index) => (
+                                <tr key={patient._id} className="hover:bg-gray-50">
+                                    <td className="py-2 px-4 border-b text-sm font-semibold">{index + 1}</td>
+                                    <td className="py-2 px-4 border-b text-center">{patient.user_id.name}</td>
+                                    <td className="py-2 px-4 border-b text-center">{patient.user_id.email}</td>
+                                    <td className="py-2 px-4 border-b text-center">{patient.user_id.phone}</td>
+                                    <td className="py-2 px-4 border-b text-sm flex gap-2">
+                                        <svg
+                                            onClick={() => navigate(`/edit-patient/${patient._id}`)}
+                                            className="w-6 h-6 md:w-8 md:h-8 cursor-pointer text-blue-500 bg-blue-100 rounded-full p-1 md:p-2 transition-all shadow-lg"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                d="M3.99 16.854l-1.314 3.504a.75.75 0 0 0 .966.965l3.503-1.314a3 3 0 0 0 1.068-.687L18.36 9.175s-.354-1.061-1.414-2.122c-1.06-1.06-2.122-1.414-2.122-1.414L4.677 15.786a3 3 0 0 0-.687 1.068zm12.249-12.63l1.383-1.383c.248-.248.579-.406.925-.348.487.08 1.232.322 1.934 1.025.703.703.945 1.447 1.025 1.934.058.346-.1.677-.348.925L19.774 7.76s-.353-1.06-1.414-2.12c-1.06-1.062-2.121-1.415-2.121-1.415z"
+                                                fill="#000000"
+                                            ></path>
+                                        </svg>
 
-                                    <svg
-                                        onClick={() => deletePatient(patient._id, patient.user_id.name)}
-                                        className="w-6 h-6 md:w-8 md:h-8 cursor-pointer text-red-500 bg-red-100 rounded-full p-1 md:p-2 transition-all shadow-lg"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z"
-                                            fill="#c42121"
-                                        ></path>
-                                    </svg>
+                                        <svg
+                                            onClick={() => deletePatient(patient._id, patient.user_id.name)}
+                                            className="w-6 h-6 md:w-8 md:h-8 cursor-pointer text-red-500 bg-red-100 rounded-full p-1 md:p-2 transition-all shadow-lg"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                d="M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z"
+                                                fill="#c42121"
+                                            ></path>
+                                        </svg>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5" className="py-40 px-38 text-center text-gray-500 bg-white">
+                                    Không có bệnh nhân nào
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
 
