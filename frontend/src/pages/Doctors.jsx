@@ -245,8 +245,8 @@ const Doctors = () => {
   return (
     <div>
       {isLoading ? (
-        <div className="flex justify-center items-center h-[80vh]">
-          <div className="flex flex-wrap gap-4">
+        <div className="flex justify-end items-center h-[80vh] mt-40">
+          <div className="flex flex-wrap gap-5">
             {[...Array(8)].map((_, index) => (
               <DoctorCardSkeleton key={index} />
             ))}
@@ -261,7 +261,7 @@ const Doctors = () => {
                 }`}
               onClick={() => setShowFilter((prev) => !prev)}
             >
-              Filters
+              Lọc chuyên khoa
             </button>
             <div
               className={`flex-col gap-4 text-[18px] text-gray-600 ${showFilter ? "flex" : "hidden sm:flex"
