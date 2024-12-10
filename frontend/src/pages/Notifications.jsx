@@ -76,7 +76,6 @@ const Notifications = () => {
       // Cập nhật số lượng thông báo chưa đọc
       const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
       setUnreadCount(unreadCount);
-      localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
