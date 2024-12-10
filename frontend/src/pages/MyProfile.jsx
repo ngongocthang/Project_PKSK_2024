@@ -8,44 +8,10 @@ import { AppContext } from "../context/AppContext";
 
 const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
 
-const ProfileSkeleton = () => {
-  return (
-    <div className="flex flex-col items-center justify-center mb-16">
-      <div className="max-w-2xl flex flex-col gap-2 text-sm bg-white shadow-lg rounded-lg p-6">
-        <div className="flex justify-center">
-          <div className="w-36 h-36 bg-gray-200 animate-pulse rounded-full" />
-        </div>
-        <div className="flex flex-col items-center mt-4">
-          <div className="bg-gray-200 animate-pulse h-6 w-1/2 rounded mb-2" />
-          <div className="bg-gray-200 animate-pulse h-4 w-3/4 rounded" />
-        </div>
-        <hr className="bg-zinc-400 h-[1px] border-none" />
-        <div className="pl-4">
-          <p className="text-neutral-500 underline mt-3 text-center">THÔNG TIN CHI TIẾT:</p>
-          <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
-            <div className="flex items-center">
-              <div className="bg-gray-200 animate-pulse h-4 w-1/4 rounded" />
-              <div className="bg-gray-200 animate-pulse h-4 w-3/4 rounded ml-2" />
-            </div>
-            <div className="flex items-center">
-              <div className="bg-gray-200 animate-pulse h-4 w-1/4 rounded" />
-              <div className="bg-gray-200 animate-pulse h-4 w-3/4 rounded ml-2" />
-            </div>
-            <div className="flex items-center mt-2">
-              <div className="bg-gray-200 animate-pulse h-4 w-1/4 rounded" />
-              <div className="bg-gray-200 animate-pulse h-4 w-3/4 rounded ml-2" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
 const MyProfile = () => {
   const navigate = useNavigate();
   const { user, setUser } = useContext(AppContext);
+  console.log("user", user);
   const [userData, setUserData] = useState({
     name: "",
     image: assets.profile_pic,
@@ -57,8 +23,10 @@ const MyProfile = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // State lưu trữ thông tin ban đầu khi bắt đầu chỉnh sửa
   const [originalData, setOriginalData] = useState({});
-  const [loading, setLoading] = useState(true); // Đặt trạng thái loading ban đầu là true
+  const [loading, setLoading] = useState(false); // Thêm trạng thái loading
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -94,8 +62,6 @@ const MyProfile = () => {
           toast.error("Token không hợp lệ, vui lòng đăng nhập lại.");
           navigate("/account");
         }
-      } finally {
-        setLoading(false); // Kết thúc quá trình tải
       }
     };
 
@@ -142,11 +108,12 @@ const MyProfile = () => {
       );
 
       toast.success(response.data.message);
-
+      
       const updatedUser = {
         ...user,
         name: userData.name,
         phone: userData.phone,
+        id: userIdObj.id || user._id,
       };
       setUser(updatedUser);
 
@@ -180,130 +147,126 @@ const MyProfile = () => {
 
   return (
     <div className="flex items-center justify-center mb-16">
-      {loading ? ( // Kiểm tra trạng thái loading
-        <ProfileSkeleton />
-      ) : (
-        <div className="max-w-lg flex flex-col gap-2 text-sm bg-white shadow-lg rounded-lg p-6">
-          <p className="text-lg text-center">Chào mừng, {userData.name}!</p>
-          <div className="flex items-center justify-center">
-            <img className="w-36 rounded" src={userData.image} alt="Profile" />
-          </div>
+      <div className="max-w-lg flex flex-col gap-2 text-sm bg-white shadow-lg rounded-lg p-6">
+        <p className="text-lg text-center">Chào mừng, {userData.name}!</p>
+        <div className="flex items-center justify-center">
+          <img className="w-36 rounded" src={userData.image} alt="Profile" />
+        </div>
 
-          {isEdit ? (
-            <div className="flex justify-center mt-4">
+        {isEdit ? (
+          <div className="flex justify-center mt-4">
+            <input
+              className="bg-gray-50 text-3xl font-medium max-w-60 text-center"
+              type="text"
+              value={userData.name}
+              onChange={(e) =>
+                setUserData((prev) => ({ ...prev, name: e.target.value }))
+              }
+            />
+          </div>
+        ) : (
+          <p className="font-medium text-3xl text-neutral-800 mt-4 text-center">
+            {userData.name}
+          </p>
+        )}
+
+        <hr className="bg-zinc-400 h-[1px] border-none" />
+
+        <div>
+          <p className="text-neutral-500 underline mt-3 text-center">THÔNG TIN CHI TIẾT:</p>
+          <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
+            <p className="font-medium text-gray-800 flex items-center">Email:</p>
+            {isEdit ? (
               <input
-                className="bg-gray-50 text-3xl font-medium max-w-60 text-center"
-                type="text"
-                value={userData.name}
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-[340px]"
+                type="email"
+                value={userData.email}
                 onChange={(e) =>
-                  setUserData((prev) => ({ ...prev, name: e.target.value }))
+                  setUserData((prev) => ({ ...prev, email: e.target.value }))
                 }
               />
-            </div>
-          ) : (
-            <p className="font-medium text-3xl text-neutral-800 mt-4 text-center">
-              {userData.name}
-            </p>
-          )}
-
-          <hr className="bg-zinc-400 h-[1px] border-none" />
-
-          <div className="pl-4">
-            <p className="text-neutral-500 underline mt-3 text-center">THÔNG TIN CHI TIẾT:</p>
-            <div className="grid grid-cols-[1fr_3fr] gap-y-2.5 mt-3 text-neutral-700">
-              <p className="font-medium text-gray-800 flex items-center">Email:</p>
-              {isEdit ? (
-                <input
-                  className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-[280px]"
-                  type="email"
-                  value={userData.email}
-                  onChange={(e) =>
-                    setUserData((prev) => ({ ...prev, email: e.target.value }))
-                  }
-                />
-              ) : (
-                <p className="text-gray-600">{userData.email}</p>
-              )}
-
-              <p className="font-medium mr-4 text-gray-800 flex items-center">Số điện thoại:</p>
-              {isEdit ? (
-                <input
-                  className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-[280px]"
-                  type="tel"
-                  value={userData.phone}
-                  onChange={(e) =>
-                    setUserData((prev) => ({ ...prev, phone: e.target.value }))
-                  }
-                />
-              ) : (
-                <p className="text-gray-600">{userData.phone}</p>
-              )}
-
-              {isEdit && (
-                <>
-                  <p className="font-medium text-gray-800 flex items-center">Mật khẩu mới:</p>
-                  <div className="relative flex items-center">
-                    <input
-                      className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-[280px]"
-                      type="text"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Nhập mật khẩu mới"
-                    />
-                  </div>
-                  {newPassword && (
-                    <>
-                      <p className="font-medium text-gray-800 flex items-center">Mật khẩu cũ:</p>
-                      <div className="relative flex items-center">
-                        <input
-                          className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-[280px]"
-                          type="text"
-                          value={oldPassword}
-                          onChange={(e) => setOldPassword(e.target.value)}
-                          placeholder="Nhập mật khẩu cũ"
-                        />
-                      </div>
-                    </>
-                  )}
-                  <small className="text-neutral-500 italic">
-                    Nhập mật khẩu cũ chỉ khi muốn đổi mật khẩu.
-                  </small>
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="flex justify-center gap-4 mt-4">
-            {isEdit ? (
-              <>
-                <button
-                  onClick={handleSave}
-                  className={`bg-blue-500 text-white py-2 px-4 rounded ${isSaveDisabled() ? "bg-gray-300 disabled-button" : ""
-                    }`}
-                  disabled={isSaveDisabled() || loading} // Disable khi loading
-                >
-                  {loading ? "Đang lưu..." : "Lưu"}
-                </button>
-                <button
-                  onClick={handleCancel}
-                  className="bg-gray-500 text-white py-2 px-4 rounded"
-                >
-                  Hủy
-                </button>
-              </>
             ) : (
-              <button
-                onClick={() => setIsEdit(true)}
-                className="bg-blue-500 text-white py-2 px-4 rounded"
-              >
-                Chỉnh sửa
-              </button>
+              <p className="text-gray-600">{userData.email}</p>
+            )}
+
+            <p className="font-medium mr-4 text-gray-800 flex items-center">Số điện thoại:</p>
+            {isEdit ? (
+              <input
+                className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 max-w-[340px]"
+                type="tel"
+                value={userData.phone}
+                onChange={(e) =>
+                  setUserData((prev) => ({ ...prev, phone: e.target.value }))
+                }
+              />
+            ) : (
+              <p className="text-gray-600">{userData.phone}</p>
+            )}
+
+            {isEdit && (
+              <>
+                <p className="font-medium text-gray-800 flex items-center">Mật khẩu mới:</p>
+                <div className="relative flex items-center">
+                  <input
+                    className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-[340px]"
+                    type="text"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Nhập mật khẩu mới"
+                  />
+                </div>
+                {newPassword && (
+                  <>
+                    <p className="font-medium text-gray-800 flex items-center">Mật khẩu cũ:</p>
+                    <div className="relative flex items-center">
+                      <input
+                        className="bg-white border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-[340px]"
+                        type="text"
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        placeholder="Nhập mật khẩu cũ"
+                      />
+                    </div>
+                  </>
+                )}
+                <small className="text-neutral-500 italic">
+                  Nhập mật khẩu cũ chỉ khi muốn đổi mật khẩu.
+                </small>
+              </>
             )}
           </div>
-
-          <ToastContainer />
         </div>
-      )}
+
+        <div className="flex justify-center gap-4 mt-4">
+          {isEdit ? (
+            <>
+              <button
+                onClick={handleSave}
+                className={`bg-blue-500 text-white py-2 px-4 rounded ${isSaveDisabled() ? "bg-gray-300 disabled-button" : ""
+                  }`}
+                disabled={isSaveDisabled() || loading} // Disable khi loading
+              >
+                {loading ? "Đang lưu..." : "Lưu"}
+              </button>
+              <button
+                onClick={handleCancel}
+                className="bg-gray-500 text-white py-2 px-4 rounded"
+              >
+                Hủy
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={() => setIsEdit(true)}
+              className="bg-blue-500 text-white py-2 px-4 rounded"
+            >
+              Chỉnh sửa
+            </button>
+          )}
+        </div>
+
+        <ToastContainer />
+      </div>
     </div>
   );
 };

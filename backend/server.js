@@ -6,7 +6,6 @@ const upload = require("./helpers/multer-config");
 const session = require("express-session");
 const cron = require("node-cron");
 const sendAppointmentReminders = require("./services/index");
-const nodemailer = require('nodemailer');
 
 const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME;
 const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
@@ -48,14 +47,14 @@ app.use((req, res, next) => {
   next();
 });
 // Cron job
-// cron.schedule("* 7 * * *", async () => {
-//   try {
-//     await sendAppointmentReminders();
-//     console.log("Email reminders triggered successfully.");
-//   } catch (error) {
-//     console.error("Error triggering email reminders:", error);
-//   }
-// });
+cron.schedule("* 7 * * *", async () => {
+  try {
+    await sendAppointmentReminders();
+    console.log("Email reminders triggered successfully.");
+  } catch (error) {
+    console.error("Error triggering email reminders:", error);
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -111,37 +110,6 @@ app.post("/upload", upload.single("image"), async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error uploading image to Cloudinary" });
-  }
-});
-
-app.post('/send-email', async (req, res) => {
-  const { name, email, message } = req.body;
-
-  if (!name || !email || !message) {
-    return res.status(400).send({ message: 'Vui lòng điền đầy đủ thông tin.' });
-  }
-
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER, // Địa chỉ email
-        pass: process.env.EMAIL_PASS, // Mật khẩu ứng dụng
-      },
-    });
-
-    const mailOptions = {
-      from: email,
-      to: process.env.EMAIL_USER, // Địa chỉ nhận email
-      subject: `Tin nhắn từ ${name}`,
-      text: message,
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.status(200).send({ message: 'Email đã được gửi thành công!' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: 'Gửi email thất bại.' });
   }
 });
 
