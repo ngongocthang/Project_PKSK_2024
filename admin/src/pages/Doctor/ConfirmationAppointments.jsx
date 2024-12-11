@@ -10,7 +10,7 @@ const ConfirmationSchedule = () => {
   const location = useLocation();
   const [currentPage, setCurrentPage] = useState(1);
   const [loadingId, setLoadingId] = useState(null);
-  const [loading, setLoading] = useState(true); // Thêm trạng thái loading
+  const [loading, setLoading] = useState(true); // Trạng thái loading
   const appointmentsPerPage = 10;
 
   // Định dạng ngày
@@ -63,9 +63,13 @@ const ConfirmationSchedule = () => {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      setLoading(true); // Bắt đầu tải dữ liệu
-      await getAppointments(); // Gọi lại danh sách lịch hẹn
-      setLoading(false); // Kết thúc tải dữ liệu
+      try {
+        await getAppointments(); // Gọi lại danh sách lịch hẹn
+      } catch (error) {
+        toast.error('Có lỗi xảy ra khi tải dữ liệu lịch hẹn.');
+      } finally {
+        setLoading(false); // Kết thúc tải dữ liệu
+      }
     };
 
     fetchAppointments(); // Lần đầu tiên khi component mount
@@ -196,7 +200,7 @@ const ConfirmationSchedule = () => {
           <p className='font-bold text-[16px]'>Ca khám</p>
           <p className='font-bold text-[16px] justify-self-end'>Hành động</p>
         </div>
-        
+
         {loading && (
           <div className="flex justify-center items-center py-6">
             <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-solid rounded-full border-[#219c9e] border-t-transparent" role="status">

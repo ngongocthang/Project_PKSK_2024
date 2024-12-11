@@ -123,7 +123,7 @@ const DoctorProfile = () => {
 
   return (
     profileData && (
-      <div className="w-full max-w-4xl mx-auto p-5 bg-gray-50 shadow-md rounded-md mt-8">
+      <div className="w-full max-w-4xl mx-auto p-5 bg-gray-50 shadow-md rounded-md mt-8 h-[450px]">
         <div className="flex flex-col sm:flex-row gap-5 mb-6">
           {/* Left section: Image, Name, and Specialization */}
           <div className="flex flex-col items-center sm:items-start gap-4 sm:w-1/3">
@@ -356,24 +356,6 @@ const DoctorProfile = () => {
                 )}
               </div>
             )}
-
-            {/* <div className="flex gap-1 pt-2">
-              <input
-                onChange={() => {
-                  if (isEdit) {
-                    setFormData((prev) => ({
-                      ...prev,
-                      available: !prev.available, 
-                    }));
-                  }
-                }}
-                checked={formData.available}
-                type="checkbox"
-                name="available"
-                id=""
-              />
-              <label htmlFor="">Available</label>
-            </div> */}
 
             <div className="flex justify-center space-x-2">
               {isEdit ? (
