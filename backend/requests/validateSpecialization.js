@@ -14,7 +14,7 @@ const specializationSchema = Joi.object({
   }),
   image: Joi.any()
   .custom((value, helpers) => {
-    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', "image/svg+xml",];
 
     // Check if `mimetype` exists and is valid
     if (!value || !value.mimetype || !validImageTypes.includes(value.mimetype)) {

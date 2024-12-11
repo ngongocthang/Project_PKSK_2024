@@ -27,9 +27,7 @@ const AddSpecialty = () => {
       "image/jpeg",
       "image/png",
       "image/gif",
-      "image/bmp",
       "image/svg+xml",
-      "image/webp",
     ];
 
     if (!validImageTypes.includes(docImg.type)) {
