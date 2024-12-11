@@ -458,6 +458,74 @@ const contact = async (req, res) => {
   }
 };
 
+// Hàm lấy lịch hẹn đã lọc
+const getFilteredScheduleDoctor = async (req, res) => {
+  const { specialization, date } = req.query;
+
+  try {
+    // Lấy danh sách bác sĩ
+    const doctors = await Doctor.find({})
+      .populate("user_id", "name image")
+      .populate("specialization_id", "name");
+
+    if (!doctors || doctors.length === 0) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Lấy lịch làm việc của các bác sĩ
+    const schedules = await Schedule.find({
+      doctor_id: { $in: doctors.map((doctor) => doctor._id) },
+    });
+
+    if (!schedules || schedules.length === 0) {
+      return res.status(404).json({ message: "Schedule not found" });
+    }
+
+    // Kết hợp thông tin bác sĩ với lịch làm việc
+    const result = doctors.map((doctor) => {
+      const doctorSchedules = schedules
+        .filter((schedule) => schedule.doctor_id.equals(doctor._id))
+        .map((schedule) => ({
+          _id: schedule._id,
+          work_date: schedule.work_date,
+          work_shift: schedule.work_shift,
+          createdAt: schedule.createdAt,
+          updatedAt: schedule.updatedAt,
+          doctorName: doctor.user_id.name,
+          doctorImage: doctor.user_id.image,
+        }));
+
+      return {
+        doctorId: doctor._id,
+        doctorName: doctor.user_id.name,
+        doctorImage: doctor.user_id.image,
+        specialization: doctor.specialization_id.name,
+        schedules: doctorSchedules,
+      };
+    });
+
+    // Lọc theo chuyên khoa
+    if (specialization) {
+      result = result.filter(doctor => doctor.specialization === specialization);
+    }
+
+    // Lọc theo ngày
+    if (date) {
+      result = result.map(doctor => ({
+        ...doctor,
+        schedules: doctor.schedules.filter(schedule => {
+          const workDate = new Date(schedule.work_date).toISOString().split("T")[0];
+          return workDate === date;
+        }),
+      })).filter(doctor => doctor.schedules.length > 0);
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   register,
   login,
@@ -470,4 +538,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   contact,
+  getFilteredScheduleDoctor
 };

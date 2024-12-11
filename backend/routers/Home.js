@@ -11,7 +11,8 @@ const {
   googleLogin,
   forgotPassword,
   resetPassword,
-  contact
+  contact,
+  getFilteredScheduleDoctor
 } = require("../controllers/HomeController/index");
 const {
   patientCreateAppointment, 
@@ -57,5 +58,6 @@ router.post('/google-login', googleLogin);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
 router.post("/send-email", contact);
+router.get('/get-filtered-schedule-doctor', getFilteredScheduleDoctor);
 
 module.exports = router;
