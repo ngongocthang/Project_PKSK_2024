@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppContext } from "../context/AppContext";
+import { convertToSlug } from "../utils/stringUtils";
 import "../index.css";
 
 const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
@@ -15,6 +16,8 @@ const AllSchedule = () => {
   const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [events, setEvents] = useState([]);
+  const [specializationFilter, setSpecializationFilter] = useState(""); // State cho chuyên khoa
+  const [dateFilter, setDateFilter] = useState(""); // State cho ngày tháng
   const { user } = useContext(AppContext);
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -25,10 +28,6 @@ const AllSchedule = () => {
     : "";
   const patient_id =
     user?.id || (user ? JSON.parse(localStorage.getItem("user"))._id : null);
-
-  if (typeof console !== "undefined") {
-    console.error = function () {};
-  }
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -72,14 +71,38 @@ const AllSchedule = () => {
 
         setDoctors(resources);
         setEvents(mappedEvents);
+
+        // Đọc tham số từ URL
+        const params = new URLSearchParams(window.location.search);
+        const specialization = params.get('specialization');
+        const date = params.get('date');
+
+        if (specialization) {
+          setSpecializationFilter(specialization);
+        }
+        if (date) {
+          setDateFilter(date);
+        }
+
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
         toast.error("Có lỗi xảy ra khi tải lịch làm việc.");
       }
+      setLoading(false);
     };
 
     fetchSchedules();
   }, []);
+
+  const filteredDoctors = specializationFilter
+    ? doctors.filter(doctor => doctor.specialization === specializationFilter)
+    : doctors;
+
+  const filteredEvents = events.filter(event => {
+    const eventDate = new Date(event.start).toISOString().split("T")[0];
+    return filteredDoctors.some(doctor => doctor.id === event.resourceId) &&
+           (!dateFilter || eventDate === dateFilter);
+  });
 
   const handleEventClick = (info) => {
     if (isToastVisible) {
@@ -90,11 +113,9 @@ const AllSchedule = () => {
     const convertTitle =
       clickedEvent.title === "Sáng" ? "morning" : "afternoon";
 
-    // Lấy ngày làm việc từ sự kiện
     const workDate = new Date(clickedEvent.start).toISOString().split("T")[0];
     const currentDate = new Date().toISOString().split("T")[0];
 
-    // Kiểm tra xem lịch làm việc đã ở quá khứ chưa
     if (workDate < currentDate) {
       toast.error("Không thể đặt lịch hẹn cho ngày đã qua!");
       return;
@@ -115,10 +136,9 @@ const AllSchedule = () => {
     const formattedDate = formatDate(appointmentData.work_date);
     setIsToastVisible(true);
 
-    // Kiểm tra số điện thoại
     if (!userLocalStorage) {
       toast.warn(
-            "Bạn chưa chưa đăng nhập. Vui lòng đăng nhập trước khi đặt lịch hẹn.",
+        "Bạn chưa đăng nhập. Vui lòng đăng nhập trước khi đặt lịch hẹn.",
         {
           position: "top-center",
           autoClose: true,
@@ -129,7 +149,6 @@ const AllSchedule = () => {
       return;
     }
 
-    // Kiểm tra số điện thoại
     if (!phone) {
       toast.warn(
         <div className="flex flex-col items-center justify-center">
@@ -171,7 +190,6 @@ const AllSchedule = () => {
       return;
     }
 
-    // Hiển thị thông báo xác nhận
     toast.info(
       <div className="flex flex-col items-center justify-center">
         <div className="flex items-center mb-2">
@@ -240,6 +258,25 @@ const AllSchedule = () => {
     }
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (specializationFilter) {
+      // Chuyển đổi chuyên khoa thành chữ thường, không dấu và thay khoảng trắng bằng dấu gạch ngang
+      const formattedSpecialization = convertToSlug(specializationFilter);
+      params.append('specialization', formattedSpecialization);
+    }
+    
+    if (dateFilter) {
+      // Định dạng ngày theo kiểu dd-mm-yyyy
+      const [year, month, day] = dateFilter.split("-");
+      const formattedDate = `${day}-${month}-${year}`;
+      params.append('date', formattedDate);
+    }
+
+    navigate(`?${params.toString()}`);
+  }, [specializationFilter, dateFilter, navigate]);
+
   return (
     <div className="bg-gray-100 min-h-max rounded-lg">
       <div className="container mx-auto p-4">
@@ -247,18 +284,35 @@ const AllSchedule = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-center mb-6">
             Lịch Làm Việc Của Bác Sĩ
           </h1>
+          <div className="text-right text-black">
+            {/* Dropdown lựa chọn chuyên khoa */}
+            <select
+              className="mb-2 p-2 border rounded mr-2 h-10"
+              value={specializationFilter}
+              onChange={(e) => setSpecializationFilter(e.target.value)}
+            >
+              <option value="">Tất cả chuyên khoa</option>
+              {Array.from(new Set(doctors.map(doctor => doctor.specialization))).map((specialization, index) => (
+                <option key={index} value={specialization}>{specialization}</option>
+              ))}
+            </select>
+
+            {/* Input chọn ngày */}
+            <input
+              type="date"
+              className="mb-2 p-2 border rounded h-10"
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+            />
+          </div>
         </header>
         <div className="calendar-container shadow-md rounded-lg overflow-hidden border border-gray-300 bg-white">
-          {/* Thanh cuộn nằm ngang cho lịch */}
-          <div
-            className="overflow-x-auto"
-            style={{ maxHeight: "640px", minWidth: "1200px" }}
-          >
+          <div className="overflow-x-auto" style={{ maxHeight: "640px", height: "auto", minWidth: "1200px" }}>
             <FullCalendar
               plugins={[resourceTimelinePlugin]}
               initialView="resourceTimelineWeek"
-              resources={doctors}
-              events={events}
+              resources={filteredDoctors}
+              events={filteredEvents}
               locale={viLocale}
               resourceAreaColumns={[
                 {
