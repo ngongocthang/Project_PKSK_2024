@@ -208,7 +208,7 @@ const SpecialtyList = () => {
                                     <td className="py-2 px-4 border-b text-sm font-semibold">{index + 1}</td>
                                     <td className="py-2 px-4 border-b text-center border-t">
                                         <div className="flex flex-col items-center">
-                                            <img src={specialty.image} alt={specialty.name} className="w-12 h-12 inline-block mr-2 rounded-full" />
+                                            <img src={specialty.image} alt="" className="w-12 h-12 inline-block mr-2 rounded-full" />
                                             <span>{specialty.name}</span>
                                         </div>
                                     </td>
