@@ -8,19 +8,21 @@ const DoctorWorkSchedule = () => {
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [schedulesPerPage] = useState(10);
-  const [loading, setLoading] = useState(false); // Thêm trạng thái loading
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const doctorInfo = sessionStorage.getItem("doctorInfo");
     const doctorId = doctorInfo ? JSON.parse(doctorInfo).id : null;
-    if (dToken && doctorId) {
-      setLoading(true); // Bắt đầu quá trình tải
+
+    // Chỉ gọi API nếu không có lịch làm việc
+    if (dToken && doctorId && schedules.length === 0) {
+      setLoading(true);
       getDoctorSchedule(doctorId).finally(() => {
-        setLoading(false); // Kết thúc quá trình tải
+        setLoading(false);
       });
     }
-  }, [dToken]);
+  }, [dToken, schedules.length]);
 
   const formatDate = (date) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -62,7 +64,7 @@ const DoctorWorkSchedule = () => {
   };
 
   const renderPagination = () => {
-    const delta = 1; // Số trang hiển thị trước và sau trang hiện tại
+    const delta = 1;
     const paginationItems = [];
 
     // Nút "Trang trước"
@@ -76,7 +78,6 @@ const DoctorWorkSchedule = () => {
           }`}
         disabled={currentPage === 1}
       >
-        {/* Hiển thị chữ "Trước" trên desktop và icon trên mobile */}
         <span className="hidden md:block">Trước</span>
         <i className="fa-solid fa-angle-left block md:hidden"></i>
       </button>
@@ -94,12 +95,10 @@ const DoctorWorkSchedule = () => {
       </button>
     );
 
-    // Hiển thị dấu ba chấm nếu cần, khi currentPage > 3
+    // Hiển thị dấu ba chấm nếu cần
     if (currentPage > 2) {
       paginationItems.push(
-        <span key="start-dots" className="px-2">
-          ...
-        </span>
+        <span key="start-dots" className="px-2">...</span>
       );
     }
 
@@ -121,12 +120,10 @@ const DoctorWorkSchedule = () => {
       );
     }
 
-    // Hiển thị dấu ba chấm nếu cần, khi currentPage < totalPages - 1
+    // Hiển thị dấu ba chấm nếu cần
     if (currentPage < totalPages - 1) {
       paginationItems.push(
-        <span key="end-dots" className="px-2">
-          ...
-        </span>
+        <span key="end-dots" className="px-2">...</span>
       );
     }
 
@@ -155,7 +152,6 @@ const DoctorWorkSchedule = () => {
           }`}
         disabled={currentPage === totalPages}
       >
-        {/* Hiển thị chữ "Tiếp" trên desktop và icon trên mobile */}
         <span className="hidden md:block">Tiếp</span>
         <i className="fa-solid fa-angle-right block md:hidden"></i>
       </button>
@@ -194,8 +190,7 @@ const DoctorWorkSchedule = () => {
         {/* Hiển thị spinner khi đang tải */}
         {loading && (
           <div className="flex justify-center items-center py-6">
-            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-solid rounded-full border-[#219c9e] border-t-transparent" role="status">
-            </div>
+            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-solid rounded-full border-[#219c9e] border-t-transparent" role="status"></div>
           </div>
         )}
 
@@ -243,7 +238,7 @@ const DoctorWorkSchedule = () => {
             </div>
           ))
         ) : (
-          !loading && ( // Chỉ hiển thị thông báo nếu không đang tải
+          !loading && (
             <p className="text-gray-500 text-center py-3">Không tìm thấy lịch làm việc nào.</p>
           )
         )}
