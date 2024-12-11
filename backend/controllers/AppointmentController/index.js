@@ -24,14 +24,14 @@ const findAllAppointment = async (req, res) => {
     const appointmentsWithDetails = await Promise.all(
       appointments.map(async (appointment) => {
         const patient = await Patient.findOne({ _id: appointment.patient_id });
-        const patientInfo = await User.findOne({ _id: patient.user_id });
+        const patientInfo = patient ? await User.findOne({ _id: patient.user_id }) : null;
         const doctor = await Doctor.findOne({ _id: appointment.doctor_id });
-        const doctorInfo = await User.findOne({ _id: doctor.user_id });
+        const doctorInfo = doctor ? await User.findOne({ _id: doctor.user_id }) : null;
 
         return {
           ...appointment.toObject(),
-          patientInfo,
-          doctorInfo,
+          patientInfo: patientInfo || {}, // Trả về đối tượng rỗng nếu không tìm thấy
+          doctorInfo: doctorInfo || {},     // Trả về đối tượng rỗng nếu không tìm thấy
         };
       })
     );
