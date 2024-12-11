@@ -62,59 +62,119 @@ const EditWorkSchedule = () => {
   };
 
   return (
-    <div className="max-w-full md:max-w-2xl mx-auto p-5">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-xl font-semibold mb-5 text-center">
-          Chỉnh Sửa Lịch Làm Việc của Bác Sĩ
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Work Date */}
-          <div>
-            <label className="block text-gray-700 mb-2">Ngày làm việc</label>
-            <DatePicker
-              selected={scheduleForm.workDate}
-              onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy"
-              minDate={new Date()}
-              className="p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-[340px]"
-            />
-          </div>
+    <div className="max-w-full mx-auto p-5">
+      {/* Giao diện cho Mobile */}
+      <div className="block sm:hidden">
+        <div className="bg-white p-5 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold mb-5 text-center">
+            Chỉnh Sửa Lịch Làm Việc của Bác Sĩ
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Work Date */}
+            <div>
+              <label className="block text-gray-700 mb-2">Ngày làm việc</label>
+              <DatePicker
+                selected={scheduleForm.workDate}
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+                minDate={new Date()}
+                className="p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-[250px]"
+              />
+            </div>
 
-          {/* Time Slot */}
-          <div>
-            <label className="block text-gray-700 mb-2">Ca làm việc</label>
-            <select
-              name="timeSlot"
-              value={scheduleForm.timeSlot}
-              onChange={handleInputChange}
-              required
-              className="w-full p-3 border rounded focus:outline-none focus:border-black"
+            {/* Time Slot */}
+            <div>
+              <label className="block text-gray-700 mb-2">Ca làm việc</label>
+              <select
+                name="timeSlot"
+                value={scheduleForm.timeSlot}
+                onChange={handleInputChange}
+                required
+                className="w-[250px] p-3 border rounded focus:outline-none focus:border-black"
+              >
+                <option value="" disabled>
+                  Chọn ca làm việc
+                </option>
+                <option value="morning">Buổi sáng</option>
+                <option value="afternoon">Buổi chiều</option>
+              </select>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className={`w-full py-3 mt-5 text-white rounded font-semibold flex items-center justify-center ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#219B9D] hover:bg-[#0091a1]"
+                }`}
+              disabled={loading}
             >
-              <option value="" disabled>
-                Chọn ca làm việc
-              </option>
-              <option value="morning">Buổi sáng</option>
-              <option value="afternoon">Buổi chiều</option>
-            </select>
-          </div>
+              {loading ? (
+                <>
+                  <div className="loader border-t-4 border-white w-4 h-4 rounded-full animate-spin mr-2"></div>
+                  Đang cập nhật...
+                </>
+              ) : (
+                "Cập nhật Lịch Làm Việc"
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className={`w-full py-3 mt-5 text-white rounded font-semibold flex items-center justify-center ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#219B9D] hover:bg-[#0091a1]"
-              }`}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <div className="loader border-t-4 border-white w-4 h-4 rounded-full animate-spin mr-2"></div>
-                Đang cập nhật...
-              </>
-            ) : (
-              "Cập nhật Lịch Làm Việc"
-            )}
-          </button>
-        </form>
+      {/* Giao diện cho Desktop */}
+      <div className="hidden sm:block">
+        <div className="bg-white p-8 rounded-lg shadow-lg">
+          <h2 className="text-xl font-semibold mb-5 text-center">
+            Chỉnh Sửa Lịch Làm Việc của Bác Sĩ
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Work Date */}
+            <div>
+              <label className="block text-gray-700 mb-2">Ngày làm việc</label>
+              <DatePicker
+                selected={scheduleForm.workDate}
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+                minDate={new Date()}
+                className="p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500 w-[340px]"
+              />
+            </div>
+
+            {/* Time Slot */}
+            <div>
+              <label className="block text-gray-700 mb-2">Ca làm việc</label>
+              <select
+                name="timeSlot"
+                value={scheduleForm.timeSlot}
+                onChange={handleInputChange}
+                required
+                className="w-full p-3 border rounded focus:outline-none focus:border-black"
+              >
+                <option value="" disabled>
+                  Chọn ca làm việc
+                </option>
+                <option value="morning">Buổi sáng</option>
+                <option value="afternoon">Buổi chiều</option>
+              </select>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className={`w-full py-3 mt-5 text-white rounded font-semibold flex items-center justify-center ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-[#219B9D] hover:bg-[#0091a1]"
+                }`}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="loader border-t-4 border-white w-4 h-4 rounded-full animate-spin mr-2"></div>
+                  Đang cập nhật...
+                </>
+              ) : (
+                "Cập nhật Lịch Làm Việc"
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

@@ -50,43 +50,87 @@ const CreateDoctorSchedule = () => {
   };
 
   return (
-    <div className='max-w-full sm:max-w-md md:max-w-2xl mx-auto p-5'>
-      <div className='bg-white p-8 rounded-lg shadow-lg'>
-        <h2 className='text-2xl font-semibold mb-5 text-center text-gray-800'>Tạo Lịch Làm Việc của Bác Sĩ</h2>
-        <form onSubmit={handleSubmit} className='space-y-5'>
-          <div>
-            <label className='block text-gray-700 mb-2 text-sm font-medium'>Ngày làm việc</label>
-            <DatePicker
-              selected={scheduleForm.workDate}
-              onChange={handleDateChange}
-              dateFormat="dd/MM/yyyy"
-              minDate={new Date()}
-              className='w-[340px] p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500'
-            />
-          </div>
+    <div className='max-w-full mx-auto p-5'>
+      {/* Giao diện cho Mobile */}
+      <div className='block sm:hidden'>
+        <div className='bg-white p-6 rounded-lg shadow-lg'>
+          <h2 className='text-2xl font-semibold mb-5 text-center text-gray-800'>Tạo Lịch Làm Việc của Bác Sĩ</h2>
+          <form onSubmit={handleSubmit} className='space-y-5'>
+            <div>
+              <label className='block text-gray-700 mb-2 text-sm font-medium'>Ngày làm việc</label>
+              <DatePicker
+                selected={scheduleForm.workDate}
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+                minDate={new Date()}
+                className='w-[250px] p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500'
+              />
+            </div>
 
-          <div>
-            <label className='block text-gray-700 mb-2'>Ca làm việc</label>
-            <select
-              name='timeSlot'
-              value={scheduleForm.timeSlot}
-              onChange={handleInputChange}
-              required
-              className='w-full p-3 border rounded focus:outline-none focus:border-black'
+            <div>
+              <label className='block text-gray-700 mb-2 text-sm font-medium'>Ca làm việc</label>
+              <select
+                name='timeSlot'
+                value={scheduleForm.timeSlot}
+                onChange={handleInputChange}
+                required
+                className='w-[250px] p-3 border rounded focus:outline-none focus:border-black'
+              >
+                <option value='' disabled>Chọn ca làm việc</option>
+                <option value='morning'>Buổi sáng</option>
+                <option value='afternoon'>Buổi chiều</option>
+              </select>
+            </div>
+
+            <button
+              type='submit'
+              className='w-full py-3 mt-5 bg-[#219B9D] text-white rounded hover:bg-[#0091a1] font-semibold'
             >
-              <option value='' disabled>Chọn ca làm việc</option>
-              <option value='morning'>Buổi sáng</option>
-              <option value='afternoon'>Buổi chiều</option>
-            </select>
-          </div>
+              Tạo Lịch Làm Việc
+            </button>
+          </form>
+        </div>
+      </div>
 
-          <button
-            type='submit'
-            className='w-full py-3 mt-5 bg-[#219B9D] text-white rounded hover:bg-[#0091a1] font-semibold'
-          >
-            Tạo Lịch Làm Việc
-          </button>
-        </form>
+      {/* Giao diện cho Desktop */}
+      <div className='hidden sm:block'>
+        <div className='bg-white p-8 rounded-lg shadow-lg'>
+          <h2 className='text-2xl font-semibold mb-5 text-center text-gray-800'>Tạo Lịch Làm Việc của Bác Sĩ</h2>
+          <form onSubmit={handleSubmit} className='space-y-5'>
+            <div>
+              <label className='block text-gray-700 mb-2'>Ngày làm việc</label>
+              <DatePicker
+                selected={scheduleForm.workDate}
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+                minDate={new Date()}
+                className='w-[340px] p-3 border border-gray-300 rounded focus:outline-none focus:border-blue-500'
+              />
+            </div>
+
+            <div>
+              <label className='block text-gray-700 mb-2'>Ca làm việc</label>
+              <select
+                name='timeSlot'
+                value={scheduleForm.timeSlot}
+                onChange={handleInputChange}
+                required
+                className='w-full p-3 border rounded focus:outline-none focus:border-black'
+              >
+                <option value='' disabled>Chọn ca làm việc</option>
+                <option value='morning'>Buổi sáng</option>
+                <option value='afternoon'>Buổi chiều</option>
+              </select>
+            </div>
+
+            <button
+              type='submit'
+              className='w-full py-3 mt-5 bg-[#219B9D] text-white rounded hover:bg-[#0091a1] font-semibold'
+            >
+              Tạo Lịch Làm Việc
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
