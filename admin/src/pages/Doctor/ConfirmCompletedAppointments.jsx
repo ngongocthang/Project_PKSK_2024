@@ -11,7 +11,7 @@ const ConfirmCompletedAppointments = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage] = useState(10);
-  const [loading, setLoading] = useState(false); // Trạng thái loading
+  const [loading, setLoading] = useState(false);
   const doctorInfo = JSON.parse(sessionStorage.getItem("doctorInfo"));
   const doctorId = doctorInfo ? doctorInfo.id : null;
   const location = useLocation();
@@ -20,11 +20,14 @@ const ConfirmCompletedAppointments = () => {
   const workDate = queryParams.get("date");
   const workShift = queryParams.get("work-shift");
 
+  // Lấy ngày hiện tại
+  const currentDate = moment().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD");
+
   useEffect(() => {
     const fetchAppointments = async () => {
       if (!doctorId || !workDate || !workShift) return;
 
-      setLoading(true); // Bắt đầu quá trình tải
+      setLoading(true);
       try {
         const response = await axios.post(
           `${VITE_BACKEND_URI}/doctor/appointment-confirm/${doctorId}`,
@@ -44,11 +47,10 @@ const ConfirmCompletedAppointments = () => {
       } catch (error) {
         console.error("Error fetching appointments:", error);
       } finally {
-        setLoading(false); // Kết thúc quá trình tải
+        setLoading(false);
       }
     };
 
-    // Gọi hàm fetchAppointments nếu chưa có lịch hẹn
     if (confirmedAppointments.length === 0) {
       fetchAppointments();
     }
@@ -184,6 +186,12 @@ const ConfirmCompletedAppointments = () => {
                   </div>
                 </td>
               </tr>
+            ) : currentAppointments.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-6 text-center text-gray-500">
+                  Không có lịch xác nhận nào.
+                </td>
+              </tr>
             ) : (
               currentAppointments.map((appointment, index) => (
                 <tr key={appointment._id} className="hover:bg-gray-50 text-center text-[16px]">
@@ -209,19 +217,24 @@ const ConfirmCompletedAppointments = () => {
                           {appointment.status === "completed" ? (
                             <span className="border border-blue-500 text-blue-500 bg-white py-1 px-3 rounded-full font-semibold">Hoàn thành</span>
                           ) : (
-                            <svg
-                              onClick={() => handleConfirm(appointment._id)}
-                              className="w-[30px] h-[30px] cursor-pointer bg-blue-500 p-2 rounded-full shadow-lg hover:bg-blue-600"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            >
-                              <path d="M5 13l4 4L19 7" />
-                            </svg>
+                            // Kiểm tra nếu ngày hiện tại khác với workDate
+                            currentDate !== workDate ? (
+                              <span className="border border-gray-400 text-gray-400 bg-white py-1 px-3 rounded-full font-semibold cursor-not-allowed">Không xác nhận</span>
+                            ) : (
+                              <svg
+                                onClick={() => handleConfirm(appointment._id)}
+                                className="w-[30px] h-[30px] cursor-pointer bg-blue-500 p-2 rounded-full shadow-lg hover:bg-blue-600"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="white"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M5 13l4 4L19 7" />
+                              </svg>
+                            )
                           )}
                         </>
                       )}
@@ -233,7 +246,6 @@ const ConfirmCompletedAppointments = () => {
           </tbody>
         </table>
       </div>
-      {/* Phân trang */}
       {totalPages > 1 && renderPagination()}
     </div>
   );

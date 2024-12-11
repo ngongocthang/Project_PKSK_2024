@@ -69,10 +69,6 @@ const ConfirmationSchedule = () => {
     };
 
     fetchAppointments(); // Lần đầu tiên khi component mount
-
-    const interval = setInterval(fetchAppointments, 10000); // Lấy lịch hẹn mỗi 10 giây
-
-    return () => clearInterval(interval); // Dọn dẹp interval khi component bị hủy
   }, [getAppointments]);
 
   const indexOfLastAppointment = currentPage * appointmentsPerPage;
