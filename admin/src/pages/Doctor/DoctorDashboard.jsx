@@ -405,7 +405,7 @@ const DoctorDashboard = () => {
       {/* Giao diện mobile */}
       <div className="sm:hidden overflow-y-auto max-h-screen mb-4">
         {/* Tiêu đề cho giao diện mobile */}
-        <div className="px-4 py-2 bg-blue-100 rounded-t sticky top-0 z-10 flex items-center justify-center">
+        <div className="px-4 py-2 bg-blue-100 rounded-t sticky top-0 z-10 flex items-center">
           <img src={assets.list_icon} alt="list-icon" className="w-6 h-6 mr-2" />
           <h2 className="font-semibold text-gray-800 text-lg text-center">Lịch hẹn sắp tới</h2>
         </div>
@@ -454,7 +454,7 @@ const DoctorDashboard = () => {
         {/* Tiêu đề cho giao diện mobile */}
         <div className="px-4 py-2 bg-blue-100 rounded-t sticky top-0 z-10 flex items-center justify-center">
           <img src={assets.list_icon} alt="list-icon" className="w-6 h-6 mr-2" />
-          <h2 className="font-semibold text-gray-800 text-lg text-center">Lịch hẹn đã xác nhận & hoàn thành</h2>
+          <h2 className="font-semibold text-gray-800 text-lg">Lịch hẹn đã xác nhận & hoàn thành</h2>
         </div>
 
         <div className="max-h-80 overflow-y-auto"> {/* Thêm div chứa cho phần cuộn */}
