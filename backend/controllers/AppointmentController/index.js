@@ -14,15 +14,19 @@ const Role = require("../../models/Role");
 const findAllAppointment = async (req, res) => {
   try {
     const appointments = await Appointment.find({});
-    if (!appointments || appointments.length === 0) {
+    
+    // Lọc các lịch hẹn không có patient_id
+    const filteredAppointments = appointments.filter(appointment => appointment.patient_id);
+
+    if (!filteredAppointments || filteredAppointments.length === 0) {
       return res.status(400).json({ message: "Appointment not found" });
     }
 
     // Sắp xếp các cuộc hẹn theo createdAt từ mới nhất đến cũ nhất
-    appointments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    filteredAppointments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     const appointmentsWithDetails = await Promise.all(
-      appointments.map(async (appointment) => {
+      filteredAppointments.map(async (appointment) => {
         const patient = await Patient.findOne({ _id: appointment.patient_id });
         const patientInfo = patient ? await User.findOne({ _id: patient.user_id }) : null;
         const doctor = await Doctor.findOne({ _id: appointment.doctor_id });
@@ -304,6 +308,81 @@ const patientCreateAppointment = async (req, res) => {
   }
 };
 
+// const getCurrentUserAppointments = async (req, res) => {
+//   try {
+//     const user_id = req.user?.id;
+//     const user_role = req.user?.role;
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0);
+
+//     let appointments;
+
+//     if (user_role === "patient") {
+//       const patient = await Patient.findOne({ user_id: user_id });
+//       if (!patient) {
+//         return res.status(400).json({ message: "Patient not found" });
+//       }
+
+//       appointments = await Appointment.find({
+//         patient_id: patient._id,
+//         work_date: { $gte: today },
+//       })
+//         .populate({
+//           path: "patient_id",
+//           populate: {
+//             path: "user_id",
+//             select: "name",
+//           },
+//         })
+//         .populate({
+//           path: "doctor_id",
+//           populate: {
+//             path: "user_id",
+//             select: "name image",
+//           },
+//         })
+//         .sort({ updatedAt: -1 });
+
+//       if (appointments.length > 0) {
+//         return res.status(200).json(appointments);
+//       }
+//     } else if (user_role === "doctor") {
+//       const doctor = await Doctor.findOne({ user_id: user_id });
+//       if (!doctor) {
+//         return res.status(400).json({ message: "Doctor not found" });
+//       }
+
+//       appointments = await Appointment.find({
+//         doctor_id: doctor._id,
+//         work_date: { $gte: today },
+//         status: "pending",
+//       })
+//         .populate({
+//           path: "patient_id",
+//           populate: {
+//             path: "user_id",
+//             select: "name",
+//           },
+//         })
+//         .populate({
+//           path: "doctor_id",
+//           populate: {
+//             path: "user_id",
+//             select: "name image",
+//           },
+//         })
+//         .sort({ updatedAt: -1 }); // Sắp xếp theo updatedAt giảm dần
+
+//       if (appointments.length > 0) {
+//         return res.status(200).json(appointments);
+//       }
+//     }
+//     return res.status(404).json({ message: "Appointments not found" });
+//   } catch (error) {
+//     console.error("Error fetching appointments:", error);
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
 const getCurrentUserAppointments = async (req, res) => {
   try {
     const user_id = req.user?.id;
@@ -339,9 +418,6 @@ const getCurrentUserAppointments = async (req, res) => {
         })
         .sort({ updatedAt: -1 });
 
-      if (appointments.length > 0) {
-        return res.status(200).json(appointments);
-      }
     } else if (user_role === "doctor") {
       const doctor = await Doctor.findOne({ user_id: user_id });
       if (!doctor) {
@@ -367,12 +443,16 @@ const getCurrentUserAppointments = async (req, res) => {
             select: "name image",
           },
         })
-        .sort({ updatedAt: -1 }); // Sắp xếp theo updatedAt giảm dần
-
-      if (appointments.length > 0) {
-        return res.status(200).json(appointments);
-      }
+        .sort({ updatedAt: -1 });
     }
+
+    // Lọc các lịch hẹn không có patient_id
+    const filteredAppointments = appointments.filter(appointment => appointment.patient_id);
+
+    if (filteredAppointments.length > 0) {
+      return res.status(200).json(filteredAppointments);
+    }
+
     return res.status(404).json({ message: "Appointments not found" });
   } catch (error) {
     console.error("Error fetching appointments:", error);
@@ -463,6 +543,60 @@ const processPrematureCancellation = async (req, res) => {
   }
 };
 
+// const showUpcomingAppointments = async (req, res) => {
+//   try {
+//     const user_id = req.params.id;
+
+//     const user_role = await User_role.findOne({ user_id: user_id });
+//     if (!user_role) {
+//       return res.status(403).json({ message: "User role not found" });
+//     }
+
+//     const role = await Role.findOne({ _id: user_role.role_id });
+//     if (!role) {
+//       return res.status(403).json({ message: "Role not found" });
+//     }
+
+//     const now = new Date();
+//     let upcomingAppointments;
+
+//     if (role.name === "admin") {
+//       upcomingAppointments = await Appointment.find({
+//         work_date: { $gte: now },
+//       }).sort({ work_date: 1 });
+//     } else {
+//       const doctor = await Doctor.findOne({ user_id: user_id });
+//       if (!doctor) {
+//         return res.status(403).json({ message: "Doctor not found" });
+//       }
+
+//       upcomingAppointments = await Appointment.find({
+//         doctor_id: doctor._id,
+//         work_date: { $gte: now },
+//         status: "confirmed",
+//       }).sort({ work_date: 1 });
+//     }
+
+//     // Lọc các lịch hẹn không có patient_id
+//     const filteredAppointments = upcomingAppointments.filter(appointment => appointment.patient_id);
+
+//     const updatedAppointments = await Promise.all(
+//       filteredAppointments.map(async (appointment) => {
+//         const patient = await Patient.findOne({ _id: appointment.patient_id });
+//         const user = patient ? await User.findOne({ _id: patient.user_id }) : null;
+
+//         return {
+//           ...appointment.toObject(),
+//           patient_name: user ? user.name : "Unknown", // Trả về "Unknown" nếu không tìm thấy user
+//         };
+//       })
+//     );
+
+//     return res.status(200).json(updatedAppointments);
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
 const showUpcomingAppointments = async (req, res) => {
   try {
     const user_id = req.params.id;
@@ -497,25 +631,24 @@ const showUpcomingAppointments = async (req, res) => {
       }).sort({ work_date: 1 });
     }
 
-    const updatedAppointments = await Promise.all(
-      upcomingAppointments.map(async (appointment) => {
-        const patient = await Patient.findOne({ _id: appointment.patient_id });
-        if (!patient) {
-          throw new Error("Patient not found");
-        }
+    // Lọc các lịch hẹn không có patient_id
+    const filteredAppointments = upcomingAppointments.filter(appointment => appointment.patient_id);
 
-        const user = await User.findOne({ _id: patient.user_id });
-        if (!user) {
-          throw new Error("User not found");
-        }
+    const updatedAppointments = await Promise.all(
+      filteredAppointments.map(async (appointment) => {
+        const patient = await Patient.findOne({ _id: appointment.patient_id });
+
+        // Chỉ lấy thông tin người dùng nếu bệnh nhân tồn tại
+        const user = patient ? await User.findOne({ _id: patient.user_id }) : null;
 
         return {
           ...appointment.toObject(),
-          patient_name: user.name,
+          patient_name: user ? user.name : undefined, // Không thêm tên nếu không tìm thấy user
         };
       })
     );
 
+    // Trả về danh sách lịch hẹn đã lọc
     return res.status(200).json(updatedAppointments);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -552,21 +685,17 @@ const getAppointmentByStatus = async (req, res) => {
       });
     }
 
-    const updatedAppointments = await Promise.all(
-      appointments.map(async (appointment) => {
-        const patient = await Patient.findOne({ _id: appointment.patient_id });
-        if (!patient) {
-          throw new Error("Patient not found");
-        }
+    // Lọc các lịch hẹn không có patient_id
+    const filteredAppointments = appointments.filter(appointment => appointment.patient_id);
 
-        const user = await User.findOne({ _id: patient.user_id });
-        if (!user) {
-          throw new Error("User not found");
-        }
+    const updatedAppointments = await Promise.all(
+      filteredAppointments.map(async (appointment) => {
+        const patient = await Patient.findOne({ _id: appointment.patient_id });
+        const user = patient ? await User.findOne({ _id: patient.user_id }) : null;
 
         return {
           ...appointment.toObject(),
-          patient_name: user.name,
+          patient_name: user ? user.name : undefined, // Không thêm tên nếu không tìm thấy user
         };
       })
     );
@@ -649,13 +778,16 @@ const getUpcomingAppointmentsDashboardAdmin = async (req, res) => {
       })
       .sort({ work_date: 1 });
 
-    if (appointments.length <= 0) {
+    // Lọc các lịch hẹn không có patient_id
+    const filteredAppointments = appointments.filter(appointment => appointment.patient_id);
+
+    if (filteredAppointments.length <= 0) {
       return res
         .status(200)
         .json({ success: false, message: "Appointment not found" });
     }
 
-    return res.status(200).json({ success: true, data: appointments });
+    return res.status(200).json({ success: true, data: filteredAppointments });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

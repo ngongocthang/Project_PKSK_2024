@@ -298,7 +298,7 @@ const DoctorDashboard = () => {
                     >
                       {/* Bệnh nhân */}
                       <td className="py-4 px-4 text-center font-medium text-gray-800">
-                        {item.patient_name}
+                        {item.patient_name ? item.patient_name : "Unknown"}
                       </td>
                       {/* Ngày khám */}
                       <td className="py-4 px-4 text-center text-gray-600">
@@ -366,7 +366,7 @@ const DoctorDashboard = () => {
                     >
                       {/* Bệnh nhân */}
                       <td className="py-4 px-4 text-center font-medium text-gray-800">
-                        {item.patient_name}
+                        {item.patient_name ? item.patient_name : "Unknown"}
                       </td>
                       {/* Ngày khám */}
                       <td className="py-4 px-4 text-center text-gray-600">
