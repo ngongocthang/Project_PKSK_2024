@@ -1,9 +1,9 @@
+import AOS from 'aos';
+import 'aos/dist/aos.css'; // Import AOS styles
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { convertToSlug } from "../utils/stringUtils";
-import AOS from 'aos';
-import 'aos/dist/aos.css'; // Import AOS styles
 
 const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
 

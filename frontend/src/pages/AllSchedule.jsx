@@ -7,10 +7,46 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AppContext } from "../context/AppContext";
-import { convertToSlug } from "../utils/stringUtils";
 import "../index.css";
+import { convertToSlug } from "../utils/stringUtils";
 
 const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
+
+const SkeletonLoader = () => {
+  return (
+    <div className="skeleton-loader">
+      <div className="skeleton-item"></div>
+      <div className="skeleton-item"></div>
+      <div className="skeleton-item"></div>
+      <style jsx>{`
+        .skeleton-loader {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+        }
+        .skeleton-item {
+          background: #e0e0e0;
+          border-radius: 4px;
+          height: 40px;
+          width: 100%;
+          animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+          0% {
+            background: #e0e0e0;
+          }
+          50% {
+            background: #c0c0c0;
+          }
+          100% {
+            background: #e0e0e0;
+          }
+        }
+      `}</style>
+    </div>
+  );
+};
+
 
 const AllSchedule = () => {
   const navigate = useNavigate();
@@ -101,7 +137,7 @@ const AllSchedule = () => {
   const filteredEvents = events.filter(event => {
     const eventDate = new Date(event.start).toISOString().split("T")[0];
     return filteredDoctors.some(doctor => doctor.id === event.resourceId) &&
-           (!dateFilter || eventDate === dateFilter);
+      (!dateFilter || eventDate === dateFilter);
   });
 
   const handleEventClick = (info) => {
@@ -260,13 +296,13 @@ const AllSchedule = () => {
 
   useEffect(() => {
     const params = new URLSearchParams();
-    
+
     if (specializationFilter) {
       // Chuyển đổi chuyên khoa thành chữ thường, không dấu và thay khoảng trắng bằng dấu gạch ngang
       const formattedSpecialization = convertToSlug(specializationFilter);
       params.append('specialization', formattedSpecialization);
     }
-    
+
     if (dateFilter) {
       // Định dạng ngày theo kiểu dd-mm-yyyy
       const [year, month, day] = dateFilter.split("-");
@@ -308,55 +344,59 @@ const AllSchedule = () => {
         </header>
         <div className="calendar-container shadow-md rounded-lg overflow-hidden border border-gray-300 bg-white">
           <div className="overflow-x-auto" style={{ maxHeight: "640px", height: "auto", minWidth: "1200px" }}>
-            <FullCalendar
-              plugins={[resourceTimelinePlugin]}
-              initialView="resourceTimelineWeek"
-              resources={filteredDoctors}
-              events={filteredEvents}
-              locale={viLocale}
-              resourceAreaColumns={[
-                {
-                  headerContent: "Bác sĩ",
-                  field: "doctorName",
-                  cellContent: (args) => {
-                    const { doctorImage, doctorName, specialization } =
-                      args.resource.extendedProps;
-                    return (
-                      <div className="flex items-center">
-                        <img
-                          src={doctorImage}
-                          alt={doctorName}
-                          className="w-8 h-8 rounded-full mr-2"
-                        />
-                        {doctorName}
-                        <span className="text-sm ml-2 text-gray-500">
-                          ({specialization})
-                        </span>
-                      </div>
-                    );
+            {loading ? (
+              <SkeletonLoader />
+            ) : (
+              <FullCalendar
+                plugins={[resourceTimelinePlugin]}
+                initialView="resourceTimelineWeek"
+                resources={filteredDoctors}
+                events={filteredEvents}
+                locale={viLocale}
+                resourceAreaColumns={[
+                  {
+                    headerContent: "Bác sĩ",
+                    field: "doctorName",
+                    cellContent: (args) => {
+                      const { doctorImage, doctorName, specialization } =
+                        args.resource.extendedProps;
+                      return (
+                        <div className="flex items-center">
+                          <img
+                            src={doctorImage}
+                            alt={doctorName}
+                            className="w-8 h-8 rounded-full mr-2"
+                          />
+                          {doctorName}
+                          <span className="text-sm ml-2 text-gray-500">
+                            ({specialization})
+                          </span>
+                        </div>
+                      );
+                    },
                   },
-                },
-              ]}
-              eventContent={(args) => {
-                const workShift = args.event.title;
-                return (
-                  <div className="flex items-center justify-center w-full h-full">
-                    <span>{workShift}</span>
-                  </div>
-                );
-              }}
-              headerToolbar={{
-                left: "prev today next",
-                center: "title",
-                right: "resourceTimelineDay,resourceTimelineWeek",
-              }}
-              eventClassNames="event-style"
-              slotMinTime="06:00:00"
-              slotMaxTime="19:00:00"
-              nowIndicator
-              eventClick={handleEventClick}
-              scrollTime="06:00:00"
-            />
+                ]}
+                eventContent={(args) => {
+                  const workShift = args.event.title;
+                  return (
+                    <div className="flex items-center justify-center w-full h-full">
+                      <span>{workShift}</span>
+                    </div>
+                  );
+                }}
+                headerToolbar={{
+                  left: "prev today next",
+                  center: "title",
+                  right: "resourceTimelineDay,resourceTimelineWeek",
+                }}
+                eventClassNames="event-style"
+                slotMinTime="06:00:00"
+                slotMaxTime="19:00:00"
+                nowIndicator
+                eventClick={handleEventClick}
+                scrollTime="06:00:00"
+              />
+            )}
           </div>
         </div>
       </div>
