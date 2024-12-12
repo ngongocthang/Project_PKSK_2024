@@ -47,7 +47,7 @@ const Doctors = () => {
   const location = useLocation();
 
   useEffect(() => {
-    AOS.init({ duration: 900, once: true }); // Init AOS with 1s duration and only animate once
+    AOS.init({ duration: 900, once: true });
   }, []);
 
   const fetchDoctors = async () => {
@@ -64,7 +64,7 @@ const Doctors = () => {
 
   const fetchSpecializations = async () => {
     try {
-      setIsLoading(true); // Đặt trạng thái tải dữ liệu là true
+      setIsLoading(true);
       const response = await axios.get(
         `${VITE_BACKEND_URI}/specialization/find-all`
       );
@@ -74,7 +74,7 @@ const Doctors = () => {
     } catch (error) {
       console.error("Error fetching specializations:", error);
     } finally {
-      setIsLoading(false); // Đặt trạng thái tải dữ liệu là false
+      setIsLoading(false);
     }
   };
 
@@ -85,7 +85,6 @@ const Doctors = () => {
       )
       : doctors;
 
-    // Lọc theo ngày làm việc
     if (selectedDate) {
       filtered = filtered.filter((doc) =>
         doc.schedules.some(
@@ -106,13 +105,31 @@ const Doctors = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [doctors, speciality, selectedDate]); // Cập nhật khi selectedDate thay đổi
+  }, [doctors, speciality, selectedDate]);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setCurrentPage(Number(queryParams.get("page")) || 1);
-    setSelectedDate(queryParams.get("date") || ""); // Lấy giá trị ngày từ URL
+    setSelectedDate(queryParams.get("date") || "");
   }, [location]);
+
+  // Cập nhật URL khi có sự thay đổi
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (speciality) {
+      const formattedSpecialization = convertToSlug(speciality);
+      params.append('specialization', formattedSpecialization);
+    }
+
+    if (selectedDate) {
+      const dateParts = selectedDate.split("-");
+      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Định dạng dd-mm-yyyy
+      params.append('date', formattedDate);
+    }
+
+    navigate(`?${params.toString()}`, { replace: true });
+  }, [speciality, selectedDate, navigate]);
 
   const totalDoctors = filterDoc.length;
   const totalPages = Math.ceil(totalDoctors / doctorsPerPage);
@@ -122,13 +139,6 @@ const Doctors = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
-    const queryParams = new URLSearchParams(location.search);
-    queryParams.set("page", page);
-    queryParams.set("date", selectedDate); // Thêm giá trị ngày vào URL
-    navigate(
-      `/doctors${speciality ? `/${speciality}` : ""}?${queryParams.toString()}`,
-      { replace: true }
-    );
   };
 
   const handleDateChange = (date) => {
@@ -143,10 +153,9 @@ const Doctors = () => {
   };
 
   const renderPagination = () => {
-    const delta = 1; // Số trang hiển thị trước và sau trang hiện tại
+    const delta = 1;
     const paginationItems = [];
 
-    // Nút "Trang trước"
     paginationItems.push(
       <button
         key="prev"
@@ -159,7 +168,6 @@ const Doctors = () => {
       </button>
     );
 
-    // Hiển thị trang 1
     paginationItems.push(
       <button
         key={1}
@@ -171,7 +179,6 @@ const Doctors = () => {
       </button>
     );
 
-    // Hiển thị dấu ba chấm nếu cần, khi currentPage > 3
     if (currentPage > 2) {
       paginationItems.push(
         <span key="start-dots" className="px-2">
@@ -180,7 +187,6 @@ const Doctors = () => {
       );
     }
 
-    // Hiển thị các trang xung quanh trang hiện tại
     for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
       paginationItems.push(
         <button
@@ -194,7 +200,6 @@ const Doctors = () => {
       );
     }
 
-    // Hiển thị dấu ba chấm nếu cần, khi currentPage < totalPages - 1
     if (currentPage < totalPages - 1) {
       paginationItems.push(
         <span key="end-dots" className="px-2">
@@ -203,7 +208,6 @@ const Doctors = () => {
       );
     }
 
-    // Hiển thị trang cuối
     if (totalPages > 1) {
       paginationItems.push(
         <button
@@ -217,7 +221,6 @@ const Doctors = () => {
       );
     }
 
-    // Nút "Trang tiếp theo"
     paginationItems.push(
       <button
         key="next"
@@ -287,8 +290,8 @@ const Doctors = () => {
               <h3>Ngày làm việc:</h3>
               <input
                 type="date"
-                value={selectedDate} // Đặt giá trị cho ô nhập ngày
-                onChange={(e) => handleDateChange(e.target.value)} // Gọi hàm cập nhật ngày
+                value={selectedDate}
+                onChange={(e) => handleDateChange(e.target.value)}
                 className="w-[94vw] sm:w-40 border rounded p-2"
               />
             </div>

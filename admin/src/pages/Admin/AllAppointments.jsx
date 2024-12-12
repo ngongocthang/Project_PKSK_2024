@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminContext } from "../../context/AdminContext";
+import axios from "axios";
+
+const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
 
 const AllAppointments = () => {
   const { aToken, appointments, getAllAppointments } = useContext(AdminContext);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [appointmentsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true); // Thêm state loading
@@ -35,6 +37,28 @@ const AllAppointments = () => {
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
     navigate(`/all-appointments?page=${pageNumber}`);
+  };
+
+  const handleDeleteAppointment = async (id, patientId) => {
+    if (window.confirm("Bạn có chắc chắn muốn xoá cuộc hẹn này?")) {
+      try {
+        const response = await axios.delete(
+          `${VITE_BACKEND_URI}/appointment/delete/${id}`,
+          {
+            data: { user_id: patientId }, // Sử dụng patient_id
+          }
+        );
+
+        if (response.data.success) {
+          alert("Xoá cuộc hẹn thành công!");
+          getAllAppointments(); // Cập nhật lại danh sách cuộc hẹn
+        } else {
+          alert("Xoá cuộc hẹn thất bại!");
+        }
+      } catch (error) {
+        alert("Đã xảy ra lỗi khi xoá cuộc hẹn!");
+      }
+    }
   };
 
   // Hàm render phân trang
@@ -149,14 +173,15 @@ const AllAppointments = () => {
     <div className="w-full max-w-6xl m-4">
       <p className="mb-3 text-lg font-medium">Tất cả các cuộc hẹn</p>
       <div className="bg-white border rounded-2xl text-sm max-h-[90vh] min-h-[60vh] overflow-y-scroll">
-        {/* Table header (không thay đổi phần này) */}
-        <div className="grid-cols-[0.5fr_1.5fr_2fr_0.5fr_2fr_1fr] bg-gray-200 py-3 px-6 border-b sm:grid hidden">
+        {/* Table header */}
+        <div className="grid grid-cols-[0.5fr_1.5fr_2fr_0.5fr_2fr_1fr_0.5fr] bg-gray-200 py-3 px-6 border-b gap-4">
           <p className="font-bold text-[16px] text-center">#</p>
           <p className="font-bold text-[16px] text-center">Bác sĩ</p>
           <p className="font-bold text-[16px] text-center">Bệnh nhân</p>
           <p className="font-bold text-[16px] text-center">Ngày</p>
           <p className="font-bold text-[16px] text-center">Ca</p>
           <p className="font-bold text-[16px] ml-7">Trạng thái</p>
+          <p className="font-bold text-[16px] ml-7">Hành động</p>
         </div>
 
         {/* Appointments */}
@@ -167,7 +192,7 @@ const AllAppointments = () => {
         ) : currentAppointments && currentAppointments.length > 0 ? (
           currentAppointments.map((item, index) => (
             <div
-              className="flex flex-col sm:grid sm:grid-cols-[0.5fr_1.5fr_2fr_0.5fr_2fr_1fr] text-gray-500 py-3 px-6 border-b hover:bg-gray-50"
+              className="grid grid-cols-[0.5fr_1.5fr_2fr_0.5fr_2fr_1fr_0.5fr] text-gray-500 py-3 px-6 border-b hover:bg-gray-50 gap-4"
               key={index}
             >
               <p className="font-bold text-center">{index + 1}</p>
@@ -194,16 +219,19 @@ const AllAppointments = () => {
                 <span className="sm:hidden font-semibold">Ca: </span>
                 <span
                   className={`py-1 px-2 rounded-full text-white text-sm text-center font-semibold
-            ${
-              item.work_shift === "afternoon" ? "bg-orange-300" : "bg-blue-400"
-            } shadow-lg max-w-[100px] w-full h-[28px]`}
+                  ${
+                    item.work_shift === "afternoon"
+                      ? "bg-orange-300"
+                      : "bg-blue-400"
+                  }
+                  shadow-lg max-w-[100px] w-full h-[28px]`}
                 >
                   {item.work_shift === "morning" ? "Sáng" : "Chiều"}
                 </span>
               </div>
 
               {/* Appointment Status Button */}
-              <div className="flex justify-center">
+              <div className="flex justify-center items-center">
                 {item.status === "canceled" ? (
                   <button className="bg-red-500 text-white text-xs font-semibold py-1 px-2 rounded-full shadow-lg transition-all duration-300 w-full w-[140px] h-[28px] text-center">
                     Đã hủy
@@ -218,16 +246,52 @@ const AllAppointments = () => {
                   </button>
                 ) : null}
               </div>
+
+              {/* Action Buttons */}
+              {/* <div className="flex justify-center items-center gap-2">
+                <button
+                  onClick={() => navigate(`/edit-appointment/${item._id}`)}
+                  className="bg-blue-500 text-white py-1 px-3 rounded text-sm"
+                >
+                  <i className="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button
+                  onClick={() => handleDeleteAppointment(item._id, item.patientInfo._id)} // Gửi patient_id
+                  className="bg-red-500 text-white py-1 px-3 rounded text-sm"
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              </div> */}
+              <div className="flex justify-center items-center gap-2">
+                {item.status === "pending" || item.status === "confirmed" ? (
+                  <button
+                    onClick={() => navigate(`/edit-appointment/${item._id}`)}
+                    className="bg-blue-500 text-white py-1 px-3 rounded text-sm"
+                  >
+                    <i className="fa-regular fa-pen-to-square"></i>
+                  </button>
+                ) : (
+                  <button
+                    className="bg-gray-300 text-gray-600 py-1 px-3 rounded text-sm cursor-not-allowed"
+                    disabled
+                  >
+                    <i className="fa-regular fa-pen-to-square"></i>
+                  </button>
+                )}
+                <button
+                  onClick={() => console.log("Xóa cuộc hẹn")}
+                  className="bg-red-500 text-white py-1 px-3 rounded text-sm"
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              </div>
             </div>
           ))
         ) : (
-          <div className="text-center p-4 text-gray-500">
-            Không có cuộc hẹn nào
-          </div>
+          <div className="flex justify-center py-4">Không có cuộc hẹn nào.</div>
         )}
       </div>
-      {/* Pagination */}
-      {appointments.length >= 10 && renderPagination()}
+      {renderPagination()}
     </div>
   );
 };

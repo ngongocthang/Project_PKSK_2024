@@ -25,6 +25,7 @@ import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import DoctorProfile from './pages/Doctor/DoctorProfile';
 import DoctorWorkSchedule from './pages/Doctor/DoctorWorkSchedule';
 import EditWorkSchedule from './pages/Doctor/EditWorkSchedule';
+import EditAppointment from './pages/Admin/EditAppointment';
 import Login from './pages/Login';
 
 const App = () => {
@@ -61,6 +62,7 @@ const App = () => {
               <Route path="/specialty-list" element={aToken ? <SpecialtyList /> : <Forbidden />} />
               <Route path="/add-specialty" element={aToken ? <AddSpecialty /> : <Forbidden />} />
               <Route path="/edit-specialty/:id" element={aToken ? <EditSpecialty /> : <Forbidden />} />
+              <Route path="/edit-appointment/:id" element={aToken ? <EditAppointment /> : <Forbidden />} />
 
               {/* Doctor Route */}
               <Route path="/doctor-dashboard" element={dToken ? <DoctorDashboard /> : <Forbidden />} />
