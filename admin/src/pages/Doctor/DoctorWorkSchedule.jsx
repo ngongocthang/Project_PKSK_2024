@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DoctorContext } from "../../context/DoctorContext";
 
 const DoctorWorkSchedule = () => {
-  const { dToken, schedules, getDoctorSchedule, deleteSchedule } = useContext(DoctorContext);
+  const { dToken, schedules, getDoctorSchedule, deleteSchedule, addSchedule } = useContext(DoctorContext);
   const [showModal, setShowModal] = useState(false);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,14 +15,35 @@ const DoctorWorkSchedule = () => {
     const doctorInfo = sessionStorage.getItem("doctorInfo");
     const doctorId = doctorInfo ? JSON.parse(doctorInfo).id : null;
 
-    // Chỉ gọi API nếu không có lịch làm việc
-    if (dToken && doctorId && schedules.length === 0) {
-      setLoading(true);
-      getDoctorSchedule(doctorId).finally(() => {
-        setLoading(false);
-      });
+    if (dToken && doctorId) {
+      refreshSchedules(); // Gọi hàm để lấy lịch làm việc
     }
-  }, [dToken, schedules.length]);
+  }, [dToken]);
+
+  const refreshSchedules = async () => {
+    const doctorInfo = sessionStorage.getItem("doctorInfo");
+    const doctorId = doctorInfo ? JSON.parse(doctorInfo).id : null;
+    
+    if (doctorId) {
+      setLoading(true);
+      try {
+        await getDoctorSchedule(doctorId); // Gọi lại lịch làm việc
+      } catch (error) {
+        console.error("Lỗi khi lấy lịch làm việc:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleAddSchedule = async (newSchedule) => {
+    try {
+      await addSchedule(newSchedule); // Thêm lịch mới
+      await refreshSchedules(); // Gọi lại để cập nhật lịch làm việc
+    } catch (error) {
+      console.error("Lỗi khi thêm lịch:", error);
+    }
+  };
 
   const formatDate = (date) => {
     const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
@@ -36,12 +57,13 @@ const DoctorWorkSchedule = () => {
 
   const handleConfirmDelete = async () => {
     if (selectedSchedule) {
-      await deleteSchedule(selectedSchedule._id);
-      setShowModal(false);
-      setSelectedSchedule(null);
-      if (schedules.length <= 10) {
-        setCurrentPage(1);
-        navigate(`/doctor-work-schedule`, { replace: true });
+      try {
+        await deleteSchedule(selectedSchedule._id); // Xóa lịch
+        setShowModal(false);
+        setSelectedSchedule(null);
+        await refreshSchedules(); // Gọi lại để cập nhật lịch làm việc
+      } catch (error) {
+        console.error("Lỗi khi xóa lịch:", error);
       }
     }
   };
