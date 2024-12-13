@@ -109,11 +109,10 @@ const DoctorWorkSchedule = () => {
       <button
         key="prev"
         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-        className={`py-1 px-3 border rounded w-[70px] flex items-center justify-center ${
-          currentPage === 1
+        className={`py-1 px-3 border rounded w-[70px] flex items-center justify-center ${currentPage === 1
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
             : "text-gray-600"
-        }`}
+          }`}
         disabled={currentPage === 1}
       >
         <span className="hidden md:block">Trước</span>
@@ -126,9 +125,8 @@ const DoctorWorkSchedule = () => {
       <button
         key={1}
         onClick={() => handlePageChange(1)}
-        className={`py-1 px-3 border rounded ${
-          currentPage === 1 ? "bg-indigo-500 text-white" : "text-gray-600"
-        }`}
+        className={`py-1 px-3 border rounded ${currentPage === 1 ? "bg-indigo-500 text-white" : "text-gray-600"
+          }`}
       >
         1
       </button>
@@ -153,9 +151,8 @@ const DoctorWorkSchedule = () => {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`py-1 px-3 border rounded ${
-            i === currentPage ? "bg-indigo-500 text-white" : "text-gray-600"
-          }`}
+          className={`py-1 px-3 border rounded ${i === currentPage ? "bg-indigo-500 text-white" : "text-gray-600"
+            }`}
         >
           {i}
         </button>
@@ -177,11 +174,10 @@ const DoctorWorkSchedule = () => {
         <button
           key={totalPages}
           onClick={() => handlePageChange(totalPages)}
-          className={`py-1 px-3 border rounded ${
-            currentPage === totalPages
+          className={`py-1 px-3 border rounded ${currentPage === totalPages
               ? "bg-indigo-500 text-white"
               : "text-gray-600"
-          }`}
+            }`}
         >
           {totalPages}
         </button>
@@ -193,11 +189,10 @@ const DoctorWorkSchedule = () => {
       <button
         key="next"
         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-        className={`py-1 px-3 border rounded w-[70px] flex items-center justify-center ${
-          currentPage === totalPages
+        className={`py-1 px-3 border rounded w-[70px] flex items-center justify-center ${currentPage === totalPages
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
             : "text-gray-600"
-        }`}
+          }`}
         disabled={currentPage === totalPages}
       >
         <span className="hidden md:block">Tiếp</span>
@@ -220,25 +215,27 @@ const DoctorWorkSchedule = () => {
         </p>
 
         {/* Nút để hiện/ẩn lịch đã qua */}
-        <button
-          onClick={() => setShowPastSchedules(!showPastSchedules)}
-          className="mb-4 px-4 py-2 text-blue-500  rounded "
-        >
-          {showPastSchedules ? "Ẩn lịch đã qua" : "Hiện lịch đã qua"}
-        </button>
-
-        <button
-          onClick={() => navigate("/doctor-create-schedule")}
-          className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-[#4CAF50] to-[#219B9D] text-white rounded-full shadow-md hover:from-[#45A049] hover:to-[#009688] transform hover:scale-110 transition-all duration-300"
-        >
-          <svg
-            className="w-5 h-5 md:w-6 md:h-6"
-            fill="currentColor"
-            viewBox="0 0 20 20"
+        <div className="flex items-center space-x-2 gap-4">
+          <button
+            onClick={() => setShowPastSchedules(!showPastSchedules)}
+            className="text-blue-500 font-medium text-zinc-400 text-sm"
           >
-            <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
-          </svg>
-        </button>
+            {showPastSchedules ? "Ẩn lịch đã qua" : "Hiện lịch đã qua"}
+          </button>
+
+          <button
+            onClick={() => navigate("/doctor-create-schedule")}
+            className="flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-gradient-to-r from-[#4CAF50] to-[#219B9D] text-white rounded-full shadow-md hover:from-[#45A049] hover:to-[#009688] transform hover:scale-110 transition-all duration-300"
+          >
+            <svg
+              className="w-5 h-5 md:w-6 md:h-6"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="bg-white border rounded-xl text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll">
@@ -263,67 +260,65 @@ const DoctorWorkSchedule = () => {
         {/* Dữ liệu lịch làm việc */}
         {currentSchedules && currentSchedules.length > 0
           ? currentSchedules.map((schedule, index) => (
-              <div
-                key={schedule._id}
-                className="flex flex-col sm:grid sm:grid-cols-[0.5fr_2fr_1fr_1fr] gap-3 py-3 px-5 border-b hover:bg-gray-50"
-              >
-                <p className="md:text-center text-center font-bold">
-                  {(currentPage - 1) * schedulesPerPage + index + 1}
-                </p>
-                <div className="flex md:justify-center items-center cursor-pointer">
-                  <span className="sm:hidden font-semibold mr-2">
-                    Ngày làm việc:{" "}
-                  </span>
-                  <td
-                    className="text-center font-medium md:border-none border-b text-[16px] hover:text-blue-400 cursor-pointer"
-                    onClick={() =>
-                      navigate(
-                        `/confirm-completed-appointments?date=${
-                          schedule.work_date.split("T")[0]
-                        }&work-shift=${schedule.work_shift}`
-                      )
-                    }
-                  >
-                    {formatDate(schedule.work_date)}
-                  </td>
-                </div>
-                <div className="flex sm:items-center sm:justify-center gap-2">
-                  <span className="sm:hidden font-semibold mr-2">
-                    Ca làm việc:{" "}
-                  </span>
-                  <p
-                    className={`py-0 md:py-1 rounded-full text-white text-sm text-center ${
-                      schedule.work_shift === "afternoon"
-                        ? "bg-orange-300"
-                        : "bg-blue-300"
-                    } shadow-lg max-w-[100px] w-full`}
-                  >
-                    {schedule.work_shift === "afternoon" ? "Chiều" : "Sáng"}
-                  </p>
-                </div>
-                <div className="flex gap-2 justify-center">
-                  <button
-                    onClick={() =>
-                      navigate(`/edit-work-schedule/${schedule._id}`)
-                    }
-                    className="bg-blue-500 text-white px-3 py-1 rounded shadow-md hover:bg-blue-600"
-                  >
-                    <i className="fa-solid fa-user-pen"></i>
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(schedule)}
-                    className="bg-red-500 text-white px-3 py-1 rounded shadow-md hover:bg-red-600"
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-            ))
-          : !loading && (
-              <p className="text-gray-500 text-center py-3">
-                Không tìm thấy lịch làm việc nào.
+            <div
+              key={schedule._id}
+              className="flex flex-col sm:grid sm:grid-cols-[0.5fr_2fr_1fr_1fr] gap-3 py-3 px-5 border-b hover:bg-gray-50"
+            >
+              <p className="md:text-center text-center font-bold">
+                {(currentPage - 1) * schedulesPerPage + index + 1}
               </p>
-            )}
+              <div className="flex md:justify-center items-center cursor-pointer">
+                <span className="sm:hidden font-semibold mr-2">
+                  Ngày làm việc:{" "}
+                </span>
+                <td
+                  className="text-center font-medium md:border-none border-b text-[16px] hover:text-blue-400 cursor-pointer"
+                  onClick={() =>
+                    navigate(
+                      `/confirm-completed-appointments?date=${schedule.work_date.split("T")[0]
+                      }&work-shift=${schedule.work_shift}`
+                    )
+                  }
+                >
+                  {formatDate(schedule.work_date)}
+                </td>
+              </div>
+              <div className="flex sm:items-center sm:justify-center gap-2">
+                <span className="sm:hidden font-semibold mr-2">
+                  Ca làm việc:{" "}
+                </span>
+                <p
+                  className={`py-0 md:py-1 rounded-full text-white text-sm text-center ${schedule.work_shift === "afternoon"
+                      ? "bg-orange-300"
+                      : "bg-blue-300"
+                    } shadow-lg max-w-[100px] w-full`}
+                >
+                  {schedule.work_shift === "afternoon" ? "Chiều" : "Sáng"}
+                </p>
+              </div>
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() =>
+                    navigate(`/edit-work-schedule/${schedule._id}`)
+                  }
+                  className="bg-blue-500 text-white px-3 py-1 rounded shadow-md hover:bg-blue-600"
+                >
+                  <i className="fa-solid fa-user-pen"></i>
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(schedule)}
+                  className="bg-red-500 text-white px-3 py-1 rounded shadow-md hover:bg-red-600"
+                >
+                  <i className="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          ))
+          : !loading && (
+            <p className="text-gray-500 text-center py-3">
+              Không tìm thấy lịch làm việc nào.
+            </p>
+          )}
       </div>
 
       {/* Phân trang */}
