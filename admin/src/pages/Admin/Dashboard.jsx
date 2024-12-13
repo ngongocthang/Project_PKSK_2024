@@ -195,7 +195,7 @@ const Dashboard = () => {
           <div className="text-center relative z-20">
             <img className="w-14 mx-auto" src={assets.appointments_icon3} alt="" />
             <p className="text-xl font-semibold text-white">{countAppointments.length}</p>
-            <p className="text-white text-xl font-semibold">Lịch hẹn</p>
+            <p className="text-white text-xl font-semibold">Lịch hẹn hoàn thành</p>
           </div>
         </div>
 
@@ -207,7 +207,7 @@ const Dashboard = () => {
           <div className="text-center relative z-20">
             <img className="w-14 mx-auto" src={assets.patients_icon} alt="" />
             <p className="text-xl font-semibold text-white">{countPatient.length}</p>
-            <p className="text-white text-xl font-semibold">Bệnh nhân</p>
+            <p className="text-white text-xl font-semibold">Bệnh nhân đã khám</p>
           </div>
         </div>
       </div>

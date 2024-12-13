@@ -71,10 +71,13 @@ const AppointmentDetails = () => {
 
               const afternoonShiftStart = new Date(scheduleDate);
               afternoonShiftStart.setHours(13, 30);
-
-              return scheduleDate > currentDateTime ||
-                (schedule.work_shift === "morning" && morningShiftStart > currentDateTime) ||
-                (schedule.work_shift === "afternoon" && afternoonShiftStart > currentDateTime);
+              return (
+                scheduleDate > currentDateTime ||
+                (schedule.work_shift === "morning" &&
+                  morningShiftStart > currentDateTime) ||
+                (schedule.work_shift === "afternoon" &&
+                  afternoonShiftStart > currentDateTime)
+              );
             });
 
             setDoctorSchedules(filteredSchedules);
@@ -110,7 +113,7 @@ const AppointmentDetails = () => {
   };
 
   const handleUpdateAppointment = async () => {
-    setIsLoadingUpdate(true);
+    setIsLoadingUpdate(true); // Bắt đầu loading
     try {
       const updatedData = {
         work_date: appointment.work_date,
@@ -136,7 +139,7 @@ const AppointmentDetails = () => {
         error.response?.data.message || "Đã xảy ra lỗi khi cập nhật!"
       );
     } finally {
-      setIsLoadingUpdate(false);
+      setIsLoadingUpdate(false); // Kết thúc loading
     }
   };
 
@@ -165,7 +168,7 @@ const AppointmentDetails = () => {
           </p>
         </div>
       </div>
-    );
+    ); // Nếu không có thông tin
   }
 
   return (
@@ -330,34 +333,82 @@ const AppointmentDetails = () => {
                   readOnly
                 />
               </div>
+              <div className="w-full lg:flex-1 flex flex-col gap-4">
+                <div className="flex-1 flex flex-col gap-1">
+                  <p className="font-bold">Ngày - Ca khám:</p>
+                  <select
+                    className="border rounded px-3 py-2"
+                    value={appointment.work_date || ""}
+                    onChange={handleScheduleChange}
+                  >
+                    <option value="">Chọn ngày khám</option>
+                    {doctorSchedules.map((schedule) => (
+                      <option key={schedule.work_date} value={schedule.work_date}>
+                        {new Date(schedule.work_date).toLocaleDateString()} -{" "}
+                        {schedule.work_shift === "morning" ? "Sáng" : "Chiều"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={handleUpdateAppointment}
+                    className={`bg-blue-500 px-6 py-2 text-white rounded-full hover:bg-blue-600 ${isLoadingUpdate ? "opacity-50 cursor-not-allowed" : ""}`}
+                    disabled={isLoadingUpdate}
+                  >
+                    {isLoadingUpdate ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-4 h-4 border-t-2 border-white border-solid rounded-full animate-spin"></div>
+                      </div>
+                    ) : (
+                      "Cập nhật"
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onCancelHandler}
+                    className="bg-gray-300 px-6 py-2 text-black rounded-full hover:bg-gray-400"
+                  >
+                    Quay lại
+                  </button>
+                </div>
+              </div>
             </div>
 
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-4 mt-4">
               <button
                 type="button"
                 onClick={handleUpdateAppointment}
-                className={`bg-blue-500 px-6 py-2 text-white rounded-full hover:bg-blue-600 ${isLoadingUpdate ? "opacity-50 cursor-not-allowed" : ""}`}
-                disabled={isLoadingUpdate}
+                className={`bg-blue-500 px-10 py-3 text-white rounded-full hover:bg-blue-600 ${isLoadingUpdate ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                disabled={
+                  isLoadingUpdate ||
+                  !appointment.work_date ||
+                  !appointment.work_shift
+                } // Vô hiệu hóa nút nếu không có lịch làm việc
               >
                 {isLoadingUpdate ? (
                   <div className="flex items-center justify-center">
-                    <div className="w-4 h-4 border-t-2 border-white border-solid rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-t-2 border-white border-solid rounded-full animate-spin"></div>
                   </div>
                 ) : (
                   "Cập nhật"
                 )}
               </button>
+
               <button
                 type="button"
                 onClick={onCancelHandler}
-                className="bg-gray-300 px-6 py-2 text-black rounded-full hover:bg-gray-400"
+                className="bg-gray-300 px-10 py-3 text-black rounded-full hover:bg-gray-400"
               >
                 Quay lại
               </button>
             </div>
-          </div>
+          </div >
         </form>
-      </div>
+      </div >
     </div>
   );
 };

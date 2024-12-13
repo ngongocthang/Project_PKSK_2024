@@ -797,7 +797,7 @@ const adminUpdateAppointment = async (req, res) => {
     if (checkAppointmentPatient) {
       return res
         .status(400)
-        .json({ message: "Appointment for the patient already exists" });
+        .json({ message: "Bệnh nhân đã tồn tại lịch hẹn này rồi!" });
     }
 
     const oldDate = moment(appointment.work_date)
