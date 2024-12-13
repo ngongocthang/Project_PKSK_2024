@@ -10,13 +10,10 @@ const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
 const DoctorCardSkeleton = () => {
   return (
     <div className="border border-indigo-200 rounded-xl overflow-hidden">
-      {/* Image placeholder */}
       <div className="relative">
         <div className="h-48 w-48 bg-gray-200 animate-pulse" />
         <div className="absolute top-2 left-2 bg-gray-200 animate-pulse h-6 w-24 rounded-full" />
       </div>
-
-      {/* Content placeholder */}
       <div className="p-4 space-y-3">
         <div className="h-7 bg-gray-200 animate-pulse rounded w-[100%]" />
         <div className="h-4 bg-gray-200 animate-pulse rounded w-1/2" />
@@ -34,7 +31,7 @@ const DoctorCardSkeleton = () => {
 };
 
 const Doctors = () => {
-  const { speciality } = useParams();
+  const { speciality: initialSpeciality } = useParams(); // Lấy tham số từ URL
   const [filterDoc, setFilterDoc] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [specializations, setSpecializations] = useState([]);
@@ -43,6 +40,7 @@ const Doctors = () => {
   const [doctorsPerPage] = useState(8);
   const [selectedDate, setSelectedDate] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [speciality, setSpeciality] = useState(initialSpeciality || ""); // Khai báo state cho speciality
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -54,6 +52,7 @@ const Doctors = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(`${VITE_BACKEND_URI}/doctor/find-all`);
+      console.log("Doctors fetched:", response.data.doctors); // Kiểm tra dữ liệu
       setDoctors(response.data.success ? response.data.doctors : []);
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -65,12 +64,8 @@ const Doctors = () => {
   const fetchSpecializations = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `${VITE_BACKEND_URI}/specialization/find-all`
-      );
-      setSpecializations(
-        response.data.success ? response.data.specializations : []
-      );
+      const response = await axios.get(`${VITE_BACKEND_URI}/specialization/find-all`);
+      setSpecializations(response.data.success ? response.data.specializations : []);
     } catch (error) {
       console.error("Error fetching specializations:", error);
     } finally {
@@ -79,12 +74,20 @@ const Doctors = () => {
   };
 
   const applyFilter = () => {
-    let filtered = speciality
-      ? doctors.filter(
-        (doc) => convertToSlug(doc.specialization_id?.name) === speciality
-      )
-      : doctors;
+    let filtered = doctors;
 
+    console.log("Doctors before filtering:", doctors); // Kiểm tra danh sách bác sĩ trước khi lọc
+
+    // Lọc theo chuyên khoa
+    if (speciality) {
+      filtered = filtered.filter(
+        (doc) => convertToSlug(doc.specialization_id?.name) === speciality
+      );
+    }
+
+    console.log("Filtered Doctors:", filtered); // Kiểm tra danh sách bác sĩ sau khi lọc
+    
+    // Lọc theo ngày làm việc
     if (selectedDate) {
       filtered = filtered.filter((doc) =>
         doc.schedules.some(
@@ -111,25 +114,13 @@ const Doctors = () => {
     const queryParams = new URLSearchParams(location.search);
     setCurrentPage(Number(queryParams.get("page")) || 1);
     setSelectedDate(queryParams.get("date") || "");
+    
+    // Lấy chuyên khoa từ URL
+    const specializationFromQuery = queryParams.get("specialization");
+    if (specializationFromQuery) {
+      setSpeciality(specializationFromQuery);
+    }
   }, [location]);
-
-  // Cập nhật URL khi có sự thay đổi
-  useEffect(() => {
-    const params = new URLSearchParams();
-
-    if (speciality) {
-      const formattedSpecialization = convertToSlug(speciality);
-      params.append('specialization', formattedSpecialization);
-    }
-
-    if (selectedDate) {
-      const dateParts = selectedDate.split("-");
-      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // Định dạng dd-mm-yyyy
-      params.append('date', formattedDate);
-    }
-
-    navigate(`?${params.toString()}`, { replace: true });
-  }, [speciality, selectedDate, navigate]);
 
   const totalDoctors = filterDoc.length;
   const totalPages = Math.ceil(totalDoctors / doctorsPerPage);
@@ -139,23 +130,40 @@ const Doctors = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("page", page);
+    if (speciality) {
+      queryParams.set("specialization", speciality);
+    }
+    if (selectedDate) {
+      queryParams.set("date", selectedDate);
+    }
+    navigate(`/doctors?${queryParams.toString()}`, { replace: true });
   };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
     const queryParams = new URLSearchParams(location.search);
-    queryParams.set("date", date); // Cập nhật giá trị ngày trong URL
+    queryParams.set("date", date);
     queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi ngày
-    navigate(
-      `/doctors${speciality ? `/${speciality}` : ""}?${queryParams.toString()}`,
-      { replace: true }
-    );
+    if (speciality) {
+      queryParams.set("specialization", speciality);
+    }
+    navigate(`/doctors?${queryParams.toString()}`, { replace: true });
+  };
+
+  const handleSpecializationChange = (slug) => {
+    const queryParams = new URLSearchParams(location.search);
+    queryParams.set("specialization", slug);
+    queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi chuyên khoa
+    navigate(`/doctors?${queryParams.toString()}`, { replace: true });
   };
 
   const renderPagination = () => {
-    const delta = 1;
+    const delta = 1; // Số trang hiển thị trước và sau trang hiện tại
     const paginationItems = [];
 
+    // Nút "Trang trước"
     paginationItems.push(
       <button
         key="prev"
@@ -168,6 +176,7 @@ const Doctors = () => {
       </button>
     );
 
+    // Hiển thị trang 1
     paginationItems.push(
       <button
         key={1}
@@ -179,6 +188,7 @@ const Doctors = () => {
       </button>
     );
 
+    // Hiển thị dấu ba chấm nếu cần, khi currentPage > 3
     if (currentPage > 2) {
       paginationItems.push(
         <span key="start-dots" className="px-2">
@@ -187,6 +197,7 @@ const Doctors = () => {
       );
     }
 
+    // Hiển thị các trang xung quanh trang hiện tại
     for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
       paginationItems.push(
         <button
@@ -200,6 +211,7 @@ const Doctors = () => {
       );
     }
 
+    // Hiển thị dấu ba chấm nếu cần, khi currentPage < totalPages - 1
     if (currentPage < totalPages - 1) {
       paginationItems.push(
         <span key="end-dots" className="px-2">
@@ -208,6 +220,7 @@ const Doctors = () => {
       );
     }
 
+    // Hiển thị trang cuối
     if (totalPages > 1) {
       paginationItems.push(
         <button
@@ -221,6 +234,7 @@ const Doctors = () => {
       );
     }
 
+    // Nút "Trang tiếp theo"
     paginationItems.push(
       <button
         key="next"
@@ -274,11 +288,7 @@ const Doctors = () => {
               {specializations.map((spec) => (
                 <div
                   key={spec._id}
-                  onClick={() =>
-                    speciality === convertToSlug(spec.name)
-                      ? navigate("/doctors")
-                      : navigate(`/doctors/${convertToSlug(spec.name)}`)
-                  }
+                  onClick={() => handleSpecializationChange(convertToSlug(spec.name))}
                   className={`w-[94vw] sm:w-40 pl-3 py-1.5 border border-gray-300 rounded transition-all cursor-pointer ${speciality === convertToSlug(spec.name)
                     ? "bg-[#e0f4fb] text-[#00759c]"
                     : ""
