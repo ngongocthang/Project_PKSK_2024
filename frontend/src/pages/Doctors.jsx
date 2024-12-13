@@ -86,7 +86,7 @@ const Doctors = () => {
     }
 
     console.log("Filtered Doctors:", filtered); // Kiểm tra danh sách bác sĩ sau khi lọc
-    
+
     // Lọc theo ngày làm việc
     if (selectedDate) {
       filtered = filtered.filter((doc) =>
@@ -114,7 +114,7 @@ const Doctors = () => {
     const queryParams = new URLSearchParams(location.search);
     setCurrentPage(Number(queryParams.get("page")) || 1);
     setSelectedDate(queryParams.get("date") || "");
-    
+
     // Lấy chuyên khoa từ URL
     const specializationFromQuery = queryParams.get("specialization");
     if (specializationFromQuery) {
@@ -154,8 +154,19 @@ const Doctors = () => {
 
   const handleSpecializationChange = (slug) => {
     const queryParams = new URLSearchParams(location.search);
-    queryParams.set("specialization", slug);
-    queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi chuyên khoa
+
+    // Kiểm tra xem chuyên khoa đã được chọn hay chưa
+    if (speciality === slug) {
+      // Nếu đã chọn, xóa chuyên khoa
+      queryParams.delete("specialization");
+      setSpeciality(""); // Cập nhật state
+    } else {
+      // Nếu chưa chọn, thiết lập chuyên khoa mới
+      queryParams.set("specialization", slug);
+      queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi chuyên khoa
+      setSpeciality(slug); // Cập nhật state
+    }
+
     navigate(`/doctors?${queryParams.toString()}`, { replace: true });
   };
 
