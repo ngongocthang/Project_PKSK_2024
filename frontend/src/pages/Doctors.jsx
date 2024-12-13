@@ -113,8 +113,12 @@ const Doctors = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     setCurrentPage(Number(queryParams.get("page")) || 1);
-    setSelectedDate(queryParams.get("date") || "");
-
+    const dateFromQuery = queryParams.get("date");
+    if (dateFromQuery) {
+      const [day, month, year] = dateFromQuery.split('-');
+      setSelectedDate(`${year}-${month}-${day}`); // Định dạng lại thành yyyy-mm-dd
+    }
+    
     // Lấy chuyên khoa từ URL
     const specializationFromQuery = queryParams.get("specialization");
     if (specializationFromQuery) {
@@ -122,34 +126,52 @@ const Doctors = () => {
     }
   }, [location]);
 
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
   const totalDoctors = filterDoc.length;
   const totalPages = Math.ceil(totalDoctors / doctorsPerPage);
   const indexOfLastDoctor = currentPage * doctorsPerPage;
   const indexOfFirstDoctor = indexOfLastDoctor - doctorsPerPage;
   const currentDoctors = filterDoc.slice(indexOfFirstDoctor, indexOfLastDoctor);
 
+  const updateURL = (newParams) => {
+    const queryParams = new URLSearchParams(newParams);
+    // Đặt lại trang về cuối cùng
+    queryParams.set("page", 1); // Đặt lại trang về 1
+    // Sắp xếp các tham số để page luôn ở cuối
+    const sortedParams = new URLSearchParams();
+    if (queryParams.get("specialization")) {
+      sortedParams.set("specialization", queryParams.get("specialization"));
+    }
+    if (queryParams.get("date")) {
+      sortedParams.set("date", queryParams.get("date"));
+    }
+    sortedParams.set("page", queryParams.get("page"));
+    navigate(`/doctors?${sortedParams.toString()}`, { replace: true });
+  };
+
   const handlePageChange = (page) => {
     setCurrentPage(page);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set("page", page);
-    if (speciality) {
-      queryParams.set("specialization", speciality);
-    }
-    if (selectedDate) {
-      queryParams.set("date", selectedDate);
-    }
-    navigate(`/doctors?${queryParams.toString()}`, { replace: true });
+    updateURL(queryParams);
   };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
     const queryParams = new URLSearchParams(location.search);
-    queryParams.set("date", date);
-    queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi ngày
-    if (speciality) {
-      queryParams.set("specialization", speciality);
+    if (date) {
+      queryParams.set("date", formatDate(date)); // Định dạng ngày
+    } else {
+      queryParams.delete("date"); // Xóa phần date nếu không có ngày
     }
-    navigate(`/doctors?${queryParams.toString()}`, { replace: true });
+    updateURL(queryParams);
   };
 
   const handleSpecializationChange = (slug) => {
@@ -163,11 +185,9 @@ const Doctors = () => {
     } else {
       // Nếu chưa chọn, thiết lập chuyên khoa mới
       queryParams.set("specialization", slug);
-      queryParams.set("page", 1); // Đặt lại trang về 1 khi thay đổi chuyên khoa
-      setSpeciality(slug); // Cập nhật state
     }
-
-    navigate(`/doctors?${queryParams.toString()}`, { replace: true });
+    
+    updateURL(queryParams);
   };
 
   const renderPagination = () => {
