@@ -52,13 +52,21 @@
 1. Clone repository:
      ```bash
      git clone https://github.com/hnmtri204/Project_PKSK_2024.git
-2. Cài đặt các phụ thuộc cho frontend:
-     ```bash
-    cd frontend
-    npm install
-    npm run dev
-3. Cài đặt các phụ thuộc cho frontend:
+2. Cài đặt các phụ thuộc cho backend:
      ```bash
     cd backend
     npm install
+3. Cài đặt các phụ thuộc cho frontend:
+     ```bash
+    cd frontend
+    npm install
+4. Cấu hình môi trường:
+  - Tạo file .env trong thư mục gốc và thiết lập các biến môi trường (như API keys, thông tin cơ sở dữ liệu, v.v.)
+5. Chạy ứng dụng:
+    Chạy backend
+     ```bash
+    npm run dev
+  
+  Chạy frontend
+   ```bash
     npm run dev
