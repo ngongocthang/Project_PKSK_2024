@@ -16,7 +16,6 @@ const AppContextProvider = (props) => {
     patient,
     setPatient,
   };
-
   return (
     <AppContext.Provider value={value}>
       {props.children}

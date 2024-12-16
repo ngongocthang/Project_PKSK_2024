@@ -32,9 +32,7 @@ const Dashboard = () => {
     getAllDoctors,
     getUpcomingApointmentsDashData,
     countAppointments,
-    getCountAppointments,
     countPatient,
-    countPatients,
     dashUpApData,
     doctors,
   } = useContext(AdminContext);
@@ -64,48 +62,29 @@ const Dashboard = () => {
               Authorization: `Bearer ${aToken}`,
             },
           });
-          const data = response.data;
-    
-          // Chuyển đổi tên tháng từ tiếng Anh sang tiếng Việt
-          const monthMapping = {
-            January: "Tháng 1",
-            February: "Tháng 2",
-            March: "Tháng 3",
-            April: "Tháng 4",
-            May: "Tháng 5",
-            June: "Tháng 6",
-            July: "Tháng 7",
-            August: "Tháng 8",
-            September: "Tháng 9",
-            October: "Tháng 10",
-            November: "Tháng 11",
-            December: "Tháng 12",
-          };
-    
-          // Cập nhật dữ liệu doanh thu
+          const data = response.data; // Lấy dữ liệu từ response
+
+          // Cập nhật doanh thu vào tháng tương ứng
           const updatedRevenueData = revenueData.map((item) => {
-            const revenueItem = data.find((d) => monthMapping[d.month] === item.month);
+            const revenueItem = data.find((d) => d.month === item.month);
             return {
               ...item,
               revenue: revenueItem ? revenueItem.revenue : 0,
             };
           });
-    
+
           setRevenueData(updatedRevenueData);
         } catch (error) {
           console.error("Error fetching revenue data:", error);
         }
       }
     };
-    
 
     fetchRevenueData();
     getDashData();
     getAllPatients();
     getAllDoctors();
     getUpcomingApointmentsDashData();
-    getCountAppointments();
-    countPatients();
   }, [aToken]);
 
   // Cấu hình biểu đồ
@@ -235,7 +214,7 @@ const Dashboard = () => {
             <p className="font-semibold text-gray-800 text-lg">Lịch hẹn sắp tới</p>
           </div>
           {/* Nội dung */}
-          <div className="overflow-x-auto mt-4">
+          <div className="overflow-x-auto">
             {/* Giao diện desktop */}
             <div className="hidden sm:block">
               <div className="max-h-[420px] overflow-y-auto border border-gray-200 rounded-lg">

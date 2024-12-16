@@ -13,7 +13,6 @@ const createWebSocketServer = (httpServer) => {
     console.log("Client connected");
 
     ws.on("message", async (message) => {
-      console.log(`Received from client: ${message}`);
 
       const parsedMessage = JSON.parse(message);
       const { user_id, action } = parsedMessage;

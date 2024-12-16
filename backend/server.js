@@ -48,6 +48,7 @@ app.use((req, res, next) => {
 });
 
 // Cron job
+// cron.schedule("* * * * *", async () => {
 cron.schedule("* 7 * * *", async () => {
   try {
     await sendAppointmentReminders();

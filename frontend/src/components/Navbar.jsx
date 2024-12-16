@@ -12,24 +12,38 @@ const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
 
+  const token = localStorage.getItem('token');
+
   // Sử dụng useRef để giữ kết nối WebSocket
   const wsRef = useRef(null);
 
   useEffect(() => {
+    // Kiểm tra token khi component được khởi tạo
+    if (token) {
+      // Bạn có thể gọi API để lấy thông tin người dùng dựa trên token
+      // Ví dụ: fetchUserData(token).then(setUser);
+      // Hoặc nếu bạn đã có thông tin người dùng trong localStorage
+      const userData = JSON.parse(localStorage.getItem('user'));
+      if (userData) {
+        setUser(userData);
+      }
+    }
+  }, [token, setUser]);
+
+  useEffect(() => {
     if (user) {
       // Khởi tạo WebSocket
-      const ws = new WebSocket(`ws://${VITE_BACKEND_URI.replace('http://', '')}`);
+      const wsProtocol =
+        window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+      const ws = new WebSocket(`${wsProtocol}${VITE_BACKEND_URI.replace('http://', '')}`);
       wsRef.current = ws;
 
       ws.onopen = () => {
-        // console.log('WebSocket connection established');
         ws.send(JSON.stringify({ user_id: user.id }));
       };
 
       ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
-
-        // Cập nhật số lượng thông báo chưa đọc và danh sách thông báo
         if (data.unreadCount !== undefined) {
           setUnreadCount(data.unreadCount);
         }
@@ -46,26 +60,8 @@ const Navbar = () => {
         console.log('WebSocket connection closed');
       };
 
-      // Cleanup WebSocket khi component bị unmount
       return () => ws.close();
     }
-  }, [user]);
-
-  // Hàm gửi yêu cầu cập nhật thông báo thủ công
-  const requestNotificationUpdate = () => {
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({ user_id: user.id, action: 'update' }));
-      // console.log('Request sent to update notifications');
-    }
-  };
-
-  // Tự động yêu cầu cập nhật thông báo mỗi giây
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      requestNotificationUpdate(); // Gọi hàm để cập nhật thông báo
-    }, 2000); // Cập nhật mỗi giây
-
-    return () => clearInterval(intervalId); // Dọn dẹp interval khi component unmount
   }, [user]);
 
   const handleLogout = () => {
@@ -75,9 +71,21 @@ const Navbar = () => {
     navigate('/account');
   };
 
+  const requestNotificationUpdate = () => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ user_id: user.id, action: 'update' }));
+    }
+  };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      requestNotificationUpdate();
+    }, 2000);
+    return () => clearInterval(intervalId);
+  }, [user]);
+
   const handleNotificationClick = () => {
     navigate('/notifications');
-    // Cập nhật trạng thái thông báo (nếu cần)
   };
 
   return (
@@ -116,7 +124,7 @@ const Navbar = () => {
           >
             <img className="w-8 rounded-full" src={assets.profile_pic} alt="Avatar" />
             <p className="font-medium text-gray-700">{user.name}</p>
-
+            <img className="w-2.5" src={assets.dropdown_icon} alt="Dropdown Icon" />
             {showDropdown && (
               <div className="absolute top-0 -left-6 pt-14 text-base font-medium text-gray-600 z-20">
                 <div className="min-w-52 bg-stone-100 rounded flex flex-col gap-4 p-4">
@@ -156,7 +164,7 @@ const Navbar = () => {
               alt="Thông báo"
             />
             {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
                 {unreadCount}
               </span>
             )}

@@ -31,19 +31,24 @@ const Notifications = () => {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const token = user?.token || localStorage.getItem("token");
-  const userId = JSON.parse(localStorage.getItem("user") || '{}').id;
+  const userId = JSON.parse(localStorage.getItem("user") || "{}").id;
 
   // Lấy thông báo từ server
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${VITE_BACKEND_URI}/notification/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        `${VITE_BACKEND_URI}/notification/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setNotifications(response.data.data);
 
-      const unreadCount = response.data.data.filter((notification) => !notification.isRead).length;
+      const unreadCount = response.data.data.filter(
+        (notification) => !notification.isRead
+      ).length;
       setUnreadCount(unreadCount);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -63,16 +68,26 @@ const Notifications = () => {
   // Đánh dấu thông báo là đã đọc
   const handleNotificationClick = async (id) => {
     try {
-      await axios.put(`${VITE_BACKEND_URI}/notification/read/${id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.put(
+        `${VITE_BACKEND_URI}/notification/read/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setActiveMenu(null);
 
       const updatedNotifications = notifications.map((notification) =>
-        notification._id === id ? { ...notification, isRead: true } : notification
+        notification._id === id
+          ? { ...notification, isRead: true }
+          : notification
       );
       setNotifications(updatedNotifications);
 
-      const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
+      const unreadCount = updatedNotifications.filter(
+        (notification) => !notification.isRead
+      ).length;
       setUnreadCount(unreadCount);
       localStorage.setItem("unreadCount", unreadCount);
     } catch (error) {
@@ -80,41 +95,29 @@ const Notifications = () => {
     }
   };
 
-  // Ẩn thông báo
-  const handleHide = async (notificationId) => {
-    const hiddenNotification = notifications.find((n) => n._id === notificationId);
-    const updatedNotifications = notifications.filter((n) => n._id !== notificationId);
-    setNotifications(updatedNotifications);
-
-    if (!hiddenNotification.isRead) {
-      const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
-      setUnreadCount(unreadCount);
-      localStorage.setItem("unreadCount", unreadCount);
-    }
-
-    try {
-      await axios.patch(`${VITE_BACKEND_URI}/notification/hide/${notificationId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-    } catch (error) {
-      console.error("Error hiding notification:", error);
-    }
-  };
-
   // Xóa thông báo
   const handleDelete = async (notificationId) => {
     try {
-      const response = await axios.delete(`${VITE_BACKEND_URI}/notification/delete/${notificationId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.delete(
+        `${VITE_BACKEND_URI}/notification/delete/${notificationId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.status === 200) {
-        const deletedNotification = notifications.find((n) => n._id === notificationId);
-        const updatedNotifications = notifications.filter((n) => n._id !== notificationId);
+        const deletedNotification = notifications.find(
+          (n) => n._id === notificationId
+        );
+        const updatedNotifications = notifications.filter(
+          (n) => n._id !== notificationId
+        );
         setNotifications(updatedNotifications);
 
         if (!deletedNotification.isRead) {
-          const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
+          const unreadCount = updatedNotifications.filter(
+            (notification) => !notification.isRead
+          ).length;
           setUnreadCount(unreadCount);
         }
       } else {
@@ -150,7 +153,9 @@ const Notifications = () => {
         displayedNotifications.map((notification) => (
           <div
             key={notification._id}
-            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-transparent" : ""}`}
+            className={`flex items-start border-b border-gray-300 py-2 ${
+              !notification.isRead ? "bg-transparent" : ""
+            }`}
             onClick={() => handleNotificationClick(notification._id)}
           >
             <img
@@ -160,9 +165,15 @@ const Notifications = () => {
             />
             <div className="flex-1 ml-3 cursor-pointer">
               <p className="font-medium mr-2">
-                {notification.isRead ? notification.content : <strong>{notification.content}</strong>}
+                {notification.isRead ? (
+                  notification.content
+                ) : (
+                  <strong>{notification.content}</strong>
+                )}
               </p>
-              <p className="text-xs text-gray-400">{timeAgo(notification.createdAt)}</p>
+              <p className="text-xs text-gray-400">
+                {timeAgo(notification.createdAt)}
+              </p>
             </div>
 
             {/* 3 dots menu */}
@@ -195,14 +206,6 @@ const Notifications = () => {
                     >
                       <i className="fa-regular fa-trash-can mr-2"></i>
                       Xóa thông báo
-                    </li>
-
-                    <li
-                      onClick={() => handleHide(notification._id)}
-                      className="cursor-pointer hover:bg-yellow-100 text-yellow-500 px-4 py-2 transition-all duration-200 rounded-md"
-                    >
-                      <i className="fa-solid fa-eye-slash mr-2"></i>
-                      Ẩn thông báo
                     </li>
                   </ul>
                 </div>
