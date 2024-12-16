@@ -81,6 +81,15 @@ const AppointmentDetails = () => {
             });
 
             setDoctorSchedules(filteredSchedules);
+
+            // Nếu không có lịch làm việc, xóa thông tin lịch làm việc
+            if (filteredSchedules.length === 0) {
+              setAppointment((prev) => ({
+                ...prev,
+                work_date: "",
+                work_shift: "",
+              }));
+            }
           }
         } catch (error) {
           toast.error("Đã xảy ra lỗi khi lấy lịch làm việc của bác sĩ!");
@@ -96,7 +105,15 @@ const AppointmentDetails = () => {
   };
 
   const handleDoctorChange = (event) => {
-    setSelectedDoctorId(event.target.value);
+    const newDoctorId = event.target.value; // Lưu ID bác sĩ mới
+    setSelectedDoctorId(newDoctorId); // Cập nhật bác sĩ được chọn
+
+    // Xóa lịch làm việc cũ khi bác sĩ thay đổi
+    setAppointment((prev) => ({
+      ...prev,
+      work_date: "",
+      work_shift: "",
+    }));
   };
 
   const handleScheduleChange = (event) => {
@@ -108,6 +125,13 @@ const AppointmentDetails = () => {
         ...prev,
         work_date: selectedSchedule.work_date,
         work_shift: selectedSchedule.work_shift,
+      }));
+    } else {
+      // Nếu không chọn lịch nào, xóa thông tin lịch làm việc
+      setAppointment((prev) => ({
+        ...prev,
+        work_date: "",
+        work_shift: "",
       }));
     }
   };
@@ -144,12 +168,12 @@ const AppointmentDetails = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="items-center">Loading...</div>;
   }
 
   if (!appointment) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
+      <div className="flex flex-col items-center justify-center h-screen w-full">
         <div className="flex flex-col items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"

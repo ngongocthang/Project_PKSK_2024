@@ -33,6 +33,8 @@ const sendAppointmentReminders = async () => {
 
       const workShiftText = appointment.work_shift === "morning" ? "Sáng" : "Chiều";
 
+      console.log(upcomingAppointments)
+
       // Tạo thông báo cho bệnh nhân
       await Notification.create({
         patient_id: appointment.patient_id._id,

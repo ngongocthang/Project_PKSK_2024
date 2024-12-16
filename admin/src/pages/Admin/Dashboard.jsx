@@ -32,7 +32,9 @@ const Dashboard = () => {
     getAllDoctors,
     getUpcomingApointmentsDashData,
     countAppointments,
+    getCountAppointments,
     countPatient,
+    countPatients,
     dashUpApData,
     doctors,
   } = useContext(AdminContext);
@@ -102,6 +104,8 @@ const Dashboard = () => {
     getAllPatients();
     getAllDoctors();
     getUpcomingApointmentsDashData();
+    getCountAppointments();
+    countPatients();
   }, [aToken]);
 
   // Cấu hình biểu đồ

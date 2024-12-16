@@ -1,3 +1,4 @@
+// notification
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,24 +26,24 @@ const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { user, setUser, setUnreadCount } = useContext(AppContext);
+  const { user, setUnreadCount } = useContext(AppContext);
   const navigate = useNavigate();
   const [activeMenu, setActiveMenu] = useState(null);
 
   const token = user?.token || localStorage.getItem("token");
+  const userId = JSON.parse(localStorage.getItem("user") || '{}').id;
 
   // Lấy thông báo từ server
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${VITE_BACKEND_URI}/notification`, {
+      const response = await axios.get(`${VITE_BACKEND_URI}/notification/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setNotifications(response.data);
+      setNotifications(response.data.data);
 
-      // Cập nhật số lượng thông báo chưa đọc trong Context
-      const unreadCount = response.data.filter((notification) => !notification.isRead).length;
+      const unreadCount = response.data.data.filter((notification) => !notification.isRead).length;
       setUnreadCount(unreadCount);
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -62,10 +63,8 @@ const Notifications = () => {
   // Đánh dấu thông báo là đã đọc
   const handleNotificationClick = async (id) => {
     try {
-      const response = await axios.put(`${VITE_BACKEND_URI}/notification/read/${id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.put(`${VITE_BACKEND_URI}/notification/read/${id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const updatedNotifications = notifications.map((notification) =>
@@ -73,9 +72,9 @@ const Notifications = () => {
       );
       setNotifications(updatedNotifications);
 
-      // Cập nhật số lượng thông báo chưa đọc
       const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
       setUnreadCount(unreadCount);
+      localStorage.setItem("unreadCount", unreadCount);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
@@ -87,18 +86,15 @@ const Notifications = () => {
     const updatedNotifications = notifications.filter((n) => n._id !== notificationId);
     setNotifications(updatedNotifications);
 
-    // Nếu thông báo bị ẩn chưa đọc, giảm số lượng chưa đọc
     if (!hiddenNotification.isRead) {
       const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
       setUnreadCount(unreadCount);
-      localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
+      localStorage.setItem("unreadCount", unreadCount);
     }
 
     try {
       await axios.patch(`${VITE_BACKEND_URI}/notification/hide/${notificationId}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
     } catch (error) {
       console.error("Error hiding notification:", error);
@@ -117,11 +113,9 @@ const Notifications = () => {
         const updatedNotifications = notifications.filter((n) => n._id !== notificationId);
         setNotifications(updatedNotifications);
 
-        // Nếu thông báo bị xóa chưa đọc, giảm số lượng chưa đọc
         if (!deletedNotification.isRead) {
           const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
           setUnreadCount(unreadCount);
-          // localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
         }
       } else {
         console.error("Could not delete notification on the server");
@@ -131,7 +125,6 @@ const Notifications = () => {
     }
   };
 
-  // Sắp xếp thông báo theo ngày tạo
   const sortedNotifications = notifications.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
@@ -141,7 +134,7 @@ const Notifications = () => {
     : sortedNotifications.slice(0, 10);
 
   const toggleMenu = (id, e) => {
-    e.stopPropagation(); // Prevent event from propagating
+    e.stopPropagation();
     setActiveMenu((prevMenu) => (prevMenu === id ? null : id));
   };
 
@@ -157,8 +150,7 @@ const Notifications = () => {
         displayedNotifications.map((notification) => (
           <div
             key={notification._id}
-            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-transparent" : ""
-              }`}
+            className={`flex items-start border-b border-gray-300 py-2 ${!notification.isRead ? "bg-transparent" : ""}`}
             onClick={() => handleNotificationClick(notification._id)}
           >
             <img
@@ -169,9 +161,6 @@ const Notifications = () => {
             <div className="flex-1 ml-3 cursor-pointer">
               <p className="font-medium mr-2">
                 {notification.isRead ? notification.content : <strong>{notification.content}</strong>}
-              </p>
-              <p className="text-xs text-gray-400">
-                Ca khám: {notification.work_shift === "morning" ? "buổi sáng" : "buổi chiều"}
               </p>
               <p className="text-xs text-gray-400">{timeAgo(notification.createdAt)}</p>
             </div>
@@ -206,6 +195,14 @@ const Notifications = () => {
                     >
                       <i className="fa-regular fa-trash-can mr-2"></i>
                       Xóa thông báo
+                    </li>
+
+                    <li
+                      onClick={() => handleHide(notification._id)}
+                      className="cursor-pointer hover:bg-yellow-100 text-yellow-500 px-4 py-2 transition-all duration-200 rounded-md"
+                    >
+                      <i className="fa-solid fa-eye-slash mr-2"></i>
+                      Ẩn thông báo
                     </li>
                   </ul>
                 </div>
