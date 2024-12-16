@@ -29,31 +29,36 @@
   - Tích hợp bộ lọc giúp bệnh nhân tìm kiếm bác sĩ theo chuyên khoa hoặc ngày làm việc.
 
 - **Thông báo**:
-  - Gửi thông báo qua email hoặc SMS khi có sự kiện quan trọng như lịch hẹn sắp diễn ra, thay đổi giờ hẹn.
+  - Gửi thông báo qua emai khi có sự kiện quan trọng như lịch hẹn sắp diễn ra, thay đổi giờ hẹn.
 
 ## Kỹ Thuật Sử Dụng
 
 - **Frontend**:
   - React: Xây dựng giao diện người dùng.
   - React Router: Điều hướng giữa các trang.
-  - State management: Sử dụng Zustand hoặc Context API để quản lý trạng thái.
-  - Axios hoặc Fetch API: Kết nối với server để đặt và quản lý lịch hẹn.
+  - State management: Sử dụng Context API để quản lý trạng thái.
+  - Axios: Kết nối với server để đặt và quản lý lịch hẹn.
   - Tailwind CSS hoặc Material UI: Thiết kế giao diện người dùng.
 
 - **Backend**:
   - Node.js hoặc Express: Quản lý API và xác thực người dùng.
-  - MongoDB hoặc MySQL: Lưu trữ dữ liệu người dùng, lịch hẹn, và các thông tin khác.
+  - MongoDB : Lưu trữ dữ liệu người dùng, lịch hẹn, và các thông tin khác.
 
 - **Tính năng mở rộng**:
-  - Tích hợp Google Calendar API: Đồng bộ lịch hẹn với Google Calendar.
-  - Hỗ trợ đặt lịch hẹn cho dịch vụ khám từ xa (telemedicine) qua video call.
   - Tích hợp thanh toán trực tuyến cho các dịch vụ trả phí.
-
-- **Thông báo**:
-  - Sử dụng SendGrid hoặc Twilio để gửi thông báo qua email/SMS.
 
 ## Hướng Dẫn Cài Đặt
 
 1. Clone repository:
-   ```bash
-   git clone https://github.com/hnmtri204/Project_PKSK_2024.git
+     ```bash
+     git clone https://github.com/hnmtri204/Project_PKSK_2024.git
+2. Cài đặt các phụ thuộc cho frontend:
+     ```bash
+    cd frontend
+    npm install
+    npm run dev
+3. Cài đặt các phụ thuộc cho frontend:
+     ```bash
+    cd backend
+    npm install
+    npm run dev
