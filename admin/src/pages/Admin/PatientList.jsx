@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AdminContext } from "../../context/AdminContext";
 
@@ -9,19 +9,17 @@ const VITE_BACKEND_URI = import.meta.env.VITE_BACKEND_URI;
 const PatientList = () => {
     const { patient, getAllPatients } = useContext(AdminContext);
     const navigate = useNavigate();
+    const location = useLocation(); // Lấy thông tin location
     const [currentPage, setCurrentPage] = useState(1);
     const [patientsPerPage] = useState(10);
-    const [isDeleting, setIsDeleting] = useState(false); // Thêm trạng thái loading
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
-        toast.dismiss();
-    }, [currentPage]);
-
-    useEffect(() => {
-        return () => {
-            toast.dismiss(); // Đóng thông báo khi component bị hủy (trang đóng)
-        };
-    }, []);
+        // Hiển thị thông báo thành công nếu có từ state
+        if (location.state?.successMessage) {
+            toast.success(location.state.successMessage);
+        }
+    }, [location.state]);
 
     useEffect(() => {
         getAllPatients();
@@ -40,6 +38,12 @@ const PatientList = () => {
         navigate(`/patient-list?page=${pageNumber}`);
     };
 
+    useEffect(() => {
+        return () => {
+          toast.dismiss(); // Đóng thông báo khi component bị hủy (trang đóng)
+        };
+      }, []);
+
     const deletePatient = async (id, name) => {
         toast.dismiss();
         toast(
@@ -52,7 +56,7 @@ const PatientList = () => {
                         <button
                             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700"
                             onClick={async () => {
-                                setIsDeleting(true); // Bắt đầu quá trình xóa
+                                setIsDeleting(true);
                                 try {
                                     await axios.delete(`${VITE_BACKEND_URI}/patient/delete/${id}`);
                                     toast.success(`Bệnh nhân ${name} đã được xóa thành công!`, {
@@ -66,7 +70,7 @@ const PatientList = () => {
                                         position: "top-right",
                                     });
                                 } finally {
-                                    setIsDeleting(false); // Kết thúc quá trình xóa
+                                    setIsDeleting(false);
                                     closeToast();
                                 }
                             }}
@@ -84,7 +88,7 @@ const PatientList = () => {
             ),
             {
                 position: "top-center",
-                autoClose: true, // Không tự động đóng
+                autoClose: true,
                 closeOnClick: false,
                 draggable: false,
             }
@@ -95,7 +99,6 @@ const PatientList = () => {
     const renderPagination = () => {
         const paginationItems = [];
 
-        // Nút "Trang trước"
         paginationItems.push(
             <button
                 key="prev"
@@ -107,7 +110,6 @@ const PatientList = () => {
             </button>
         );
 
-        // Hiển thị trang 1
         paginationItems.push(
             <button
                 key={1}
@@ -118,12 +120,10 @@ const PatientList = () => {
             </button>
         );
 
-        // Hiển thị dấu ba chấm nếu cần
         if (currentPage > 2) {
             paginationItems.push(<span key="start-dots" className="px-2">...</span>);
         }
 
-        // Hiển thị các trang xung quanh trang hiện tại
         for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
             paginationItems.push(
                 <button
@@ -136,12 +136,10 @@ const PatientList = () => {
             );
         }
 
-        // Hiển thị dấu ba chấm nếu cần
         if (currentPage < totalPages - 1) {
             paginationItems.push(<span key="end-dots" className="px-2">...</span>);
         }
 
-        // Hiển thị trang cuối
         if (totalPages > 1) {
             paginationItems.push(
                 <button
@@ -154,7 +152,6 @@ const PatientList = () => {
             );
         }
 
-        // Nút "Trang tiếp theo"
         paginationItems.push(
             <button
                 key="next"

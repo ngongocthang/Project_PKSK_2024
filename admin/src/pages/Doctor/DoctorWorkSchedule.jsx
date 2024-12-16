@@ -110,8 +110,8 @@ const DoctorWorkSchedule = () => {
         key="prev"
         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
         className={`py-1 px-3 border rounded w-[70px] flex items-center justify-center ${currentPage === 1
-            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "text-gray-600"
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "text-gray-600"
           }`}
         disabled={currentPage === 1}
       >
@@ -175,8 +175,8 @@ const DoctorWorkSchedule = () => {
           key={totalPages}
           onClick={() => handlePageChange(totalPages)}
           className={`py-1 px-3 border rounded ${currentPage === totalPages
-              ? "bg-indigo-500 text-white"
-              : "text-gray-600"
+            ? "bg-indigo-500 text-white"
+            : "text-gray-600"
             }`}
         >
           {totalPages}
@@ -190,8 +190,8 @@ const DoctorWorkSchedule = () => {
         key="next"
         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
         className={`py-1 px-3 border rounded w-[70px] flex items-center justify-center ${currentPage === totalPages
-            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "text-gray-600"
+          ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+          : "text-gray-600"
           }`}
         disabled={currentPage === totalPages}
       >
@@ -247,18 +247,14 @@ const DoctorWorkSchedule = () => {
           <p className="font-bold text-center text-[16px]">Hành động</p>
         </div>
 
-        {/* Hiển thị spinner khi đang tải */}
-        {loading && (
-          <div className="flex justify-center items-center py-6">
-            <div
-              className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-solid rounded-full border-[#219c9e] border-t-transparent"
-              role="status"
-            ></div>
-          </div>
-        )}
 
-        {/* Dữ liệu lịch làm việc */}
-        {currentSchedules && currentSchedules.length > 0
+
+        {loading ? ( // Hiển thị spinner khi đang tải
+          <div className="flex justify-center items-center py-6">
+            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-solid rounded-full border-[#219c9e] border-t-transparent" role="status">
+            </div>
+          </div>
+        ) : currentSchedules && currentSchedules.length > 0
           ? currentSchedules.map((schedule, index) => (
             <div
               key={schedule._id}
@@ -289,8 +285,8 @@ const DoctorWorkSchedule = () => {
                 </span>
                 <p
                   className={`py-0 md:py-1 rounded-full text-white text-sm text-center ${schedule.work_shift === "afternoon"
-                      ? "bg-orange-300"
-                      : "bg-blue-300"
+                    ? "bg-orange-300"
+                    : "bg-blue-300"
                     } shadow-lg max-w-[100px] w-full`}
                 >
                   {schedule.work_shift === "afternoon" ? "Chiều" : "Sáng"}

@@ -121,7 +121,7 @@ const Notifications = () => {
         if (!deletedNotification.isRead) {
           const unreadCount = updatedNotifications.filter((notification) => !notification.isRead).length;
           setUnreadCount(unreadCount);
-          localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
+          // localStorage.setItem("unreadCount", unreadCount); // Lưu lại vào localStorage
         }
       } else {
         console.error("Could not delete notification on the server");
