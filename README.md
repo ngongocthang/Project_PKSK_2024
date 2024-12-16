@@ -63,10 +63,10 @@
 4. Cấu hình môi trường:
   - Tạo file .env trong thư mục gốc và thiết lập các biến môi trường (như API keys, thông tin cơ sở dữ liệu, v.v.)
 5. Chạy ứng dụng:
-    Chạy backend
+    - Chạy backend
      ```bash
     npm run dev
   
-  Chạy frontend
+  - Chạy frontend
    ```bash
     npm run dev
