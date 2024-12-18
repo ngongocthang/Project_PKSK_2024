@@ -128,7 +128,6 @@ const PatientList = () => {
         1
       </button>
     );
-
     if (currentPage > 2) {
       paginationItems.push(
         <span key="start-dots" className="px-2">
@@ -136,7 +135,6 @@ const PatientList = () => {
         </span>
       );
     }
-
     for (
       let i = Math.max(2, currentPage - 1);
       i <= Math.min(totalPages - 1, currentPage + 1);
@@ -154,7 +152,6 @@ const PatientList = () => {
         </button>
       );
     }
-
     if (currentPage < totalPages - 1) {
       paginationItems.push(
         <span key="end-dots" className="px-2">

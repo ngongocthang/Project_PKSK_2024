@@ -149,7 +149,7 @@ const ConfirmCompletedAppointments = () => {
 
   return (
     <div className="w-full max-w-6xl m-5">
-      <div className="flex justify-between items-center mb-3">
+      <div className="hidden md:flex justify-between items-center mb-3">
         <p className="text-lg font-medium text-gray-700">Xác nhận khám bệnh</p>
         <div className="space-x-4">
           <input
@@ -165,7 +165,23 @@ const ConfirmCompletedAppointments = () => {
         </div>
       </div>
 
-      <div className="bg-white border rounded text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll">
+      {/* Mobile View */}
+      <div className="md:hidden flex flex-col items-center mb-3">
+        <p className="text-lg font-medium text-gray-700 mb-2">Xác nhận khám bệnh</p>
+        <input
+          type="text"
+          placeholder="Tìm kiếm bệnh nhân..."
+          className="p-2 rounded-lg border-2 border-[#0091a1] bg-blue-50 shadow-md text-sm font-semibold text-gray-800 mb-2 w-full"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <span className="p-2 rounded-lg border-2 border-[#0091a1] bg-blue-50 shadow-md text-sm font-semibold text-gray-800 w-full text-center">
+          {formatVietnameseDate(workDate)}
+        </span>
+      </div>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block bg-white border rounded text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll">
         <table className="w-full border-collapse">
           <thead className="bg-gray-200">
             <tr>
@@ -217,7 +233,6 @@ const ConfirmCompletedAppointments = () => {
                           {appointment.status === "completed" ? (
                             <span className="border border-blue-500 text-blue-500 bg-white py-1 px-3 rounded-full font-semibold">Hoàn thành</span>
                           ) : (
-                            // Kiểm tra nếu ngày hiện tại khác với workDate
                             currentDate !== workDate ? (
                               <span className="border border-gray-400 text-gray-400 bg-white py-1 px-3 rounded-full font-semibold cursor-not-allowed">Không xác nhận</span>
                             ) : (
@@ -245,6 +260,61 @@ const ConfirmCompletedAppointments = () => {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Table */}
+      <div className="md:hidden bg-white border rounded text-sm max-h-[80vh] min-h-[50vh] overflow-y-scroll p-4">
+        {loading ? (
+          <div className="flex justify-center items-center py-6">
+            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-solid rounded-full border-[#219c9e] border-t-transparent" role="status"></div>
+          </div>
+        ) : currentAppointments.length === 0 ? (
+          <p className="py-6 text-center text-gray-500">Không có lịch xác nhận nào.</p>
+        ) : (
+          currentAppointments.map((appointment, index) => (
+            <div key={appointment._id} className="border-b py-4 px-2 mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <p className="font-medium text-lg">{index + 1}. {appointment.patient_id.user_id.name}</p>
+                <p className={`py-1 px-2 rounded-full text-white text-base font-semibold ${appointment.paymentStatus === "true" ? "bg-green-400" : "bg-red-400"}`}>
+                  {appointment.paymentStatus === "true" ? "Đã thanh toán" : "Chưa thanh toán"}
+                </p>
+              </div>
+              <p className="text-gray-600 text-sm">SĐT: {appointment.patient_id.user_id.phone}</p>
+              <p className={`py-1 px-2 rounded-full text-white text-base font-semibold ${appointment.work_shift === "afternoon" ? "bg-orange-400" : "bg-blue-400"}`}>
+                {appointment.work_shift === "morning" ? "Sáng" : "Chiều"}
+              </p>
+              <div className="flex justify-center mt-2">
+                {loadingId === appointment._id ? (
+                  <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    {appointment.status === "completed" ? (
+                      <span className="border border-blue-500 text-blue-500 bg-white py-1 px-3 rounded-full font-semibold">Hoàn thành</span>
+                    ) : (
+                      currentDate !== workDate ? (
+                        <span className="border border-gray-400 text-gray-400 bg-white py-1 px-3 rounded-full font-semibold cursor-not-allowed">Không xác nhận</span>
+                      ) : (
+                        <svg
+                          onClick={() => handleConfirm(appointment._id)}
+                          className="w-[30px] h-[30px] cursor-pointer bg-blue-500 p-2 rounded-full shadow-lg hover:bg-blue-600"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M5 13l4 4L19 7" />
+                        </svg>
+                      )
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
       {totalPages > 1 && renderPagination()}
     </div>

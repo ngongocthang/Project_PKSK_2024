@@ -58,24 +58,12 @@ const App = () => {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/abouts" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-          <Route
-            path="/notifications"
-            element={token ? <Notifications /> : <Home />}
-          />
-          <Route
-            path="/my-appointments"
-            element={token ? <MyAppointments /> : <Home />}
-          />
+          <Route path="/notifications" element={token ? <Notifications /> : <Home />}/>
+          <Route path="/my-appointments" element={token ? <MyAppointments /> : <Home />}/>
           <Route path="/appointment/:docId" element={<Appointment />} />
-          <Route
-            path="/medical-history"
-            element={token ? <MedicalHistory /> : <Home />}
-          />
+          <Route path="/medical-history" element={token ? <MedicalHistory /> : <Home />}/>
           <Route path="/all-schedule" element={<AllSchedule />} />
-          <Route
-            path="/my-profile"
-            element={token ? <MyProfile /> : <Home />}
-          />
+          <Route path="/my-profile" element={token ? <MyProfile /> : <Home />}/>
           <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </div>

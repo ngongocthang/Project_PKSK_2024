@@ -200,7 +200,7 @@ const DoctorAppointments = () => {
                     {item.work_shift === "morning" ? "Sáng" : "Chiều"}
                   </p>
                 </div>
-                <div className='flex flex-row gap-2 md:gap-3 justify-center md:justify-end mr-2'>
+                <div className='flex flex-row gap-2 mt-2 md:mt-0 md:gap-3 justify-center md:justify-end mr-2'>
                   {item.status === "pending" && (
                     <button className='bg-yellow-400 text-white font-semibold py-1 px-4 rounded-full text-xs shadow-lg sm:text-sm w-[140px]'>
                       Đang chờ
